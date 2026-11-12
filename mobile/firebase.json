@@ -1,0 +1,25 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "babyhealth-guard",
+          "appId": "1:644928159931:android:b8150aea33aa1c4157a99e",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "babyhealth-guard",
+          "configurations": {
+            "android": "1:644928159931:android:b8150aea33aa1c4157a99e",
+            "web": "1:644928159931:web:9797b6711d15551057a99e"
+          }
+        }
+      }
+    }
+  }
+}

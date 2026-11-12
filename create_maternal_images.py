@@ -1,0 +1,249 @@
+import os
+
+assets_dir = r"C:\Users\Admin\BabyHealth-Guard\assets\images"
+os.makedirs(assets_dir, exist_ok=True)
+
+# 1. PREGNANT MOTHER SVG
+pregnant_svg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="pregBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c4a6e"/>
+      <stop offset="50%" stop-color="#0e7490"/>
+      <stop offset="100%" stop-color="#134e4a"/>
+    </linearGradient>
+    <linearGradient id="pregSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8d5524"/>
+      <stop offset="100%" stop-color="#5c3818"/>
+    </linearGradient>
+    <linearGradient id="pregDress" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="50%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="600" rx="32" fill="url(#pregBg)"/>
+
+  <!-- Decorative sun aura -->
+  <circle cx="400" cy="300" r="220" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+  <circle cx="400" cy="300" r="160" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" stroke-dasharray="8 8"/>
+
+  <!-- Mother Torso & Elegant Posture -->
+  <!-- Pregnant Dress Silhouette -->
+  <path d="M 330 260 Q 300 380 270 560 L 530 560 Q 500 380 470 260 Z" fill="url(#pregDress)"/>
+  
+  <!-- Prominent Baby Bump / Pregnant Belly Curve -->
+  <ellipse cx="440" cy="400" rx="90" ry="110" fill="url(#pregDress)" opacity="0.95"/>
+  <ellipse cx="440" cy="400" rx="80" ry="95" fill="#f59e0b" opacity="0.25"/>
+
+  <!-- Loving Hands Resting on Belly -->
+  <path d="M 340 320 Q 370 420 440 430" stroke="url(#pregSkin)" stroke-width="26" fill="none" stroke-linecap="round"/>
+  <ellipse cx="440" cy="430" rx="28" ry="16" fill="url(#pregSkin)" transform="rotate(-10 440 430)"/>
+  
+  <path d="M 480 320 Q 480 380 430 380" stroke="url(#pregSkin)" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <ellipse cx="430" cy="380" rx="26" ry="14" fill="url(#pregSkin)" transform="rotate(15 430 380)"/>
+
+  <!-- Mother Neck & Head -->
+  <rect x="385" y="190" width="30" height="50" rx="10" fill="url(#pregSkin)"/>
+  <circle cx="400" cy="160" r="55" fill="url(#pregSkin)"/>
+  
+  <!-- Elegant African Headwrap (Kitenge / Gomesi Turban) -->
+  <path d="M 345 150 Q 400 90 455 150 Q 440 80 370 90 Z" fill="#d97706"/>
+  <ellipse cx="400" cy="120" rx="50" ry="30" fill="#ea580c"/>
+  <circle cx="430" cy="110" r="16" fill="#10b981"/>
+
+  <!-- Facial Profile (Smiling gently downwards at belly) -->
+  <path d="M 390 175 Q 405 185 415 175" stroke="#3e2723" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="385" cy="160" r="3.5" fill="#3e2723"/>
+
+  <!-- Floating Glass Tag 1: Gestational Age -->
+  <g transform="translate(50, 80)" filter="url(#softGlow)">
+    <rect width="230" height="85" rx="18" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <circle cx="36" cy="42" r="18" fill="#f59e0b"/>
+    <text x="36" y="47" font-family="sans-serif" font-size="15" fill="#fff" text-anchor="middle">🤰</text>
+    <text x="66" y="36" font-family="sans-serif" font-size="10" font-weight="bold" fill="#fcd34d" letter-spacing="1">PREGNANT MOTHER</text>
+    <text x="66" y="55" font-family="sans-serif" font-size="15" font-weight="bold" fill="#ffffff">32 Weeks Gestation</text>
+    <text x="66" y="71" font-family="sans-serif" font-size="11" fill="#cbd5e1">Third Trimester • Active</text>
+  </g>
+
+  <!-- Floating Glass Tag 2: Maternal Vitals -->
+  <g transform="translate(520, 80)" filter="url(#softGlow)">
+    <rect width="230" height="85" rx="18" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <circle cx="36" cy="42" r="18" fill="#10b981"/>
+    <text x="36" y="47" font-family="sans-serif" font-size="14" fill="#fff" text-anchor="middle">❤️</text>
+    <text x="66" y="36" font-family="sans-serif" font-size="10" font-weight="bold" fill="#a7f3d0" letter-spacing="1">CLINICAL VITALS</text>
+    <text x="66" y="55" font-family="sans-serif" font-size="15" font-weight="bold" fill="#ffffff">BP 118/76 mmHg</text>
+    <text x="66" y="71" font-family="sans-serif" font-size="11" fill="#6ee7b7">● Normal &amp; Healthy</text>
+  </g>
+
+  <!-- Bottom ECG & Kicks Line -->
+  <path d="M 60 520 L 220 520 L 240 480 L 260 550 L 280 500 L 300 520 L 740 520" fill="none" stroke="#22d3ee" stroke-width="3" opacity="0.8"/>
+  <text x="400" y="550" font-family="sans-serif" font-size="12" font-weight="bold" fill="#a5f3fc" text-anchor="middle">11 Distinct Fetal Kicks Recorded Today</text>
+</svg>'''
+
+with open(os.path.join(assets_dir, 'pregnant_mother.svg'), 'w', encoding='utf-8') as f:
+    f.write(pregnant_svg)
+
+# 2. LACTATING MOTHER SVG
+lactating_svg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="lacBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="50%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="lacSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8d5524"/>
+      <stop offset="100%" stop-color="#5c3818"/>
+    </linearGradient>
+    <linearGradient id="wrapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#f43f5e"/>
+    </linearGradient>
+    <filter id="softGlow2" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="600" rx="32" fill="url(#lacBg)"/>
+
+  <!-- Radiant circular aura -->
+  <circle cx="400" cy="320" r="230" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="2"/>
+  
+  <!-- Lactating Mother Body & Breastfeeding Wrap -->
+  <path d="M 300 280 Q 260 400 240 560 L 560 560 Q 540 400 500 280 Z" fill="#065f46"/>
+  <ellipse cx="400" cy="440" rx="140" ry="110" fill="url(#wrapGrad)" opacity="0.9"/>
+
+  <!-- Mother Neck & Head Turned Tenderly Towards Infant -->
+  <rect x="385" y="180" width="30" height="50" rx="10" fill="url(#lacSkin)" transform="rotate(-5 385 180)"/>
+  <circle cx="395" cy="150" r="56" fill="url(#lacSkin)"/>
+
+  <!-- African Traditional Floral Gomesi Wrap Headwear -->
+  <ellipse cx="395" cy="115" rx="55" ry="32" fill="#10b981"/>
+  <ellipse cx="370" cy="110" rx="22" ry="16" fill="#f59e0b"/>
+  <ellipse cx="420" cy="110" rx="22" ry="16" fill="#ec4899"/>
+
+  <!-- Mother Peaceful Face -->
+  <path d="M 390 165 Q 400 174 410 165" stroke="#3e2723" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="385" cy="150" r="3.5" fill="#3e2723"/>
+
+  <!-- Baby Cradled for Lactation / Nursing -->
+  <g transform="translate(360, 310) rotate(-25)">
+    <!-- Swaddle Wrap -->
+    <ellipse cx="60" cy="80" rx="70" ry="45" fill="#fef08a"/>
+    <!-- Baby Head -->
+    <circle cx="30" cy="55" r="28" fill="url(#lacSkin)"/>
+    <!-- Cute Beanie -->
+    <ellipse cx="28" cy="42" rx="26" ry="16" fill="#a7f3d0"/>
+    <!-- Closed Content Eye -->
+    <path d="M 22 55 Q 28 60 34 55" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- Loving Arms Embracing Nursing Baby -->
+  <path d="M 330 300 Q 320 440 430 430" stroke="url(#lacSkin)" stroke-width="30" fill="none" stroke-linecap="round"/>
+  <path d="M 470 300 Q 480 430 390 440" stroke="url(#lacSkin)" stroke-width="26" fill="none" stroke-linecap="round"/>
+
+  <!-- Floating Glass Tag 1: Exclusive Breastfeeding -->
+  <g transform="translate(50, 70)" filter="url(#softGlow2)">
+    <rect width="240" height="85" rx="18" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <circle cx="36" cy="42" r="18" fill="#10b981"/>
+    <text x="36" y="47" font-family="sans-serif" font-size="15" fill="#fff" text-anchor="middle">🤱</text>
+    <text x="66" y="36" font-family="sans-serif" font-size="10" font-weight="bold" fill="#6ee7b7" letter-spacing="1">LACTATING MOTHER</text>
+    <text x="66" y="55" font-family="sans-serif" font-size="15" font-weight="bold" fill="#ffffff">Exclusive Breastfeeding</text>
+    <text x="66" y="71" font-family="sans-serif" font-size="11" fill="#cbd5e1">0–6 Months • Natural Immunity</text>
+  </g>
+
+  <!-- Floating Glass Tag 2: Postnatal Nutrition -->
+  <g transform="translate(510, 70)" filter="url(#softGlow2)">
+    <rect width="240" height="85" rx="18" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <circle cx="36" cy="42" r="18" fill="#ec4899"/>
+    <text x="36" y="47" font-family="sans-serif" font-size="14" fill="#fff" text-anchor="middle">💧</text>
+    <text x="66" y="36" font-family="sans-serif" font-size="10" font-weight="bold" fill="#fbcfe8" letter-spacing="1">POSTNATAL RECOVERY</text>
+    <text x="66" y="55" font-family="sans-serif" font-size="15" font-weight="bold" fill="#ffffff">Hydration &amp; Nutrition</text>
+    <text x="66" y="71" font-family="sans-serif" font-size="11" fill="#f472b6">Iron, Calcium &amp; Clean Water</text>
+  </g>
+</svg>'''
+
+with open(os.path.join(assets_dir, 'lactating_mother.svg'), 'w', encoding='utf-8') as f:
+    f.write(lactating_svg)
+
+# 3. HEALTHY BABY SVG
+healthy_baby_svg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="babyBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="50%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="babySkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8d5524"/>
+      <stop offset="100%" stop-color="#5c3818"/>
+    </linearGradient>
+    <filter id="softGlow3" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="600" rx="32" fill="url(#babyBg)"/>
+
+  <!-- Soft Warm Light & Bassinet Bed -->
+  <ellipse cx="400" cy="340" rx="240" ry="150" fill="#f8fafc" opacity="0.95"/>
+  <ellipse cx="400" cy="340" rx="220" ry="135" fill="#fef08a" opacity="0.4"/>
+
+  <!-- Sleeping Newborn Figure -->
+  <!-- Cozy Swaddle Blanket -->
+  <ellipse cx="410" cy="350" rx="140" ry="90" fill="#fbcfe8" transform="rotate(-8 410 350)"/>
+  <path d="M 340 310 Q 420 380 470 330" stroke="#f472b6" stroke-width="3" fill="none"/>
+
+  <!-- Baby Head -->
+  <circle cx="320" cy="330" r="50" fill="url(#babySkin)"/>
+  <!-- Knitted Newborn Beanie Hat -->
+  <path d="M 270 330 Q 320 270 370 330 Z" fill="#67e8f9"/>
+  <circle cx="320" cy="270" r="12" fill="#06b6d4"/>
+
+  <!-- Cute Peaceful Face Details -->
+  <!-- Cute Sleeping Eyes -->
+  <path d="M 305 335 Q 315 342 325 335" stroke="#3e2723" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Rosy Cheeks -->
+  <circle cx="300" cy="345" r="7" fill="#f43f5e" opacity="0.4"/>
+  <!-- Gentle smile -->
+  <path d="M 312 355 Q 320 360 328 355" stroke="#3e2723" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Tiny Baby Hand Cradled on Blanket -->
+  <circle cx="370" cy="370" r="14" fill="url(#babySkin)"/>
+
+  <!-- Floating Glass Tag 1: Neonatal Growth -->
+  <g transform="translate(50, 60)" filter="url(#softGlow3)">
+    <rect width="230" height="85" rx="18" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <circle cx="36" cy="42" r="18" fill="#06b6d4"/>
+    <text x="36" y="47" font-family="sans-serif" font-size="15" fill="#fff" text-anchor="middle">👶</text>
+    <text x="66" y="36" font-family="sans-serif" font-size="10" font-weight="bold" fill="#67e8f9" letter-spacing="1">NEWBORN HEALTH</text>
+    <text x="66" y="55" font-family="sans-serif" font-size="15" font-weight="bold" fill="#ffffff">Birth Wt: 3.42 kg</text>
+    <text x="66" y="71" font-family="sans-serif" font-size="11" fill="#cbd5e1">APGAR Score: 9/10 (Optimal)</text>
+  </g>
+
+  <!-- Floating Glass Tag 2: Immunization Schedule -->
+  <g transform="translate(520, 60)" filter="url(#softGlow3)">
+    <rect width="230" height="85" rx="18" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <circle cx="36" cy="42" r="18" fill="#10b981"/>
+    <text x="36" y="47" font-family="sans-serif" font-size="14" fill="#fff" text-anchor="middle">💉</text>
+    <text x="66" y="36" font-family="sans-serif" font-size="10" font-weight="bold" fill="#a7f3d0" letter-spacing="1">UNEPI IMMUNIZATION</text>
+    <text x="66" y="55" font-family="sans-serif" font-size="15" font-weight="bold" fill="#ffffff">BCG &amp; Polio 0 Given</text>
+    <text x="66" y="71" font-family="sans-serif" font-size="11" fill="#6ee7b7">Next: 6-Week Pentavalent</text>
+  </g>
+
+  <!-- Bottom Bassinet Status -->
+  <text x="400" y="520" font-family="sans-serif" font-size="12" font-weight="bold" fill="#c7d2fe" text-anchor="middle">Neonatal Growth Tracking • Zero Hypothermia</text>
+</svg>'''
+
+with open(os.path.join(assets_dir, 'healthy_baby.svg'), 'w', encoding='utf-8') as f:
+    f.write(healthy_baby_svg)
+
+print("Generated pregnant_mother.svg, lactating_mother.svg, and healthy_baby.svg successfully!")
+

@@ -1,0 +1,18 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if a user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Match any document in the database
+    match /{document=**} {
+      // Allow read and write access for any authenticated user
+      // (supports both mobile mothers and web dashboard doctors)
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BabyHealth Guard — Digital Maternal & Newborn Healthcare Platform</title>
+  <meta name="description" content="Uganda's maternal and newborn health system. 100% offline mobile app, clinical web dashboard, 10 Ugandan languages MaamaCare AI chatbot, and zero-internet *920# USSD access.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            body: ['"Inter"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+              800: '#155e75',
+              900: '#164e63',
+              dark: '#08232c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .material-symbols-outlined {
+      vertical-align: middle;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .material-symbols-fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.9; transform: scale(1.03); }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 3s infinite ease-in-out;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-[#fcfbfe] text-slate-800 antialiased selection:bg-cyan-100 selection:text-cyan-900 flex flex-col min-h-screen">
+
+  <!-- ========================================================================= -->
+  <!-- 1. TOP EMERGENCY HOTLINE & INSTITUTIONAL BAR                              -->
+  <!-- ========================================================================= -->
+  <div class="bg-gradient-to-r from-[#08232c] via-[#0e7490] to-[#08232c] text-white text-xs py-2.5 px-4 shadow-sm border-b border-cyan-800/40">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 font-medium">
+        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-rose-500 text-white font-bold text-[10px] animate-pulse">!</span>
+        <span><strong>24/7 Maternal Emergency:</strong> Dial Toll-Free <a href="tel:112" class="underline font-bold hover:text-cyan-200">112</a> or <a href="tel:0800100200" class="underline font-bold hover:text-cyan-200">0800 100 200</a></span>
+        <span class="hidden md:inline text-cyan-200/60">•</span>
+        <span class="hidden md:inline text-cyan-100">Zero-Data USSD Fallback: <strong class="bg-white/15 px-2 py-0.5 rounded text-white tracking-wider">*920#</strong></span>
+      </div>
+      <div class="flex items-center gap-4 text-xs font-semibold">
+        <a href="https://wa.me/256778501066?text=Hello%20BabyHealth%20Guard%2C%20I%20need%20assistance%20with%20maternal%20care." target="_blank" class="inline-flex items-center gap-1.5 text-emerald-300 hover:text-white transition-colors">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.585 1.961.949 2.796.949 3.181 0 5.767-2.586 5.768-5.766.001-3.18-2.585-5.736-5.768-5.736zm0-1.872c4.225 0 7.639 3.414 7.639 7.638 0 4.225-3.414 7.639-7.639 7.639-.995 0-1.95-.194-2.825-.548l-4.706 1.233 1.258-4.597c-.439-.958-.667-2.008-.667-3.727 0-4.224 3.414-7.638 7.639-7.638zm0 0"/></svg>
+          <span>WhatsApp: +256 778 501 066</span>
+        </a>
+        <span class="text-cyan-200/40">|</span>
+        <a href="mailto:infor@babyguard.org" class="hover:text-cyan-200 transition-colors">infor@babyguard.org</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. STICKY MODERN HEADER & NAVIGATION                                      -->
+  <!-- ========================================================================= -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="/" class="flex items-center gap-3.5 group">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#08232c] via-[#0e7490] to-teal-500 text-white flex items-center justify-center shadow-lg shadow-cyan-900/15 group-hover:scale-105 transition-transform duration-200">
+          <span class="material-symbols-outlined text-[26px]">health_and_safety</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-extrabold text-[19px] tracking-tight text-slate-900 leading-tight group-hover:text-[#0e7490] transition-colors">
+            BabyHealth Guard
+          </span>
+          <span class="text-[11px] font-bold text-[#0e7490] tracking-wider uppercase">
+            Maternal &amp; Newborn Care System
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden lg:flex items-center gap-7 text-sm font-semibold text-slate-600">
+        <a href="#care-journey" class="hover:text-[#0e7490] transition-colors">Care Journey</a>
+        <a href="#maamacare-ai" class="hover:text-[#0e7490] transition-colors flex items-center gap-1.5 text-[#0e7490] font-bold">
+          <span class="material-symbols-outlined text-[17px] text-cyan-600">auto_awesome</span>
+          <span>MaamaCare AI (10 Languages)</span>
+        </a>
+        <a href="#simulator" class="hover:text-[#0e7490] transition-colors">Device Simulator</a>
+        <a href="#ussd" class="hover:text-[#0e7490] transition-colors">USSD *920#</a>
+        <a href="#contact" class="hover:text-[#0e7490] transition-colors">Contact</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2.5">
+        <!-- Direct WhatsApp Pill Button -->
+        <a href="https://wa.me/256778501066?text=Hello%20BabyHealth%20Guard%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20maternal%20care%20system." target="_blank" class="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-xs shadow-xs transition-all active:scale-95">
+          <svg class="w-4 h-4 fill-emerald-600" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.585 1.961.949 2.796.949 3.181 0 5.767-2.586 5.768-5.766.001-3.18-2.585-5.736-5.768-5.736zm0-1.872c4.225 0 7.639 3.414 7.639 7.638 0 4.225-3.414 7.639-7.639 7.639-.995 0-1.95-.194-2.825-.548l-4.706 1.233 1.258-4.597c-.439-.958-.667-2.008-.667-3.727 0-4.224 3.414-7.638 7.639-7.638zm0 0"/></svg>
+          <span>WhatsApp Chat</span>
+        </a>
+
+        <!-- Launch Clinical Dashboard Button -->
+        <a href="/frontend/index.html" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-[#0e7490] hover:bg-[#08232c] text-white font-bold text-xs sm:text-sm shadow-md shadow-cyan-900/15 transition-all active:scale-95">
+          <span class="material-symbols-outlined text-[18px]">monitor_heart</span>
+          <span>Staff Dashboard</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 3. HERO SECTION WITH RICH VISUAL IMAGERY                                  -->
+  <!-- ========================================================================= -->
+  <section class="relative overflow-hidden pt-10 pb-16 lg:pt-14 lg:pb-24 bg-gradient-to-b from-white via-[#f8fafc] to-[#f1f5f9] border-b border-slate-200">
+    <!-- Glow backdrops -->
+    <div class="absolute -top-32 right-0 w-96 h-96 bg-cyan-100/50 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/2 left-0 w-80 h-80 bg-rose-100/35 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        <!-- Left Column: Compelling, Clean Value Proposition -->
+        <div class="lg:col-span-6 flex flex-col items-start text-left">
+          
+          <!-- Category Pill -->
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-50 border border-cyan-200/80 text-[#0e7490] font-bold text-xs tracking-wider uppercase mb-5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Uganda Ministry of Health Digital Guidelines</span>
+          </div>
+
+          <!-- Main Title -->
+          <h1 class="text-4xl sm:text-5xl lg:text-[54px] font-extrabold text-slate-900 tracking-tight leading-[1.12] mb-5">
+            Safeguarding Every Mother &amp; Baby, <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#0e7490] via-teal-600 to-cyan-500">Across Uganda.</span>
+          </h1>
+
+          <!-- Body Description -->
+          <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-7 max-w-xl">
+            Offline maternal tracking, immediate danger sign triage, and automated clinic appointments — accessible on smartphones, tablets, laptops, and basic 2G phones via <strong class="text-slate-800 bg-slate-100 px-2 py-0.5 rounded font-bold">*920#</strong>.
+          </p>
+
+          <!-- CTAs -->
+          <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto mb-9">
+            <a href="#maamacare-ai" class="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#0e7490] to-teal-600 hover:from-[#08232c] hover:to-[#0e7490] text-white font-bold text-sm shadow-lg shadow-cyan-900/20 transition-all active:scale-95">
+              <span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+              <span>Ask MaamaCare AI (10 Languages)</span>
+            </a>
+            <a href="/frontend/index.html" class="inline-flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition-all active:scale-95">
+              <span class="material-symbols-outlined text-[19px]">stethoscope</span>
+              <span>Midwife Dashboard</span>
+            </a>
+            <a href="https://wa.me/256778501066?text=Hello%20BabyHealth%20Guard%2C%20I%20am%20seeking%20maternal%20care%20guidance." target="_blank" class="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm shadow-md shadow-emerald-900/15 transition-all active:scale-95">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.585 1.961.949 2.796.949 3.181 0 5.767-2.586 5.768-5.766.001-3.18-2.585-5.736-5.768-5.736zm0-1.872c4.225 0 7.639 3.414 7.639 7.638 0 4.225-3.414 7.639-7.639 7.639-.995 0-1.95-.194-2.825-.548l-4.706 1.233 1.258-4.597c-.439-.958-.667-2.008-.667-3.727 0-4.224 3.414-7.638 7.639-7.638zm0 0"/></svg>
+              <span>WhatsApp (+256 778 501 066)</span>
+            </a>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full pt-5 border-t border-slate-200">
+            <div class="flex flex-col">
+              <span class="text-xl sm:text-2xl font-extrabold text-slate-900">100%</span>
+              <span class="text-xs text-slate-500 font-medium">Offline Capable</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xl sm:text-2xl font-extrabold text-[#0e7490]">10+</span>
+              <span class="text-xs text-slate-500 font-medium">Ugandan Dialects</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xl sm:text-2xl font-extrabold text-slate-900">*920#</span>
+              <span class="text-xs text-slate-500 font-medium">Zero-Data USSD</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xl sm:text-2xl font-extrabold text-emerald-600">24/7</span>
+              <span class="text-xs text-slate-500 font-medium">Midwife Hotlines</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Stunning Visual Showcase With Authentic Imagery -->
+        <div class="lg:col-span-6 relative">
+          
+          <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900 aspect-[4/3] group">
+            <!-- Authentic Maternal Photography -->
+            <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=1200&q=80" 
+                 onerror="this.onerror=null; this.src='/assets/images/mother_baby_hero.svg';" 
+                 alt="African Mother and Child" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            
+            <!-- Dark Gradient Vignette for Readability -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent"></div>
+
+            <!-- Top Header Glass Badge -->
+            <div class="absolute top-4 left-4 right-4 flex items-center justify-between">
+              <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-xs font-semibold border border-white/20">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Active Maternal Care Session</span>
+              </div>
+              <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-cyan-600/80 backdrop-blur-md text-white text-xs font-bold border border-cyan-400/30">
+                <span>Trimester 3 • 32 Wks</span>
+              </div>
+            </div>
+
+            <!-- Floating Overlay Card: Vitals Snapshot -->
+            <div class="absolute bottom-4 left-4 right-4 bg-slate-900/85 backdrop-blur-md rounded-2xl p-4 text-white border border-white/20 shadow-lg">
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <div>
+                  <h4 class="font-bold text-sm leading-tight text-white">Amina &amp; Baby Joel</h4>
+                  <span class="text-[11px] text-cyan-200">Bwera Sub-County Health Centre III</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-emerald-300 font-bold block uppercase tracking-wider">Midwife Triage</span>
+                  <span class="text-xs font-semibold text-white">Sr. Sarah Omondi</span>
+                </div>
+              </div>
+
+              <!-- 3 Vitals Metrics -->
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-white/10 rounded-xl p-2 border border-white/10">
+                  <span class="text-[10px] text-cyan-300 block font-semibold uppercase">Blood Pressure</span>
+                  <span class="text-sm sm:text-base font-extrabold text-white">118/76</span>
+                  <span class="text-[9px] text-emerald-400 block font-semibold">● Normal</span>
+                </div>
+                <div class="bg-white/10 rounded-xl p-2 border border-white/10">
+                  <span class="text-[10px] text-cyan-300 block font-semibold uppercase">Baby Kicks</span>
+                  <span class="text-sm sm:text-base font-extrabold text-white">11 Kicks</span>
+                  <span class="text-[9px] text-emerald-400 block font-semibold">● Active Today</span>
+                </div>
+                <div class="bg-white/10 rounded-xl p-2 border border-white/10">
+                  <span class="text-[10px] text-cyan-300 block font-semibold uppercase">Next Clinic</span>
+                  <span class="text-sm sm:text-base font-extrabold text-white">Thursday</span>
+                  <span class="text-[9px] text-amber-300 block font-semibold">SMS Reminder</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Floating Dialect Pill -->
+          <div class="mt-3 flex items-center justify-between text-xs text-slate-500 px-2">
+            <span class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-[#0e7490]">translate</span>
+              Supports Luganda, Runyankore, Rukiga, Lusoga, Acholi, Lango, Ateso, Lugbara &amp; more
+            </span>
+            <a href="#maamacare-ai" class="font-bold text-[#0e7490] hover:underline flex items-center gap-0.5">
+              Try AI Chatbot →
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 4. VISUAL CARE JOURNEY — 4 PHOTO-DRIVEN STAGES                            -->
+  <!-- ========================================================================= -->
+  <section id="care-journey" class="py-20 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <span class="inline-block px-3 py-1 rounded-full bg-[#0e7490]/10 text-[#0e7490] text-xs font-bold uppercase tracking-wider mb-2.5">
+          Comprehensive Care Pathway
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight mb-3">
+          Caring for Mother and Baby from Conception to Infancy
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+          Streamlined digital protocols designed for rural clinics, district hospitals, and village health teams across Uganda.
+        </p>
+      </div>
+
+      <!-- 4 Photo Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Stage 1 -->
+        <div class="rounded-3xl border border-slate-200 bg-[#fbfafd] overflow-hidden shadow-xs hover:shadow-xl hover:border-cyan-500/40 transition-all duration-300 flex flex-col group">
+          <div class="relative h-48 bg-slate-800 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80" 
+                 onerror="this.onerror=null; this.src='/assets/images/anc_clinic.svg';" 
+                 alt="Antenatal Care Clinic" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-cyan-700 text-white font-bold text-[10px] uppercase tracking-wider">
+              Stage 1
+            </span>
+            <div class="absolute bottom-3 left-3 text-white">
+              <span class="text-xs font-bold block">Antenatal Visits (ANC 1–4)</span>
+            </div>
+          </div>
+          <div class="p-5 flex-1 flex flex-col justify-between">
+            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+              Complete maternal registry, gestational age tracking, blood pressure logs, and automated SMS reminders ensuring all 4 recommended visits.
+            </p>
+            <a href="/frontend/index.html#maternal-care" class="text-xs font-bold text-[#0e7490] flex items-center gap-1 hover:underline">
+              <span>View Maternal Roster</span>
+              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="rounded-3xl border border-slate-200 bg-[#fbfafd] overflow-hidden shadow-xs hover:shadow-xl hover:border-teal-500/40 transition-all duration-300 flex flex-col group">
+          <div class="relative h-48 bg-slate-800 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80" 
+                 onerror="this.onerror=null; this.src='/assets/images/vht_community.svg';" 
+                 alt="Village Health Team Community" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-teal-700 text-white font-bold text-[10px] uppercase tracking-wider">
+              Stage 2
+            </span>
+            <div class="absolute bottom-3 left-3 text-white">
+              <span class="text-xs font-bold block">Community &amp; VHT Outreach</span>
+            </div>
+          </div>
+          <div class="p-5 flex-1 flex flex-col justify-between">
+            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+              Village Health Teams reach remote households using offline Android tablets and zero-internet 2G USSD (*920#) to log check-ins and nutrition advice.
+            </p>
+            <a href="#ussd" class="text-xs font-bold text-teal-700 flex items-center gap-1 hover:underline">
+              <span>Explore USSD *920#</span>
+              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="rounded-3xl border border-slate-200 bg-[#fbfafd] overflow-hidden shadow-xs hover:shadow-xl hover:border-rose-500/40 transition-all duration-300 flex flex-col group">
+          <div class="relative h-48 bg-slate-800 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?auto=format&fit=crop&w=600&q=80" 
+                 onerror="this.onerror=null; this.src='/assets/images/mother_baby_hero.svg';" 
+                 alt="Danger Signs Triage" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-rose-600 text-white font-bold text-[10px] uppercase tracking-wider">
+              Stage 3
+            </span>
+            <div class="absolute bottom-3 left-3 text-white">
+              <span class="text-xs font-bold block">Danger Signs &amp; Triage</span>
+            </div>
+          </div>
+          <div class="p-5 flex-1 flex flex-col justify-between">
+            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+              Instant clinical alerts for vaginal bleeding, severe preeclampsia headaches, high fever, or reduced baby kicks with 112 / 0800 100 200 hotlines.
+            </p>
+            <a href="/mobile/danger_signs_preview.html" class="text-xs font-bold text-rose-700 flex items-center gap-1 hover:underline">
+              <span>Check Triage Rules</span>
+              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="rounded-3xl border border-slate-200 bg-[#fbfafd] overflow-hidden shadow-xs hover:shadow-xl hover:border-indigo-500/40 transition-all duration-300 flex flex-col group">
+          <div class="relative h-48 bg-slate-800 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80" 
+                 onerror="this.onerror=null; this.src='/assets/images/newborn_care.svg';" 
+                 alt="Newborn Care and Growth" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-indigo-700 text-white font-bold text-[10px] uppercase tracking-wider">
+              Stage 4
+            </span>
+            <div class="absolute bottom-3 left-3 text-white">
+              <span class="text-xs font-bold block">Newborn Growth &amp; Vaccines</span>
+            </div>
+          </div>
+          <div class="p-5 flex-1 flex flex-col justify-between">
+            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+              Postnatal neonatal tracking: birth weight, APGAR score, jaundice checks, exclusive breastfeeding guidance, and UNEPI immunization schedule.
+            </p>
+            <a href="/frontend/index.html#newborn-care" class="text-xs font-bold text-indigo-700 flex items-center gap-1 hover:underline">
+              <span>View Infant Tracker</span>
+              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 5. MAAMACARE AI CLINIC CHATBOT (10 UGANDAN LOCAL LANGUAGES)               -->
+  <!-- ========================================================================= -->
+  <section id="maamacare-ai" class="py-20 bg-gradient-to-b from-[#f1f5f9] via-white to-[#faf8ff] border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0e7490]/10 text-[#0e7490] text-xs font-bold uppercase tracking-wider mb-3">
+          <span class="material-symbols-outlined text-[16px]">auto_awesome</span>
+          <span>Multilingual Maternal AI Engine</span>
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight mb-3">
+          MaamaCare AI: Maternal Guidance in 10 Ugandan Languages
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+          Select your local language below. Ask questions about danger signs, baby kicks, nutrition, or clinic visits, and listen to spoken advice with authentic dialect pronunciation.
+        </p>
+      </div>
+
+      <!-- Main Chatbot Card Container -->
+      <div class="max-w-4xl mx-auto bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-300/60 overflow-hidden flex flex-col">
+        
+        <!-- Chatbot Top Bar -->
+        <div class="bg-gradient-to-r from-[#08232c] via-[#0e7490] to-teal-700 p-4 sm:p-5 text-white flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/20">
+              🤱
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-extrabold text-base sm:text-lg leading-tight">MaamaCare AI Clinic</h3>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-400 text-[#08232c] font-bold text-[10px] uppercase">Online</span>
+              </div>
+              <p class="text-xs text-cyan-100 mt-0.5" id="activeDialectLabel">Luganda (Central / Buganda) Active</p>
+            </div>
+          </div>
+
+          <!-- Language Selector Dropdown -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-cyan-100 hidden sm:inline">Select Language:</span>
+            <select id="langSelectDropdown" onchange="switchLanguage(this.value)" class="bg-white text-slate-900 font-bold text-xs rounded-xl px-3 py-2 border border-cyan-300 focus:outline-hidden focus:ring-2 focus:ring-teal-400 cursor-pointer shadow-sm">
+              <option value="luganda">🇺🇬 Luganda (Central)</option>
+              <option value="runyankore">🇺🇬 Runyankore (Western)</option>
+              <option value="rukiga">🇺🇬 Rukiga (Kigezi)</option>
+              <option value="lusoga">🇺🇬 Lusoga (Busoga)</option>
+              <option value="acholi">🇺🇬 Acholi (Northern / Luo)</option>
+              <option value="lango">🇺🇬 Lango (Northern)</option>
+              <option value="ateso">🇺🇬 Ateso (Eastern / Teso)</option>
+              <option value="lugbara">🇺🇬 Lugbara (West Nile)</option>
+              <option value="runyoro">🇺🇬 Runyoro-Rutooro (Western)</option>
+              <option value="lumasaba">🇺🇬 Lumasaba (Bugisu)</option>
+              <option value="english">🌐 English (Official)</option>
+              <option value="swahili">🇹🇿 Kiswahili (East Africa)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick Horizontal Language Pills Bar -->
+        <div class="bg-slate-50 px-4 py-2.5 border-b border-slate-200 overflow-x-auto flex items-center gap-1.5 scrollbar-thin">
+          <button onclick="switchLanguage('luganda')" class="lang-pill px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#0e7490] text-white" data-lang="luganda">Luganda</button>
+          <button onclick="switchLanguage('runyankore')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="runyankore">Runyankore</button>
+          <button onclick="switchLanguage('rukiga')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="rukiga">Rukiga</button>
+          <button onclick="switchLanguage('lusoga')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="lusoga">Lusoga</button>
+          <button onclick="switchLanguage('acholi')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="acholi">Acholi</button>
+          <button onclick="switchLanguage('lango')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="lango">Lango</button>
+          <button onclick="switchLanguage('ateso')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="ateso">Ateso</button>
+          <button onclick="switchLanguage('lugbara')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="lugbara">Lugbara</button>
+          <button onclick="switchLanguage('runyoro')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="runyoro">Runyoro</button>
+          <button onclick="switchLanguage('lumasaba')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="lumasaba">Lumasaba</button>
+          <button onclick="switchLanguage('english')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="english">English</button>
+          <button onclick="switchLanguage('swahili')" class="lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all" data-lang="swahili">Swahili</button>
+        </div>
+
+        <!-- Chat Conversation Messages Window -->
+        <div id="chatMessages" class="p-4 sm:p-6 bg-slate-50/60 min-h-[360px] max-h-[460px] overflow-y-auto space-y-4">
+          <!-- Dynamic Message Bubbles appended here -->
+        </div>
+
+        <!-- Quick Question Suggestion Chips (Localized) -->
+        <div class="px-4 py-2.5 bg-slate-100 border-t border-slate-200 flex flex-wrap items-center gap-2" id="quickChipsContainer">
+          <!-- Localized question chips populated by JS -->
+        </div>
+
+        <!-- Chat Input Bar With Audio & Voice -->
+        <div class="p-3 sm:p-4 bg-white border-t border-slate-200">
+          <form onsubmit="handleChatSubmit(event)" class="flex items-center gap-2">
+            
+            <!-- Voice Input Mic Button -->
+            <button type="button" onclick="startVoiceInput()" id="btnVoiceInput" title="Speak question via microphone" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-cyan-50 text-slate-700 hover:text-[#0e7490] border border-slate-200 flex items-center justify-center shrink-0 transition-colors">
+              <span class="material-symbols-outlined text-[20px]">mic</span>
+            </button>
+
+            <!-- Text Input -->
+            <input type="text" id="chatTextInput" placeholder="Buuza ekibuuzo ku lubuto oba omwana..." class="flex-1 bg-slate-50 focus:bg-white text-sm px-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#0e7490] focus:outline-hidden focus:ring-1 focus:ring-[#0e7490] transition-all">
+
+            <!-- Send Button -->
+            <button type="submit" class="px-4 sm:px-5 py-2.5 rounded-xl bg-[#0e7490] hover:bg-[#08232c] text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-md shadow-cyan-900/15 transition-all shrink-0 active:scale-95">
+              <span>Send</span>
+              <span class="material-symbols-outlined text-[16px]">send</span>
+            </button>
+
+          </form>
+
+          <div class="mt-2 flex items-center justify-between text-[11px] text-slate-500 px-1">
+            <span>🔊 Click "Listen" on any answer to hear native audio speech synthesis</span>
+            <span class="hidden sm:inline">24/7 Clinical Triage • Hotline: <a href="tel:0800100200" class="text-[#0e7490] font-bold underline">0800 100 200</a></span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 6. MULTI-DEVICE RESPONSIVE SIMULATOR (LAPTOP, TABLET, MOBILE)             -->
+  <!-- ========================================================================= -->
+  <section id="simulator" class="py-20 bg-slate-100 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <span class="inline-block px-3 py-1 rounded-full bg-[#0e7490]/10 text-[#0e7490] text-xs font-bold uppercase tracking-wider mb-3">
+          Adaptive Responsive Engineering
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight mb-3">
+          Test BabyHealth Guard Across Every Device Screen
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+          Switch between phone, tablet, and laptop display modes below to test how the system automatically adapts to every healthcare worker's and mother's device.
+        </p>
+      </div>
+
+      <!-- Quick View Selector Tabs -->
+      <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
+        <button onclick="loadSimView('/frontend/index.html', 'Healthcare Worker Dashboard (Clinical Roster)', 'laptop')" class="sim-view-btn px-4 py-2 rounded-xl text-xs font-bold bg-[#0e7490] text-white shadow-sm transition-all" data-url="/frontend/index.html">
+          🏥 Web Dashboard
+        </button>
+        <button onclick="loadSimView('/mobile/welcome_preview.html', 'Mother Welcome Screen (Screen 1)', 'tablet')" class="sim-view-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition-all" data-url="/mobile/welcome_preview.html">
+          📱 1. Welcome Screen
+        </button>
+        <button onclick="loadSimView('/mobile/registration_preview.html', 'Mother Registration Screen (Screen 2)', 'tablet')" class="sim-view-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition-all" data-url="/mobile/registration_preview.html">
+          📝 2. Registration
+        </button>
+        <button onclick="loadSimView('/mobile/dashboard_preview.html', 'Mother Care Dashboard (Screen 3)', 'tablet')" class="sim-view-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition-all" data-url="/mobile/dashboard_preview.html">
+          📊 3. Mother Dashboard
+        </button>
+        <button onclick="loadSimView('/mobile/danger_signs_preview.html', 'Danger Signs Emergency Triage', 'tablet')" class="sim-view-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition-all" data-url="/mobile/danger_signs_preview.html">
+          🚨 4. Danger Signs
+        </button>
+        <button onclick="loadSimView('/mobile/visits_preview.html', 'Clinic Visits & Reminders', 'tablet')" class="sim-view-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition-all" data-url="/mobile/visits_preview.html">
+          🗓️ 5. Clinic Visits
+        </button>
+      </div>
+
+      <!-- Simulator Frame Container -->
+      <div class="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-2xl shadow-slate-300/60">
+        
+        <!-- Controls Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 mb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-cyan-50 text-[#0e7490] flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]">devices</span>
+            </div>
+            <div>
+              <h4 id="simTitle" class="font-bold text-slate-900 text-sm sm:text-base leading-tight">Healthcare Worker Dashboard</h4>
+              <span id="simDimBadge" class="text-[11px] text-slate-500 font-medium">Breakpoint: Laptop / Desktop (100% Fluid)</span>
+            </div>
+          </div>
+
+          <!-- Device Mode Buttons -->
+          <div class="flex items-center bg-slate-100 p-1 rounded-xl gap-1 border border-slate-200/80">
+            <button type="button" onclick="setSimDeviceMode('mobile')" id="sim-btn-mobile" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 text-slate-700 hover:bg-white transition-all">
+              <span class="material-symbols-outlined text-[16px]">smartphone</span>
+              <span>Mobile (390px)</span>
+            </button>
+            <button type="button" onclick="setSimDeviceMode('tablet')" id="sim-btn-tablet" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 text-slate-700 hover:bg-white transition-all">
+              <span class="material-symbols-outlined text-[16px]">tablet</span>
+              <span>Tablet (768px)</span>
+            </button>
+            <button type="button" onclick="setSimDeviceMode('laptop')" id="sim-btn-laptop" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-white text-[#0e7490] shadow-xs transition-all">
+              <span class="material-symbols-outlined text-[16px]">laptop</span>
+              <span>Laptop (100%)</span>
+            </button>
+          </div>
+
+          <!-- Open in Full Tab Button -->
+          <a id="simFullTabLink" href="/frontend/index.html" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold inline-flex items-center gap-1.5 transition-colors">
+            <span>Open in Full Screen</span>
+            <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+          </a>
+        </div>
+
+        <!-- Centered Frame Viewport -->
+        <div class="w-full flex justify-center bg-slate-50/80 rounded-2xl p-3 sm:p-5 overflow-hidden border border-slate-200">
+          <iframe id="simIframe" src="/frontend/index.html" class="w-full h-[760px] rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300" frameborder="0"></iframe>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 7. ZERO-INTERNET USSD & SMS GUIDE (*920#)                                 -->
+  <!-- ========================================================================= -->
+  <section id="ussd" class="py-20 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="bg-gradient-to-tr from-[#08232c] via-[#0c404f] to-[#0e7490] rounded-3xl p-8 sm:p-12 text-white shadow-xl">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <div class="lg:col-span-7">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-cyan-200 text-xs font-bold uppercase tracking-wider mb-4 border border-white/15">
+              Inclusive Rural Access
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">
+              Free 2G USSD Gateway via <span class="text-amber-300">*920#</span>
+            </h2>
+            <p class="text-cyan-100 text-sm sm:text-base leading-relaxed mb-6">
+              Mothers and village health teams without smartphones or internet connection can dial <strong>*920#</strong> from any basic mobile phone across MTN, Airtel, and Uganda Telecom networks.
+            </p>
+
+            <div class="space-y-3 mb-6 text-xs sm:text-sm text-cyan-50">
+              <div class="flex items-center gap-3">
+                <span class="w-6 h-6 rounded-full bg-cyan-500/30 flex items-center justify-center font-bold text-xs text-white">1</span>
+                <span>Dial <strong>*920#</strong> to open the BabyHealth Guard Care Menu.</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="w-6 h-6 rounded-full bg-cyan-500/30 flex items-center justify-center font-bold text-xs text-white">2</span>
+                <span>Select <strong>1. Register Pregnancy</strong> or <strong>2. Log Daily Check-In</strong>.</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="w-6 h-6 rounded-full bg-cyan-500/30 flex items-center justify-center font-bold text-xs text-white">3</span>
+                <span>Select <strong>3. Next ANC Visit</strong> to receive date and clinic room details.</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="w-6 h-6 rounded-full bg-rose-500/40 flex items-center justify-center font-bold text-xs text-rose-200">4</span>
+                <span>Select <strong>4. Emergency Alert</strong> to dispatch village health team midwives.</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <a href="https://wa.me/256778501066?text=Hello%20BabyHealth%20Guard%2C%20I%20have%20questions%20about%20the%20USSD%20service." target="_blank" class="px-5 py-3 rounded-xl bg-white text-slate-900 font-bold text-xs sm:text-sm hover:bg-cyan-50 transition-colors shadow-md">
+                Contact USSD Gateway Team
+              </a>
+              <span class="text-xs text-cyan-200">Toll-free • Zero mobile data required</span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 flex justify-center">
+            <!-- Simulated Feature Phone Screen -->
+            <div class="w-64 bg-slate-900 rounded-3xl p-5 border-4 border-slate-700 shadow-2xl text-emerald-400 font-mono text-xs">
+              <div class="border-b border-slate-800 pb-2 mb-3 text-center text-slate-400 text-[10px]">
+                TELCO NETWORK • 2G USSD
+              </div>
+              <div class="space-y-1.5 leading-relaxed">
+                <p class="text-white font-bold mb-2">BabyHealth Guard (*920#)</p>
+                <p>1. Register Pregnancy</p>
+                <p>2. Today's Check-in</p>
+                <p>3. Next ANC Clinic Date</p>
+                <p>4. Report Danger Signs</p>
+                <p>5. Call Midwife</p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between text-slate-500 text-[10px]">
+                <span>Cancel [Back]</span>
+                <span class="text-cyan-400 font-bold">Select [OK]</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 8. INSTITUTIONAL FOOTER WITH VERIFIED CONTACTS & SOCIALS                 -->
+  <!-- ========================================================================= -->
+  <footer id="contact" class="bg-[#08232c] text-white pt-16 pb-12 border-t border-cyan-900/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Top Grid: 4 Pillars -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-14 border-b border-slate-800">
+        
+        <!-- Column 1: Organization & Mission (4 cols) -->
+        <div class="lg:col-span-4 flex flex-col items-start">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-[#0e7490] text-white flex items-center justify-center shadow-md">
+              <span class="material-symbols-outlined text-[24px]">health_and_safety</span>
+            </div>
+            <div>
+              <span class="font-extrabold text-lg text-white tracking-tight">BabyHealth Guard</span>
+              <p class="text-[11px] text-cyan-300 font-semibold uppercase tracking-wider">Maternal &amp; Newborn System</p>
+            </div>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed mb-5">
+            Empowering expectant mothers, midwives, and healthcare systems with inclusive digital monitoring. Designed for rural communities in Uganda and East Africa, supporting offline smartphones, clinical web dashboards, and 2G USSD phones.
+          </p>
+          <div class="flex flex-col gap-2 text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="text-slate-300">System Status: <strong>Online &amp; Active</strong></span>
+            </div>
+            <div>Ministry of Health (MoH) Digital Guidelines Compliant</div>
+            <div>End-to-End Maternal Health Data Confidentiality</div>
+          </div>
+        </div>
+
+        <!-- Column 2: System Ecosystem & Links (3 cols) -->
+        <div class="lg:col-span-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-cyan-300 mb-4 pb-1 border-b border-slate-800">
+            System Ecosystem
+          </h4>
+          <ul class="space-y-2.5 text-xs text-slate-300">
+            <li>
+              <a href="/frontend/index.html" class="hover:text-cyan-200 transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px] text-cyan-400">arrow_forward</span>
+                Healthcare Worker Dashboard
+              </a>
+            </li>
+            <li>
+              <a href="/mobile/welcome_preview.html" class="hover:text-cyan-200 transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px] text-cyan-400">arrow_forward</span>
+                Mother's Mobile Flow (Welcome)
+              </a>
+            </li>
+            <li>
+              <a href="/mobile/dashboard_preview.html" class="hover:text-cyan-200 transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px] text-cyan-400">arrow_forward</span>
+                Mother Care Dashboard
+              </a>
+            </li>
+            <li>
+              <a href="/frontend/index.html#maternal-care" class="hover:text-cyan-200 transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px] text-cyan-400">arrow_forward</span>
+                Maternal Clinical Registry
+              </a>
+            </li>
+            <li>
+              <a href="/frontend/index.html#newborn-care" class="hover:text-cyan-200 transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px] text-cyan-400">arrow_forward</span>
+                Newborn Growth &amp; Checks
+              </a>
+            </li>
+            <li>
+              <a href="/frontend/index.html#appointments" class="hover:text-cyan-200 transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px] text-cyan-400">arrow_forward</span>
+                Visits &amp; SMS Reminders
+              </a>
+            </li>
+            <li>
+              <a href="/frontend/index.html#referrals" class="hover:text-cyan-200 transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px] text-cyan-400">arrow_forward</span>
+                Hospital Referral Pipeline
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Emergency & Health Support (2 cols) -->
+        <div class="lg:col-span-2">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-rose-300 mb-4 pb-1 border-b border-slate-800">
+            Emergency Hotlines
+          </h4>
+          <ul class="space-y-2.5 text-xs text-slate-300">
+            <li>
+              <a href="tel:112" class="text-rose-400 font-bold hover:underline flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[15px]">call</span>
+                Police &amp; Ambulance: 112
+              </a>
+            </li>
+            <li>
+              <a href="tel:0800100200" class="text-amber-300 font-bold hover:underline flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[15px]">support_agent</span>
+                Midwife Helpline: 0800 100 200
+              </a>
+            </li>
+            <li>
+              <a href="/mobile/danger_signs_preview.html" class="hover:text-cyan-200 transition-colors">
+                Danger Signs Protocol
+              </a>
+            </li>
+            <li>
+              <a href="#ussd" class="hover:text-cyan-200 transition-colors">
+                Free USSD Menu (*920#)
+              </a>
+            </li>
+            <li>
+              <a href="https://wa.me/256778501066" target="_blank" class="text-emerald-400 font-bold hover:underline">
+                WhatsApp Live Help
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Contact Us, WhatsApp & Social Channels (3 cols) -->
+        <div class="lg:col-span-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-cyan-300 mb-4 pb-1 border-b border-slate-800">
+            Contact &amp; Connect With Us
+          </h4>
+          
+          <div class="space-y-3 text-xs text-slate-300 mb-6">
+            <!-- Direct Phone -->
+            <div class="flex items-start gap-2.5">
+              <span class="material-symbols-outlined text-cyan-400 text-[18px] shrink-0 mt-0.5">call</span>
+              <div>
+                <span class="text-slate-400 block text-[11px]">Primary Phone / Hotline:</span>
+                <a href="tel:+256778501066" class="text-white font-bold hover:text-cyan-300 text-sm tracking-wide">
+                  +256 778 501 066
+                </a>
+              </div>
+            </div>
+
+            <!-- Functioning WhatsApp -->
+            <div class="flex items-start gap-2.5">
+              <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.585 1.961.949 2.796.949 3.181 0 5.767-2.586 5.768-5.766.001-3.18-2.585-5.736-5.768-5.736zm0-1.872c4.225 0 7.639 3.414 7.639 7.638 0 4.225-3.414 7.639-7.639 7.639-.995 0-1.95-.194-2.825-.548l-4.706 1.233 1.258-4.597c-.439-.958-.667-2.008-.667-3.727 0-4.224 3.414-7.638 7.639-7.638zm0 0"/></svg>
+              </div>
+              <div>
+                <span class="text-slate-400 block text-[11px]">Official WhatsApp Channel:</span>
+                <a href="https://wa.me/256778501066?text=Hello%20BabyHealth%20Guard%20Team%2C%20I%20am%20reaching%20out%20for%20assistance." target="_blank" class="text-emerald-400 font-bold hover:underline text-sm">
+                  +256 778 501 066
+                </a>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="flex items-start gap-2.5">
+              <span class="material-symbols-outlined text-cyan-400 text-[18px] shrink-0 mt-0.5">mail</span>
+              <div>
+                <span class="text-slate-400 block text-[11px]">Official Inquiries &amp; Support:</span>
+                <a href="mailto:infor@babyguard.org" class="text-cyan-200 font-semibold hover:underline">
+                  infor@babyguard.org
+                </a>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="flex items-start gap-2.5">
+              <span class="material-symbols-outlined text-cyan-400 text-[18px] shrink-0 mt-0.5">location_on</span>
+              <div>
+                <span class="text-slate-400 block text-[11px]">Operations &amp; Outreach:</span>
+                <span class="text-slate-200">Uganda &amp; East Africa Maternal Health Network</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Channels Section (TikTok, X, WhatsApp, etc.) -->
+          <span class="text-[11px] text-slate-400 uppercase tracking-wider font-bold block mb-2.5">
+            Follow &amp; Connect On Social Media:
+          </span>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            
+            <!-- WhatsApp Social Icon -->
+            <a href="https://wa.me/256778501066?text=Hello%20BabyHealth%20Guard%2C%20I%20would%20like%20to%20connect." target="_blank" title="Chat on WhatsApp" class="w-9 h-9 rounded-xl bg-emerald-600/30 hover:bg-emerald-500 text-emerald-300 hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95 border border-emerald-500/30">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.585 1.961.949 2.796.949 3.181 0 5.767-2.586 5.768-5.766.001-3.18-2.585-5.736-5.768-5.736zm0-1.872c4.225 0 7.639 3.414 7.639 7.638 0 4.225-3.414 7.639-7.639 7.639-.995 0-1.95-.194-2.825-.548l-4.706 1.233 1.258-4.597c-.439-.958-.667-2.008-.667-3.727 0-4.224 3.414-7.638 7.639-7.638zm0 0"/></svg>
+            </a>
+
+            <!-- TikTok Icon -->
+            <a href="https://www.tiktok.com/@babyhealthguard" target="_blank" title="Follow on TikTok" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-[#ff0050] text-slate-200 hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95 border border-white/15">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-2.901 2.89 2.896 2.896 0 0 1-2.892-2.89 2.896 2.896 0 0 1 2.892-2.891c.334 0 .653.055.952.153V9.45a6.34 6.34 0 0 0-.952-.072 6.335 6.335 0 0 0-6.336 6.336 6.335 6.335 0 0 0 6.336 6.336 6.335 6.335 0 0 0 6.336-6.336V8.653a8.163 8.163 0 0 0 4.78 1.528V6.735a4.797 4.797 0 0 1-1-.049z"/></svg>
+            </a>
+
+            <!-- X (Twitter) Icon -->
+            <a href="https://x.com/babyhealthguard" target="_blank" title="Follow on X (Twitter)" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-black text-slate-200 hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95 border border-white/15">
+              <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+
+            <!-- Facebook Icon -->
+            <a href="https://facebook.com/babyhealthguard" target="_blank" title="Follow on Facebook" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-[#1877f2] text-slate-200 hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95 border border-white/15">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.82 0-1.667.417-1.667 1.705v2.275h4.022l-.535 3.667h-3.487v7.98c5.845-.968 10.292-6.027 10.292-12.115C24 4.757 19.243 0 13.376 0S2.752 4.757 2.752 11.576c0 6.088 4.447 11.147 10.292 12.115z"/></svg>
+            </a>
+
+            <!-- Instagram Icon -->
+            <a href="https://instagram.com/babyhealthguard" target="_blank" title="Follow on Instagram" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 text-slate-200 hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95 border border-white/15">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Bar: Legal, Disclaimer & Copyright -->
+      <div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <p>© 2026 <strong>BabyHealth Guard</strong>. All rights reserved. Registered Digital Maternal Care Platform.</p>
+        <div class="flex flex-wrap items-center gap-4">
+          <a href="#" class="hover:text-cyan-200 transition-colors">Privacy Policy</a>
+          <span>•</span>
+          <a href="#" class="hover:text-cyan-200 transition-colors">Terms of Service</a>
+          <span>•</span>
+          <a href="#" class="hover:text-cyan-200 transition-colors">Clinical Safety Protocols</a>
+          <span>•</span>
+          <a href="#" class="hover:text-cyan-200 transition-colors">Data Security</a>
+        </div>
+      </div>
+
+      <!-- Medical Disclaimer -->
+      <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-500 leading-relaxed text-center">
+        <strong>Medical Disclaimer:</strong> BabyHealth Guard is a digital health monitoring and clinical decision-support platform designed to facilitate antenatal care tracking, vital signs recording, and healthcare appointment compliance. It does not replace emergency medical diagnosis. In case of acute maternal complications or emergency symptoms, contact local healthcare facilities or dial toll-free 112 / 0800 100 200 immediately.
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- 9. FLOATING ASSISTANT WIDGET (MAAMACARE AI + WHATSAPP)                    -->
+  <!-- ========================================================================= -->
+  <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    
+    <!-- Floating MaamaCare AI Quick Modal -->
+    <div id="floatingAiModal" class="hidden mb-3 w-[360px] sm:w-[380px] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-fade-in flex flex-col">
+      <div class="bg-gradient-to-r from-[#08232c] to-[#0e7490] p-4 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-lg">🤱</div>
+          <div>
+            <h5 class="font-bold text-sm leading-tight">MaamaCare AI Assistant</h5>
+            <span class="text-[10px] text-cyan-200">10 Ugandan Languages • Audio Voice</span>
+          </div>
+        </div>
+        <button onclick="toggleFloatingAiModal()" class="text-white/80 hover:text-white p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <div class="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">
+        <span class="font-semibold text-slate-600">Language:</span>
+        <select onchange="switchLanguage(this.value)" id="floatingLangSelect" class="bg-white text-slate-900 font-bold text-xs rounded-lg px-2 py-1 border border-slate-300">
+          <option value="luganda">Luganda</option>
+          <option value="runyankore">Runyankore</option>
+          <option value="rukiga">Rukiga</option>
+          <option value="lusoga">Lusoga</option>
+          <option value="acholi">Acholi</option>
+          <option value="lango">Lango</option>
+          <option value="ateso">Ateso</option>
+          <option value="lugbara">Lugbara</option>
+          <option value="runyoro">Runyoro</option>
+          <option value="lumasaba">Lumasaba</option>
+          <option value="english">English</option>
+          <option value="swahili">Swahili</option>
+        </select>
+      </div>
+
+      <div id="floatingChatMessages" class="p-3.5 bg-slate-50/80 max-h-[280px] overflow-y-auto space-y-3 text-xs">
+        <!-- Floating chat messages -->
+      </div>
+
+      <div class="p-2.5 bg-white border-t border-slate-200">
+        <form onsubmit="handleFloatingChatSubmit(event)" class="flex items-center gap-2">
+          <input type="text" id="floatingChatInput" placeholder="Buuza ekibuuzo..." class="flex-1 bg-slate-50 text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-1 focus:ring-[#0e7490]">
+          <button type="submit" class="p-2 rounded-xl bg-[#0e7490] text-white">
+            <span class="material-symbols-outlined text-[16px]">send</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Dual Floating Pill Buttons -->
+    <div class="flex items-center gap-2">
+      <!-- MaamaCare AI Floating Button -->
+      <button onclick="toggleFloatingAiModal()" aria-label="Open MaamaCare AI Chatbot" class="flex items-center gap-2 py-3 px-4 rounded-full bg-gradient-to-r from-[#0e7490] to-teal-600 hover:from-[#08232c] hover:to-[#0e7490] text-white font-bold text-xs sm:text-sm shadow-xl shadow-cyan-900/25 active:scale-95 transition-all">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-200 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+        </span>
+        <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+        <span>MaamaCare AI (10 Dialects)</span>
+      </button>
+
+      <!-- WhatsApp Help Button -->
+      <a href="https://wa.me/256778501066?text=Hello%20BabyHealth%20Guard%2C%20I%20need%20assistance%20with%20maternal%20care." target="_blank" aria-label="Open WhatsApp Chat" class="flex items-center gap-2 py-3 px-4 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-emerald-900/25 active:scale-95 transition-all">
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.585 1.961.949 2.796.949 3.181 0 5.767-2.586 5.768-5.766.001-3.18-2.585-5.736-5.768-5.736zm0-1.872c4.225 0 7.639 3.414 7.639 7.638 0 4.225-3.414 7.639-7.639 7.639-.995 0-1.95-.194-2.825-.548l-4.706 1.233 1.258-4.597c-.439-.958-.667-2.008-.667-3.727 0-4.224 3.414-7.638 7.639-7.638zm0 0"/></svg>
+        <span class="hidden sm:inline">WhatsApp</span>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 10. JAVASCRIPT APPLICATION CORE (AI CHATBOT, AUDIO VOICE, SIMULATOR)      -->
+  <!-- ========================================================================= -->
+  <script>
+    // Embedded 10 Ugandan Languages Knowledge Engine
+    const LANGUAGES = {
+  "luganda": {
+    "name": "Luganda (Central / Buganda)",
+    "flag": "🇺🇬 Central",
+    "greeting": "Oli otya Maama! Nze MaamaCare AI, omuyambi wo ku by'obulamu bwo n'obw'omwana wo. Ndi wano okukuyamba ku bintu byonna ebikwata ku lubuto, okugenda mu ddwaliro, n'obulamu bw'omwana.",
+    "placeholder": "Buuza ekibuuzo ku lubuto oba omwana...",
+    "listenText": "Wuliriza eddoboozi",
+    "quickChips": [
+      "🚨 Obubonero obw'obulabe",
+      "👶 Omwana akuba atya?",
+      "🥗 Eby'okulya n'eddagala lya ayoni",
+      "🏥 Eddwaliro n'okubala emyezi"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["obulabe", "omusaayi", "omutwe", "amaaso", "omusujja", "kuzimba", "okulumwa", "ebire", "bleeding", "headache", "fever", "pain"],
+        "response": "⚠️ OBULABE OBW'AMANGU! Singa ofuna okuvaamu omusaayi, omutwe omunene ogutawona ng'olina ebire mu maaso, omusujja omungi, oba amagulu n'obwenyi okuzimba ennyo, genda mu ddwaliro eriri okumpi amangu ddala! Osobola n'okukuba essimu ku 112 oba 0800 100 200 ku bwereere, oba kubira omusawo wo ku +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": ["kuba", "okukuba", "tazannya", "omwana", "kicks", "movement", "move"],
+        "response": "👶 OKUKUBA KW'OMWANA: Okuva ku wiiki 24–28, omwana wo aba asuubirwa okukuba. Funa ekifo eky'eddembe, olyeko ekintu, owoomuleko wansi ku lubiriizi olwa kkono. Omwana asaanidde akube emirundi egitakka wansi wa 10 mu ssaawa bbiri (2). Bw'owulira nti takubye oba nti akendeezezza ennyo, genda mu ddwaliro omusawo akebe omutima gwe."
+      },
+      "nutrition": {
+        "keywords": ["lya", "okulya", "enva", "ayoni", "omusaayi", "doodo", "nakati", "eddagala", "iron", "food", "eat"],
+        "response": "🥗 EBY'OKULYA N'OBULAMU: Lya emmere ezimba omubiri n'ereeta omusaayi: enva endiirwa (doodo, nakati, bbugga), ebijanjaalo, amagi, ebinyebwa, n'ebibala nga emicungwa. Mira buli lunaku obutole bwa Ayoni ne Folic Acid (eddagala ery'omusaayi) lye baakuwa mu ddwaliro. Nwa amazzi amayonjo amalungi buli lunaku."
+      },
+      "visits": {
+        "keywords": ["ddwaliro", "anc", "okugenda", "eddwaaliro", "omusawo", "appointment", "clinic", "hospital"],
+        "response": "🏥 OKUGENDA MU DDWALIRO (ANC): Buli maama alina okugenda mu ddwaliro emirundi egitakka wansi wa 4 mu lubuto lwe olwonna. Bwe tuba tukozesa BabyHealth Guard, ofuna obubaka bwa SMS obukujjukiza olunaku lw'eddwaliro. Bw'oba tolina ssimu ya smartphone, koona *920# okumanya olunaku lwo."
+      },
+      "labor": {
+        "keywords": ["okuzaala", "ebisa", "okulumwa", "amazzi", "labor", "delivery", "birth"],
+        "response": "🤱 OBUBONERO OBW'OKUZAALA: Bw'otandika okulumwa ebisa ebijja buli luvannyuma lw'eddakiika 5-10 nga byeyongera, oba ng'amazzi g'omwana gasaze, tambula amangu ogende mu ddwaliro erina abasawo abazaalisa. Tuteekateeka ebyetaago by'omwana byonna (baby basin, amasuuka amayonjo, ssaabuni, n'ebizigula)."
+      }
+    },
+    "default": "Weebale maama! Ekyo ekibuuzo kikulu nnyo ku bulamu bwo n'obw'omwana. Osobola okumbuuza ku bubonero obw'obulabe, okukuba kw'omwana, eby'okulya, oba okukuba essimu eri omusawo wo ku +256 778 501 066."
+  },
+  "runyankore": {
+    "name": "Runyankore (Western / Ankole)",
+    "flag": "🇺🇬 Western",
+    "greeting": "Agandi Maama! Ndi MaamaCare AI, omuyambi waawe w'eby'amagara gaanyu n'omwana waawe ori munda. Ndi wano kukuyamba aha buri kintu eki orikwenda kumanya.",
+    "placeholder": "Buuza ekibuuzo aha nda nari omwana...",
+    "listenText": "Huuriza eiraka",
+    "quickChips": [
+      "🚨 Obumanyiso bw'akabi",
+      "👶 Omwana arikutera ata?",
+      "🥗 Eby'okurya n'obujuma bw'omusaayi",
+      "🏥 Okwija omu ddwaliro"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["akabi", "omusaayi", "omutwe", "amaisho", "omuswi", "okuzimba", "bleeding", "headache"],
+        "response": "⚠️ AKABI K'AMAANI! Waareeba omusaayi kuruga omuriiwe, omutwe gukurema munonga oine ebihuubwa omu maisho, omusujja gw'amaani, nari amaguru n'amaisho bikazimba, yiruka aha ddwaliro ahonaaho! Nari teera essimu ya bwerere 112 / 0800 100 200, nari omidwife waawe aha +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": ["kutera", "omwana", "kicks", "gutera", "movement"],
+        "response": "👶 OKUTERA KW'OMWANA: Kuruga aha wiiki 24–28, omwana ashemereire kutera. Za omu mwanya murungi, ohuumure aha rubaju rwa bumosho. Ashemereire kutera emirundi ikumi (10) omu shaaha ibiri (2). Yaaba atari kutera nari akakendeeza, yiruka aha ddwaliro amanguka."
+      },
+      "nutrition": {
+        "keywords": ["kurya", "ebyokurya", "omusaayi", "ebihimba", "doodo", "iron", "food"],
+        "response": "🥗 EBY'OKURYA: Rya emboga ziragrikirwe (doodo, ebitakuri), ebihimba, ebinyobwa, amagi n'amata. Mira buri eizooba obujuma bwa Iron & Folic Acid ebi bakuha aha ddwaliro kwongyera omusaayi. Nywa amaizi masya marungi."
+      },
+      "visits": {
+        "keywords": ["eddwaliro", "irwariro", "anc", "omusawo", "clinic", "hospital"],
+        "response": "🏥 OKWIZA OMU DDWALIRO (ANC): Oine kugyenda aha ddwaliro emirundi ekitari hansi y'ena (4) omu nda yaawe yoona. Bw'oba oine ekitabo kya BabyHealth Guard, tukwoherereza SMS y'okukwijusya. Aha simu ya butoosa, teera *920# kumanya ebiro byaawe."
+      }
+    },
+    "default": "Webare maama! Ekyo n'ekibuuzo kirungi munonga. Ndi wano kukuyamba omu rugyendo rwawe rw'enda. Noobaasa kumbuuza aha kutera kw'omwana, eby'okurya, obumanyiso bw'akabi, nari waateera essimu aha +256 778 501 066."
+  },
+  "rukiga": {
+    "name": "Rukiga (Kigezi Highlands)",
+    "flag": "🇺🇬 Kigezi",
+    "greeting": "Oraire ota Maama! Ndi MaamaCare AI, omukuru w'amagara gaanyu n'omwana ori munda omu Kigezi. Nkwase ki leero aha by'enda yaawe?",
+    "placeholder": "Buuza aha nda n'omwana wo...",
+    "listenText": "Huuriza eiraka",
+    "quickChips": [
+      "🚨 Obumanyiso bw'akabi k'amaani",
+      "👶 Omwana arikutera ata?",
+      "🥗 Eby'okurya by'omusaayi",
+      "🏥 Okugyenda aha ddwaliro"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["akabi", "omusaayi", "omutwe", "amaisho", "bleeding", "headache", "fever"],
+        "response": "⚠️ AKABI K'AMAANI! Waaza omu musaayi kuruga omu nda, omutwe gukurema gwine ebihoho omu maisho, nari omusujja gw'amaani, yiruka aha ddwaliro erikukira haihi ahonaaho! Teera essimu 112 nari waza aha Bwera/Kabale HC ahonaaho."
+      },
+      "kicks": {
+        "keywords": ["kutera", "omwana", "kicks", "movement"],
+        "response": "👶 OKUTERA KW'OMWANA: Reeba yaaba omwana arikutera emirundi 10 omu shaaha ibiri waaba orikuhuumura. Omwana yaareka kutera, genda obwire obwo obwo aha ddwaliro bakebere omutima gw'omwana."
+      },
+      "nutrition": {
+        "keywords": ["kurya", "ebyokurya", "iron", "omusaayi", "ebijuma"],
+        "response": "🥗 EBY'OKURYA: Rya emboga zirikutukura, ebihimba, amagi, n'amata ga kaanywisa. Mira obujuma bwa ferusi (iron) bwa buri eizooba kureebeka ngu oine omusaayi gw'okukuza omwana gwawe."
+      },
+      "visits": {
+        "keywords": ["eddwaliro", "anc", "irwariro", "omusawo"],
+        "response": "🏥 OKUGYENDA AHA DDWALIRO: Genda aha ddwaliro emirundi 4. Teera *920# aha simu yawe yoona kureeba obwire bwawe obw'okubonana n'omusawo."
+      }
+    },
+    "default": "Webare kwebuuza maama! Amagara gaawe n'omwana nigo g'omugasho munonga. Kumbuuza aha by'okurya, okutera kw'omwana, obumanyiso bw'akabi, nari kutuura oteire essimu aha +256 778 501 066."
+  },
+  "lusoga": {
+    "name": "Lusoga (Busoga)",
+    "flag": "🇺🇬 Busoga",
+    "greeting": "Kodheyo Maama! Nze MaamaCare AI ow'omulala gwo ku by'obulamu bwo n'obw'omwana ori mu nda. Kiki kye nsobola okukuyamba nakyo leero?",
+    "placeholder": "Buuza ekibuuzo kyo ku nda n'omwana...",
+    "listenText": "Wuliriza eddoboozi",
+    "quickChips": [
+      "🚨 Obubonero obubi (Danger)",
+      "👶 Omwana akuba atya?",
+      "🥗 Eby'okulya n'amata",
+      "🏥 Okubala enaku dh'eddwaliro"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["obulabe", "omusaayi", "omutwe", "amaaso", "omusujja", "bleeding", "headache"],
+        "response": "⚠️ AKABANGA AKABI! Singa obona omusaayi gukuvaamu, omutwe ogukutemye ng'obona obuziyaziyo mu maaso, oba amagulu okuzimba ennyo, fuba ogende mu ddwaliro lw'amangu ddala! Kuba ku 112 oba 0800 100 200 kw'ebwereere."
+      },
+      "kicks": {
+        "keywords": ["kuba", "okukuba", "omwana", "kicks", "move"],
+        "response": "👶 OKUKUBA KW'OMWANA: Omwana wo asaanidde akube emirundi egitakka wansi wa 10 mu ssaawa ibiri nga oli mukusiriikirira n'okuwummula. Bw'aleka okukuba, yanguwa ogende mu ddwaliro balamule omwana."
+      },
+      "nutrition": {
+        "keywords": ["lya", "okulya", "doodo", "amata", "ayoni", "food"],
+        "response": "🥗 EBY'OKULYA: Lya ebinyebwa, enva endiirwa nga doodo ne sukuma, ebijanjaalo, amagi, n'amata. Mira buli lunaku ebinini by'omusaayi (iron and folic acid) byebakuwa mu ddwaliro."
+      },
+      "visits": {
+        "keywords": ["eddwaliro", "anc", "omusawo", "clinic"],
+        "response": "🏥 OKUGENDA MU DDWALIRO: Buli maama agende mu ddwaliro emirundi 4 mu lubuto. Kozesa *920# ku ssimu ey'amapeesa okufuna enaku dho."
+      }
+    },
+    "default": "Webale kwogera nange maama! Obulamu bwo n'obw'omwana bwe bukulu obusooka. Buuza ku buli kintu ky'oyagala oba kubira abasawo baffe ku +256 778 501 066."
+  },
+  "acholi": {
+    "name": "Acholi (Northern / Luo)",
+    "flag": "🇺🇬 Acholi",
+    "greeting": "Kop ango Maama! An aye MaamaCare AI me konyi i kom yotkom meri ki pa litino ma itye kwede i ici. Tye gin mo ma imito penyo tin?",
+    "placeholder": "Peny lapiny i kom ic ki litino...",
+    "listenText": "Winye dwon",
+    "quickChips": [
+      "🚨 Pwony me gemo (Danger)",
+      "👶 Gayo pa litino (Kicks)",
+      "🥗 Cam me yotkom ki yat me remo",
+      "🏥 Cito i ot yat (ANC)"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["gemo", "remo", "wic", "wang", "lyeto", "bleeding", "headache", "fever"],
+        "response": "⚠️ PWONY ME GEMO MADIT! Ka ineno remo cwer ki i dyere, wic abara madit marac atika, wangi bedo col, onyo lyeto me kom madit, citi i ot yat ma cok loyo oyotoyot! Go cim me nono 112 onyo 0800 100 200, onyo go cim pa daktari i +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": ["gayo", "litino", "kicks", "pe gayo", "movement"],
+        "response": "👶 GAYO PA LITINO: Cakke ki i dwe me abic nyo abicel, litino myero ogoy cwinyi tyen apar (10) i cawa aryo ka itye ka yweyo maber. Ka litino ogik gayo onyo gayo manok atika, citi i ot yat oyotoyot me pimo cwinye."
+      },
+      "nutrition": {
+        "keywords": ["cam", "dek", "alode", "remo", "yat", "food", "eat"],
+        "response": "🥗 CAM ME YOTKOM: Cam alode, boo, lakotkot, lapena, odii, ki cam dwe dwe. Mony yat me remo (iron and folic acid) ma kimiyi i ot yat nino ducu wek remo bed ma opong i komi."
+      },
+      "visits": {
+        "keywords": ["ot yat", "anc", "daktari", "cito", "hospital"],
+        "response": "🏥 CITO I OT YAT (ANC): Citi i ot yat tyen angwen (4) i ic ma itye kwede. Go cim *920# me nongo nino me cito i ot yat meri."
+      }
+    },
+    "default": "Apwoyo tutwal maama! Yotkom meri ki pa litino tye gin madit adada. Itye ki twero me penyo lapiny mo keken i kom gayo pa litino, cam maber, nyo cito i ot yat. Go cim i +256 778 501 066."
+  },
+  "lango": {
+    "name": "Lango (Leb-Lango / Northern)",
+    "flag": "🇺🇬 Lango",
+    "greeting": "Kop ango Maama! Atye kany me konyi i yotkom me ic meri kede me litino ame itye kede. Imito apenya i kom ngo tin?",
+    "placeholder": "Peny lapiny i yotkom me ic...",
+    "listenText": "Winye dwon",
+    "quickChips": [
+      "🚨 Obanga gema (Danger Signs)",
+      "👶 Kwano gayo pa litino",
+      "🥗 Cam me kelo remo",
+      "🏥 Nino me cito i ot yat"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["gema", "remo", "wiye", "wang", "lyeto", "bleeding", "headache"],
+        "response": "⚠️ OBANGA GEMA MALELE! Ka icwec remo, wiye obaro atek tutwal kede ceto col me wang, onyo komi olyet atek, wot i ot yat atotot! Pe igal bino cawa mo. Go cim me nono 112 onyo 0800 100 200."
+      },
+      "kicks": {
+        "keywords": ["gayo", "litino", "kwano", "kicks", "move"],
+        "response": "👶 GAYO PA LITINO: Litino myero ogoy ic tyen apar (10) i kine me cawa aryo ka iweyo. Ka pe tye ka gayo, nyo ogik gayo woko, citi i ot yat wek daktari opim yotkom pa litino."
+      },
+      "nutrition": {
+        "keywords": ["cam", "dek", "alode", "cak", "remo", "food"],
+        "response": "🥗 CAM ME KONYO REMO: Cam dek cwaa, dek ngor, odii, alode, kede cak. Mwony yat me remo (iron/folic) ame amiyi i ot yat nino ducu wek remo pe dok piny."
+      },
+      "visits": {
+        "keywords": ["ot yat", "anc", "nino", "daktari"],
+        "response": "🏥 NINO ME CITO I OT YAT: Citi i ot yat tyen angwen (4) i ic ducu. Teere cim i *920# me ngeyo cawa me ot yat."
+      }
+    },
+    "default": "Apwoyo matek maama! Yotkom meri aye gin ma pigere tek tutwal. Peny lapiny i kom yotkom me ic, nino me ot yat, onyo go cim i +256 778 501 066 me lok kede midwife."
+  },
+  "ateso": {
+    "name": "Ateso (Eastern / Teso)",
+    "flag": "🇺🇬 Teso",
+    "greeting": "Yoga noi Maama! Eong nesi MaamaCare AI ikepakoni kede aijar kon kede naka ikoku kotoma aberu. Anyoika bo inyikokit jo aisiom lolo?",
+    "placeholder": "Ingit aingiset nako aijar naka ikoku...",
+    "listenText": "Koko eporoto",
+    "quickChips": [
+      "🚨 Agogon naka akalany (Danger)",
+      "👶 Aikeun naka ikoku (Kicks)",
+      "🥗 Inyamat ka edeka loka aokot",
+      "🏥 Airot ore loka eipone (ANC)"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["akalany", "aokot", "akou", "akwap", "bleeding", "headache"],
+        "response": "⚠️ AGOGON NAKA AKALANY! Arai ituru aokot, aipot akou kakwapi kede aitiyo na amoni, arai ekukuni akou noi kede amuranat, kotor ore loka eipone (hospital) atipet! Epedori jo aiyalam simu 112 arai 0800 100 200."
+      },
+      "kicks": {
+        "keywords": ["ikoku", "aikeun", "kicks", "movement"],
+        "response": "👶 AIKEUN NAKA IKOKU: Isubit ikoku aikeun akon akou irwan itomon (10) kotoma isaawan iarei ka iweiti. Arai mam ikoku ekukuni, kotor ore loka eipone atipet aanyun daktari."
+      },
+      "nutrition": {
+        "keywords": ["inyamat", "edeka", "aokot", "ebwolo", "food"],
+        "response": "🥗 INYAMAT LUKAJOKAK: Inyam emorot, ebwolo, imare, kede ikiyai. Inyam edeka loka aokot (Iron and Folic Acid) loka apukot nesi ijaikitai ore loka eipone kinyam ka aponi aokot kanu ikoku."
+      },
+      "visits": {
+        "keywords": ["eipone", "ore", "anc", "daktari"],
+        "response": "🏥 AIROT ORE LOKA EIPONE (ANC): Kolot ore loka eipone irwan iwon (4) kotoma aberu kere. Kooma *920# aanyun apaaran kon nako airot."
+      }
+    },
+    "default": "Eyalama noi maama! Aijar kon kede naka ikoku nesi epol noi. Ingit aingiset kere nako aikeun naka ikoku, inyamat, arai koom simu mama ejaasi ikepakok wok ko +256 778 501 066."
+  },
+  "lugbara": {
+    "name": "Lugbara (West Nile)",
+    "flag": "🇺🇬 West Nile",
+    "greeting": "Mi ngoni Maama! Ma mini MaamaCare AI, aza koza mini kpere mva mini dria vule. E'yo azi mini ndazu ngo leero?",
+    "placeholder": "Zi e'yo mva kede ali vule...",
+    "listenText": "Eri o'du",
+    "quickChips": [
+      "🚨 E'yo ndri ka (Danger Signs)",
+      "👶 Mva saza (Baby Kicks)",
+      "🥗 Enya kede aya ari nzeza",
+      "🏥 Muza osipitali sia (ANC)"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["ndri", "ari", "dri", "aza", "bleeding", "headache", "fever"],
+        "response": "⚠️ E'YO NDRI KA! Ari ka le'e mi ti vule, dri ka sa nyari-nyari kede mi ma amveza, ko mva ka mu pe ku, mu osipitali sia azo amvu! Zaza simu 112 ko 0800 100 200 awu be ku, ko zaza midwife mini i +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": ["mva", "saza", "pe", "kicks", "movement"],
+        "response": "👶 MVA SAZA: Mva leke mu sa mudri (10) sawa iri (2) alu ma alea mi ka iwe. Mva ka pe ku ko ka pe mudri ku, mu osipitali sia daktari ma ne mva ma o'du mve."
+      },
+      "nutrition": {
+        "keywords": ["enya", "aya", "ari", "nya", "food"],
+        "response": "🥗 ENYA NYIRIKO: Nya enya nyiriko be (alode, enva endiirwa), anyapa nya, ebinyebe nya, kede aya ari nzeza (iron and folic acid) mini feza osipitali sia nya o'du dria."
+      },
+      "visits": {
+        "keywords": ["osipitali", "anc", "muza", "daktari"],
+        "response": "🏥 MUZA OSIPITALI SIA (ANC): Mi mu osipitali sia o'du su (4) ali mini dria. Zaza *920# simu si o'du mini nizu."
+      }
+    },
+    "default": "Awa'difo maama! Yotkom mini be mva mini be nesi e'yo eripi a'dusi. Zi e'yo azi mini lezuri dria, ko zaza daktari mini simu si i +256 778 501 066."
+  },
+  "runyoro": {
+    "name": "Runyoro-Rutooro (Western)",
+    "flag": "🇺🇬 Bunyoro-Tooro",
+    "greeting": "Oraire ota Maama! Ninyowe MaamaCare AI, omuyambi waawe ow'eby'obwomeezi bwawe n'obw'omwana ori munda. Oine kibuuzo ki ekiro kya leero?",
+    "placeholder": "Buuza ekibuuzo kyona...",
+    "listenText": "Huuriza iraka",
+    "quickChips": [
+      "🚨 Obulumuna bw'amaani (Danger)",
+      "👶 Omwana arikutera ata?",
+      "🥗 Eby'okulya eby'omusaayi",
+      "🏥 Ebiro by'okugenda ha ddwaliro"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["obulumuna", "omusaayi", "omutwe", "amaisho", "bleeding", "headache"],
+        "response": "⚠️ OBULUMUNA BW'AMAANI! Obworaaba oine omusaayi ogurukukwija, omutwe ogurukukulema oine ebihoho omu maisho, nari omusujja gw'amaani, genda ha ddwaliro erikukira haihi ahonaaho! Nari oteere essimu 112 / 0800 100 200 ey'obwereere."
+      },
+      "kicks": {
+        "keywords": ["kutera", "omwana", "kicks", "movement"],
+        "response": "👶 OKUTERA KW'OMWANA: Omwana asemerire kutera emirundi ikumi (10) omu saaha ibiri obworaaba orukuhuumura. Obw'araareka kutera, iruka ha ddwaliro abasawo bakebere omutima gwe."
+      },
+      "nutrition": {
+        "keywords": ["kulya", "ebyokulya", "iron", "omusaayi", "food"],
+        "response": "🥗 EBY'OKULYA: Lya emboga z'ebitakuri, doodo, ebihimba, n'amata. Mira obutole bwa ayoni na ffoliki obw'omusaayi obubakuhaire ha ddwaliro buli kiro."
+      },
+      "visits": {
+        "keywords": ["ddwaliro", "anc", "omusawo", "ebiro"],
+        "response": "🏥 EBIRO BY'OKUGENDA HA DDWALIRO: Oine kugenda ha ddwaliro emirundi ena (4) omu nda yoona. Teera *920# aha simu yawe kumanya ebiro byawe."
+      }
+    },
+    "default": "Webale muno maama! Obwomeezi bwawe n'obw'omwana nigo b'omugaso gw'amaani. Kumbuuza ekiro kyona nari oteere essimu aha +256 778 501 066."
+  },
+  "lumasaba": {
+    "name": "Lumasaba (Bugisu / Mount Elgon)",
+    "flag": "🇺🇬 Bugisu",
+    "greeting": "Mulembe Maama! Inze MaamaCare AI, omuyambi wo khulwe bulamu bwoosi n'obwo mwana ori munda. Wangatsile kwi leero khulwe nda yiyo?",
+    "placeholder": "Buuza khulwe bulamu bwoosi...",
+    "listenText": "Wulila lilaka",
+    "quickChips": [
+      "🚨 Kamatsai n'obulabe",
+      "👶 Okhukuba khwo mwana",
+      "🥗 By'okhulia n'eddagala",
+      "🏥 Tsikhabado tsyo mu dwalilo"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["kamatsai", "lilulu", "kamoni", "kamabeka", "bleeding", "headache"],
+        "response": "⚠️ LUBANGA LULULU! Wakhabona kamatsai kakhuvaamu, omutwe ogukulumina ng'obona kamoni kanyirirala, khenda mu dwalilo mangu mangu! Khuba lisiimu ku 112 naye 0800 100 200 y'obwereere."
+      },
+      "kicks": {
+        "keywords": ["khukuba", "mwana", "kicks", "movement"],
+        "response": "👶 OKHUKUBA KHWO MWANA: Pima okhukuba khwo mwana. Akube kamasiira likumi (10) mu ssaawa tsibili ng'owumulile. Namaleka okhukuba, khenda mu dwalilo omusawo apime omwoyo gwo mwana."
+      },
+      "nutrition": {
+        "keywords": ["lia", "khulia", "doodo", "kamatsai", "food"],
+        "response": "🥗 EBY'OKHULIA: Lya lidodo, kamasindwa, biyanjaalo, kamagi, ne matsai. Manya okhunywa kimatwoli kye kamatsai (iron) kye bakhuwelesye mu dwalilo tsikhafu tsyoosi."
+      },
+      "visits": {
+        "keywords": ["dwalilo", "anc", "omusawo", "tsikhabado"],
+        "response": "🏥 TSIKHABADO TSYO MU DWALILO: Khenda mu dwalilo kamasiira kane (4) mu nda yiyo yoosi. Teera *920# khulwe tsikhabado tsyo."
+      }
+    },
+    "default": "Wanyala naabi maama! Obulamu bwo n'obwo mwana bwebufuna imbeli. Buuza khuri kyosi ky'oyenda kuteera lisiimu ku +256 778 501 066."
+  },
+  "english": {
+    "name": "English (Official)",
+    "flag": "🌐 English",
+    "greeting": "Hello Mama! I am MaamaCare AI, your dedicated maternal & newborn health assistant. I can assist you with pregnancy guidance, baby kicks, danger signs, nutrition, and clinic visits across 10+ Ugandan languages.",
+    "placeholder": "Ask any question about your pregnancy or baby...",
+    "listenText": "Listen to Voice",
+    "quickChips": [
+      "🚨 Danger signs during pregnancy",
+      "👶 How to count baby kicks",
+      "🥗 Nutrition & Iron/Folic pills",
+      "🏥 Next clinic visit & birth prep"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["danger", "bleeding", "headache", "vision", "fever", "swelling", "pain", "chills"],
+        "response": "⚠️ CRITICAL EMERGENCY ALERT: If you experience vaginal bleeding, severe unyielding headache with blurred vision, high fever, or sudden severe swelling of hands and face, proceed to the nearest hospital or health centre immediately! You can dial toll-free 112 or 0800 100 200, or call our care midwife on +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": ["kicks", "kick", "movement", "move", "fetal"],
+        "response": "👶 FETAL KICK COUNTING: Starting around week 24–28, your baby should move regularly. Rest on your left side in a quiet room after eating. You should feel at least 10 distinct kicks or rolls within 2 hours. If kicks decrease noticeably or stop, seek clinical evaluation right away."
+      },
+      "nutrition": {
+        "keywords": ["food", "nutrition", "eat", "iron", "folic", "anemia", "greens"],
+        "response": "🥗 MATERNAL NUTRITION: Eat iron-rich foods including dark green leafy vegetables (doodo, nakati, spinach), beans, eggs, groundnuts, and clean fresh fruits with Vitamin C. Take your daily Iron & Folic Acid supplements to prevent maternal anemia and support healthy baby growth."
+      },
+      "visits": {
+        "keywords": ["visit", "anc", "clinic", "hospital", "doctor", "appointment", "schedule"],
+        "response": "🏥 CLINIC VISITS (ANC): The World Health Organization and Uganda Ministry of Health recommend at least 4 comprehensive ANC visits. BabyHealth Guard automatically sends SMS reminders before each date. You can also dial *920# on any phone to check your next visit date."
+      }
+    },
+    "default": "Thank you for checking in, Mama! Your health and your baby's development are our top priority. You can ask me about danger signs, counting kicks, medication, or reach our care team on WhatsApp at +256 778 501 066."
+  },
+  "swahili": {
+    "name": "Kiswahili (East Africa)",
+    "flag": "🇹🇿 Swahili",
+    "greeting": "Jambo Mama! Mimi ni MaamaCare AI, msaidizi wako wa afya ya uzazi na mtoto. Niko hapa kukusaidia kwa maswali yote kuhusu ujauzito, mienendo ya mtoto, lishe bora na kliniki.",
+    "placeholder": "Uliza swali kuhusu ujauzito au mtoto...",
+    "listenText": "Sikiliza sauti",
+    "quickChips": [
+      "🚨 Dalili za hatari (Danger)",
+      "👶 Kuhesabu mateke ya mtoto",
+      "🥗 Lishe na vidonge vya damu",
+      "🏥 Tarehe ya kliniki (ANC)"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": ["hatari", "damu", "kichwa", "macho", "homa", "bleeding", "headache"],
+        "response": "⚠️ TAHADHARI YA HATARI! Ukiona damu inatoka, maumivu makali ya kichwa yasiyokwisha na kutoona vizuri, homa kali, au mtoto kuacha kucheza, nenda hospitalini mara moja! Piga nambari ya bure 112 au 0800 100 200, au piga +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": ["mateke", "kucheza", "mtoto", "kicks", "move"],
+        "response": "👶 MWENENDO WA MTOTO: Mtoto anapaswa kucheza angalau mara 10 ndani ya masaa mawili unapopumzika kwa upande wa kushoto. Mtoto asipocheza kabisa, fika kituo cha afya mara moja kuchunguzwa mapigo ya moyo."
+      },
+      "nutrition": {
+        "keywords": ["chakula", "lishe", "mboga", "chuma", "damu", "food"],
+        "response": "🥗 LISHE BORA: Kula mboga za majani za kijani kibichi (dodo, mchicha), maharagwe, mayai, samaki na matunda yenye vitamini C. Meza vidonge vya Iron na Folic Acid kila siku kuongeza damu mwilini."
+      },
+      "visits": {
+        "keywords": ["kliniki", "hospitali", "daktari", "anc"],
+        "response": "🏥 KLINIKI YA WAJAUZITO (ANC): Hudhuria kliniki angalau mara 4 wakati wa ujauzito. Tumia *920# kwenye simu ya kawaida kupata tarehe yako ya kliniki bila malipo."
+      }
+    },
+    "default": "Asante sana mama! Afya yako na ya mtoto ndiyo kipaumbele chetu kikuu. Unaweza kuniuliza chochote au kupiga simu kwa wataalamu wetu kupitia +256 778 501 066."
+  }
+};
+
+    let currentLang = 'luganda';
+
+    // Initialize Chat
+    document.addEventListener('DOMContentLoaded', () => {
+      initChat();
+    });
+
+    function switchLanguage(langKey) {
+      if (!LANGUAGES[langKey]) return;
+      currentLang = langKey;
+      
+      // Update UI elements
+      const langData = LANGUAGES[langKey];
+      document.getElementById('activeDialectLabel').textContent = `${langData.name} Active`;
+      document.getElementById('chatTextInput').placeholder = langData.placeholder;
+      document.getElementById('langSelectDropdown').value = langKey;
+      const fSelect = document.getElementById('floatingLangSelect');
+      if (fSelect) fSelect.value = langKey;
+
+      // Update pill buttons
+      document.querySelectorAll('.lang-pill').forEach(btn => {
+        if (btn.getAttribute('data-lang') === langKey) {
+          btn.className = 'lang-pill px-3 py-1 rounded-full text-xs font-bold transition-all bg-[#0e7490] text-white';
+        } else {
+          btn.className = 'lang-pill px-3 py-1 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-200 transition-all';
+        }
+      });
+
+      initChat();
+    }
+
+    function initChat() {
+      const langData = LANGUAGES[currentLang];
+      const container = document.getElementById('chatMessages');
+      const floatContainer = document.getElementById('floatingChatMessages');
+      
+      // Render Initial Greeting
+      const greetingHtml = `
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+            🤱
+          </div>
+          <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-xs border border-slate-200 text-xs text-slate-800 leading-relaxed max-w-xl">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-bold text-[#0e7490]">${langData.name}</span>
+              <span class="text-[10px] text-slate-400">MaamaCare AI</span>
+            </div>
+            <p>${langData.greeting}</p>
+            <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between">
+              <button type="button" onclick="speakCurrentText('${escapeQuotes(langData.greeting)}', '${currentLang}')" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#0e7490] hover:text-cyan-800 transition-colors">
+                <span class="material-symbols-outlined text-[16px]">volume_up</span>
+                <span>${langData.listenText}</span>
+              </button>
+              <span class="text-[10px] text-slate-400">Audio Voice Enabled</span>
+            </div>
+          </div>
+        </div>
+      `;
+      container.innerHTML = greetingHtml;
+      if (floatContainer) floatContainer.innerHTML = greetingHtml;
+
+      // Populate Quick Suggestion Chips
+      const chipsBox = document.getElementById('quickChipsContainer');
+      chipsBox.innerHTML = '';
+      langData.quickChips.forEach(chipText => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'px-3 py-1.5 rounded-full bg-white hover:bg-cyan-50 hover:text-[#0e7490] text-slate-700 text-xs font-semibold border border-slate-200 shadow-xs transition-colors flex items-center gap-1 active:scale-95';
+        btn.textContent = chipText;
+        btn.onclick = () => {
+          document.getElementById('chatTextInput').value = chipText;
+          processUserMessage(chipText);
+        };
+        chipsBox.appendChild(btn);
+      });
+    }
+
+    function handleChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatTextInput');
+      const text = input.value.trim();
+      if (!text) return;
+      processUserMessage(text);
+      input.value = '';
+    }
+
+    function handleFloatingChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('floatingChatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      processUserMessage(text);
+      input.value = '';
+    }
+
+    function processUserMessage(text) {
+      const container = document.getElementById('chatMessages');
+      const floatContainer = document.getElementById('floatingChatMessages');
+
+      // Append User Bubble
+      const userBubble = `
+        <div class="flex items-start justify-end gap-2.5">
+          <div class="bg-[#0e7490] text-white rounded-2xl rounded-tr-none p-3.5 shadow-xs text-xs leading-relaxed max-w-md">
+            <p>${text}</p>
+          </div>
+          <div class="w-8 h-8 rounded-xl bg-slate-800 text-white flex items-center justify-center font-bold text-xs shrink-0">
+            👤
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', userBubble);
+      if (floatContainer) floatContainer.insertAdjacentHTML('beforeend', userBubble);
+      container.scrollTop = container.scrollHeight;
+
+      // Match Intent from Language Config
+      setTimeout(() => {
+        const responseText = matchMedicalResponse(text, currentLang);
+        const langData = LANGUAGES[currentLang];
+        
+        const aiBubble = `
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+              🤱
+            </div>
+            <div class="bg-white rounded-2xl rounded-tl-none p-4 shadow-xs border border-slate-200 text-xs text-slate-800 leading-relaxed max-w-xl">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="font-bold text-[#0e7490]">${langData.name}</span>
+                <span class="text-[10px] text-slate-400">Just now</span>
+              </div>
+              <p>${responseText}</p>
+              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between">
+                <button type="button" onclick="speakCurrentText('${escapeQuotes(responseText)}', '${currentLang}')" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#0e7490] hover:text-cyan-800 transition-colors">
+                  <span class="material-symbols-outlined text-[16px]">volume_up</span>
+                  <span>${langData.listenText}</span>
+                </button>
+                <a href="https://wa.me/256778501066?text=${encodeURIComponent('MaamaCare AI Assistance: ' + text)}" target="_blank" class="text-[10px] font-bold text-emerald-600 hover:underline flex items-center gap-1">
+                  Connect Midwife on WhatsApp →
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', aiBubble);
+        if (floatContainer) floatContainer.insertAdjacentHTML('beforeend', aiBubble);
+        container.scrollTop = container.scrollHeight;
+        if (floatContainer) floatContainer.scrollTop = floatContainer.scrollHeight;
+
+        // Auto-play speech audio for natural voice experience
+        speakCurrentText(responseText, currentLang);
+      }, 400);
+    }
+
+    function matchMedicalResponse(query, langKey) {
+      const langConfig = LANGUAGES[langKey] || LANGUAGES['luganda'];
+      const q = query.toLowerCase();
+      
+      if (langConfig.intents) {
+        for (const [intentKey, intentData] of Object.entries(langConfig.intents)) {
+          if (intentData.keywords.some(k => q.includes(k.toLowerCase()))) {
+            return intentData.response;
+          }
+        }
+      }
+      return langConfig.default;
+    }
+
+    // Text to Speech Audio Engine (Web Speech API)
+    function speakCurrentText(text, langKey) {
+      if (!('speechSynthesis' in window)) {
+        console.warn('Speech synthesis not supported on this browser.');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      
+      const cleanText = text.replace(/⚠️|👶|🥗|🏥|🤱|●|🚨/g, '').trim();
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      
+      // Select appropriate voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v => v.lang.startsWith('sw') || v.lang.includes('ZA') || v.lang.includes('KE') || v.lang.includes('NG')) 
+                     || voices.find(v => v.lang.startsWith('en')) 
+                     || voices[0];
+      if (preferred) utterance.voice = preferred;
+      
+      utterance.rate = 0.93; // Warm maternal clinical pacing
+      utterance.pitch = 1.04;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Voice Input (Speech Recognition)
+    function startVoiceInput() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Voice speech recognition is not supported in this browser. Please type your question.");
+        return;
+      }
+      const micBtn = document.getElementById('btnVoiceInput');
+      micBtn.classList.add('bg-rose-100', 'text-rose-600', 'animate-pulse');
+      
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-UG';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('chatTextInput').value = transcript;
+        processUserMessage(transcript);
+      };
+
+      recognition.onerror = function(event) {
+        console.error('Speech recognition error', event.error);
+        micBtn.classList.remove('bg-rose-100', 'text-rose-600', 'animate-pulse');
+      };
+
+      recognition.onend = function() {
+        micBtn.classList.remove('bg-rose-100', 'text-rose-600', 'animate-pulse');
+      };
+
+      recognition.start();
+    }
+
+    function toggleFloatingAiModal() {
+      const modal = document.getElementById('floatingAiModal');
+      modal.classList.toggle('hidden');
+    }
+
+    function escapeQuotes(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
+    }
+
+    // Multi-Device Simulator Controls
+    function setSimDeviceMode(mode) {
+      const frame = document.getElementById('simIframe');
+      const badge = document.getElementById('simDimBadge');
+      const btnM = document.getElementById('sim-btn-mobile');
+      const btnT = document.getElementById('sim-btn-tablet');
+      const btnL = document.getElementById('sim-btn-laptop');
+
+      [btnM, btnT, btnL].forEach(b => {
+        b.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 text-slate-700 hover:bg-white transition-all';
+      });
+
+      if (mode === 'mobile') {
+        frame.style.maxWidth = '390px';
+        badge.textContent = 'Breakpoint: Mobile Phone (390px × 760px)';
+        btnM.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-white text-[#0e7490] shadow-xs transition-all';
+      } else if (mode === 'tablet') {
+        frame.style.maxWidth = '768px';
+        badge.textContent = 'Breakpoint: Tablet (768px × 760px)';
+        btnT.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-white text-[#0e7490] shadow-xs transition-all';
+      } else {
+        frame.style.maxWidth = '100%';
+        badge.textContent = 'Breakpoint: Laptop / Desktop (100% Fluid)';
+        btnL.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-white text-[#0e7490] shadow-xs transition-all';
+      }
+    }
+
+    function loadSimView(url, title, preferredDevice) {
+      const frame = document.getElementById('simIframe');
+      const titleEl = document.getElementById('simTitle');
+      const fullTabLink = document.getElementById('simFullTabLink');
+      
+      frame.src = url;
+      titleEl.textContent = title;
+      fullTabLink.href = url;
+
+      document.querySelectorAll('.sim-view-btn').forEach(btn => {
+        if (btn.getAttribute('data-url') === url) {
+          btn.className = 'sim-view-btn px-4 py-2 rounded-xl text-xs font-bold bg-[#0e7490] text-white shadow-sm transition-all';
+        } else {
+          btn.className = 'sim-view-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition-all';
+        }
+      });
+
+      if (preferredDevice) {
+        setSimDeviceMode(preferredDevice);
+      }
+    }
+  </script>
+
+</body>
+</html>

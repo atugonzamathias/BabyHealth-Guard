@@ -1,0 +1,34 @@
+﻿# Dependencies & Build
+node_modules/
+.next/
+dist/
+build/
+
+# Environment variables & service accounts
+.env*.local
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!firebase.json
+!firestore.*.json
+
+# IDE & OS
+.idea/
+.DS_Store
+Thumbs.db
+
+# Python cache & temporary audit scripts
+__pycache__/
+*.pyc
+check_*.py
+fix_*.py
+audit_*.py
+find_*.py
+trace_*.py
+read_*.py
+verify_*.py
+apply_*.py
+build_*.py
+install_*.py
+patch_*.py
