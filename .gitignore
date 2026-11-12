@@ -12,6 +12,7 @@ build/
 !tsconfig.json
 !firebase.json
 !firestore.*.json
+!frontend/src/data/*.json
 
 # IDE & OS
 .idea/

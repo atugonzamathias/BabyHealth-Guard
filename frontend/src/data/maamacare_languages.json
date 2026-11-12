@@ -1,0 +1,704 @@
+{
+  "luganda": {
+    "name": "Luganda (Central)",
+    "greeting": "Oli otya Maama! Nze MaamaCare AI, omuyambi wo ku by'obulamu bwo n'obw'omwana wo. Ndi wano okukuyamba ku bintu byonna ebikwata ku lubuto, okugenda mu ddwaliro, n'obulamu bw'omwana.",
+    "placeholder": "Buuza ekibuuzo ku lubuto oba omwana...",
+    "listenText": "Wuliriza eddoboozi",
+    "quickChips": [
+      "🚨 Obubonero obw'obulabe",
+      "👶 Omwana akuba atya?",
+      "🥗 Eby'okulya n'eddagala lya ayoni",
+      "🏥 Eddwaliro n'okubala emyezi"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "obulabe",
+          "omusaayi",
+          "omutwe",
+          "amaaso",
+          "omusujja",
+          "kuzimba",
+          "okulumwa",
+          "ebire",
+          "bleeding",
+          "headache",
+          "fever",
+          "pain"
+        ],
+        "response": "⚠️ OBULABE OBW'AMANGU! Singa ofuna okuvaamu omusaayi, omutwe omunene ogutawona ng'olina ebire mu maaso, omusujja omungi, oba amagulu n'obwenyi okuzimba ennyo, genda mu ddwaliro eriri okumpi amangu ddala! Osobola n'okukuba essimu ku 112 oba 0800 100 200 ku bwereere, oba kubira omusawo wo ku +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": [
+          "kuba",
+          "okukuba",
+          "tazannya",
+          "omwana",
+          "kicks",
+          "movement",
+          "move"
+        ],
+        "response": "👶 OKUKUBA KW'OMWANA: Okuva ku wiiki 24–28, omwana wo aba asuubirwa okukuba. Funa ekifo eky'eddembe, olyeko ekintu, owoomuleko wansi ku lubiriizi olwa kkono. Omwana asaanidde akube emirundi egitakka wansi wa 10 mu ssaawa bbiri (2). Bw'owulira nti takubye oba nti akendeezezza ennyo, genda mu ddwaliro omusawo akebe omutima gwe."
+      },
+      "nutrition": {
+        "keywords": [
+          "lya",
+          "okulya",
+          "enva",
+          "ayoni",
+          "omusaayi",
+          "doodo",
+          "nakati",
+          "eddagala",
+          "iron",
+          "food",
+          "eat"
+        ],
+        "response": "🥗 EBY'OKULYA N'OBULAMU: Lya emmere ezimba omubiri n'ereeta omusaayi: enva endiirwa (doodo, nakati, bbugga), ebijanjaalo, amagi, ebinyebwa, n'ebibala nga emicungwa. Mira buli lunaku obutole bwa Ayoni ne Folic Acid (eddagala ery'omusaayi) lye baakuwa mu ddwaliro. Nwa amazzi amayonjo amalungi buli lunaku."
+      },
+      "visits": {
+        "keywords": [
+          "ddwaliro",
+          "anc",
+          "okugenda",
+          "eddwaaliro",
+          "omusawo",
+          "appointment",
+          "clinic",
+          "hospital"
+        ],
+        "response": "🏥 OKUGENDA MU DDWALIRO (ANC): Buli maama alina okugenda mu ddwaliro emirundi egitakka wansi wa 4 mu lubuto lwe olwonna. Bwe tuba tukozesa BabyHealth Guard, ofuna obubaka bwa SMS obukujjukiza olunaku lw'eddwaliro. Bw'oba tolina ssimu ya smartphone, koona *920# okumanya olunaku lwo."
+      },
+      "labor": {
+        "keywords": [
+          "okuzaala",
+          "ebisa",
+          "okulumwa",
+          "amazzi",
+          "labor",
+          "delivery",
+          "birth"
+        ],
+        "response": "🤱 OBUBONERO OBW'OKUZAALA: Bw'otandika okulumwa ebisa ebijja buli luvannyuma lw'eddakiika 5-10 nga byeyongera, oba ng'amazzi g'omwana gasaze, tambula amangu ogende mu ddwaliro erina abasawo abazaalisa. Tuteekateeka ebyetaago by'omwana byonna."
+      }
+    },
+    "default": "Weebale maama! Ekyo ekibuuzo kikulu nnyo ku bulamu bwo n'obw'omwana. Osobola okumbuuza ku bubonero obw'obulabe, okukuba kw'omwana, eby'okulya, oba okukuba essimu eri omusawo wo ku +256 778 501 066."
+  },
+  "runyankore": {
+    "name": "Runyankore (Western)",
+    "greeting": "Agandi Maama! Ndi MaamaCare AI, omuyambi waawe w'eby'amagara gaanyu n'omwana waawe ori munda. Ndi wano kukuyamba aha buri kintu eki orikwenda kumanya.",
+    "placeholder": "Buuza ekibuuzo aha nda nari omwana...",
+    "listenText": "Huuriza eiraka",
+    "quickChips": [
+      "🚨 Obumanyiso bw'akabi",
+      "👶 Omwana arikutera ata?",
+      "🥗 Eby'okurya n'obujuma bw'omusaayi",
+      "🏥 Okwija omu ddwaliro"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "akabi",
+          "omusaayi",
+          "omutwe",
+          "amaisho",
+          "omuswi",
+          "okuzimba",
+          "bleeding",
+          "headache"
+        ],
+        "response": "⚠️ AKABI K'AMAANI! Waareeba omusaayi kuruga omuriiwe, omutwe gukurema munonga oine ebihuubwa omu maisho, omusujja gw'amaani, nari amaguru n'amaisho bikazimba, yiruka aha ddwaliro ahonaaho! Nari teera essimu ya bwerere 112 / 0800 100 200, nari omidwife waawe aha +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": [
+          "kutera",
+          "omwana",
+          "kicks",
+          "gutera",
+          "movement"
+        ],
+        "response": "👶 OKUTERA KW'OMWANA: Kuruga aha wiiki 24–28, omwana ashemereire kutera. Za omu mwanya murungi, ohuumure aha rubaju rwa bumosho. Ashemereire kutera emirundi ikumi (10) omu shaaha ibiri (2). Yaaba atari kutera nari akakendeeza, yiruka aha ddwaliro amanguka."
+      },
+      "nutrition": {
+        "keywords": [
+          "kurya",
+          "ebyokurya",
+          "omusaayi",
+          "ebihimba",
+          "doodo",
+          "iron",
+          "food"
+        ],
+        "response": "🥗 EBY'OKURYA: Rya emboga ziragrikirwe (doodo, ebitakuri), ebihimba, ebinyobwa, amagi n'amata. Mira buri eizooba obujuma bwa Iron & Folic Acid ebi bakuha aha ddwaliro kwongyera omusaayi. Nywa amaizi masya marungi."
+      },
+      "visits": {
+        "keywords": [
+          "eddwaliro",
+          "irwariro",
+          "anc",
+          "omusawo",
+          "clinic",
+          "hospital"
+        ],
+        "response": "🏥 OKWIZA OMU DDWALIRO (ANC): Oine kugyenda aha ddwaliro emirundi ekitari hansi y'ena (4) omu nda yaawe yoona. Bw'oba oine ekitabo kya BabyHealth Guard, tukwoherereza SMS y'okukwijusya. Aha simu ya butoosa, teera *920# kumanya ebiro byaawe."
+      }
+    },
+    "default": "Webare maama! Ekyo n'ekibuuzo kirungi munonga. Ndi wano kukuyamba omu rugyendo rwawe rw'enda. Noobaasa kumbuuza aha kutera kw'omwana, eby'okurya, obumanyiso bw'akabi, nari waateera essimu aha +256 778 501 066."
+  },
+  "rukiga": {
+    "name": "Rukiga (Kigezi)",
+    "greeting": "Oraire ota Maama! Ndi MaamaCare AI, omukuru w'amagara gaanyu n'omwana ori munda omu Kigezi. Nkwase ki leero aha by'enda yaawe?",
+    "placeholder": "Buuza aha nda n'omwana wo...",
+    "listenText": "Huuriza eiraka",
+    "quickChips": [
+      "🚨 Obumanyiso bw'akabi k'amaani",
+      "👶 Omwana arikutera ata?",
+      "🥗 Eby'okurya by'omusaayi",
+      "🏥 Okugyenda aha ddwaliro"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "akabi",
+          "omusaayi",
+          "omutwe",
+          "amaisho",
+          "bleeding",
+          "headache",
+          "fever"
+        ],
+        "response": "⚠️ AKABI K'AMAANI! Waaza omu musaayi kuruga omu nda, omutwe gukurema gwine ebihoho omu maisho, nari omusujja gw'amaani, yiruka aha ddwaliro erikukira haihi ahonaaho! Teera essimu 112 nari waza aha Bwera/Kabale HC ahonaaho."
+      },
+      "kicks": {
+        "keywords": [
+          "kutera",
+          "omwana",
+          "kicks",
+          "movement"
+        ],
+        "response": "👶 OKUTERA KW'OMWANA: Reeba yaaba omwana arikutera emirundi 10 omu shaaha ibiri waaba orikuhuumura. Omwana yaareka kutera, genda obwire obwo obwo aha ddwaliro bakebere omutima gw'omwana."
+      },
+      "nutrition": {
+        "keywords": [
+          "kurya",
+          "ebyokurya",
+          "iron",
+          "omusaayi",
+          "ebijuma"
+        ],
+        "response": "🥗 EBY'OKURYA: Rya emboga zirikutukura, ebihimba, amagi, n'amata ga kaanywisa. Mira obujuma bwa ferusi (iron) bwa buri eizooba kureebeka ngu oine omusaayi gw'okukuza omwana gwawe."
+      },
+      "visits": {
+        "keywords": [
+          "eddwaliro",
+          "anc",
+          "irwariro",
+          "omusawo"
+        ],
+        "response": "🏥 OKUGYENDA AHA DDWALIRO: Genda aha ddwaliro emirundi 4. Teera *920# aha simu yawe yoona kureeba obwire bwawe obw'okubonana n'omusawo."
+      }
+    },
+    "default": "Webare kwebuuza maama! Amagara gaawe n'omwana nigo g'omugasho munonga. Kumbuuza aha by'okurya, okutera kw'omwana, obumanyiso bw'akabi, nari kutuura oteire essimu aha +256 778 501 066."
+  },
+  "lusoga": {
+    "name": "Lusoga (Busoga)",
+    "greeting": "Kodheyo Maama! Nze MaamaCare AI ow'omulala gwo ku by'obulamu bwo n'obw'omwana ori mu nda. Kiki kye nsobola okukuyamba nakyo leero?",
+    "placeholder": "Buuza ekibuuzo kyo ku nda n'omwana...",
+    "listenText": "Wuliriza eddoboozi",
+    "quickChips": [
+      "🚨 Obubonero obubi",
+      "👶 Omwana akuba atya?",
+      "🥗 Eby'okulya n'amata",
+      "🏥 Okubala enaku dh'eddwaliro"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "obulabe",
+          "omusaayi",
+          "omutwe",
+          "amaaso",
+          "omusujja",
+          "bleeding",
+          "headache"
+        ],
+        "response": "⚠️ AKABANGA AKABI! Singa obona omusaayi gukuvaamu, omutwe ogukutemye ng'obona obuziyaziyo mu maaso, oba amagulu okuzimba ennyo, fuba ogende mu ddwaliro lw'amangu ddala! Kuba ku 112 oba 0800 100 200 kw'ebwereere."
+      },
+      "kicks": {
+        "keywords": [
+          "kuba",
+          "okukuba",
+          "omwana",
+          "kicks",
+          "move"
+        ],
+        "response": "👶 OKUKUBA KW'OMWANA: Omwana wo asaanidde akube emirundi egitakka wansi wa 10 mu ssaawa ibiri nga oli mukusiriikirira n'okuwummula. Bw'aleka okukuba, yanguwa ogende mu ddwaliro balamule omwana."
+      },
+      "nutrition": {
+        "keywords": [
+          "lya",
+          "okulya",
+          "doodo",
+          "amata",
+          "ayoni",
+          "food"
+        ],
+        "response": "🥗 EBY'OKULYA: Lya ebinyebwa, enva endiirwa nga doodo ne sukuma, ebijanjaalo, amagi, n'amata. Mira buli lunaku ebinini by'omusaayi (iron and folic acid) byebakuwa mu ddwaliro."
+      },
+      "visits": {
+        "keywords": [
+          "eddwaliro",
+          "anc",
+          "omusawo",
+          "clinic"
+        ],
+        "response": "🏥 OKUGENDA MU DDWALIRO: Buli maama agende mu ddwaliro emirundi 4 mu lubuto. Kozesa *920# ku ssimu ey'amapeesa okufuna enaku dho."
+      }
+    },
+    "default": "Webale kwogera nange maama! Obulamu bwo n'obw'omwana bwe bukulu obusooka. Buuza ku buli kintu ky'oyagala oba kubira abasawo baffe ku +256 778 501 066."
+  },
+  "acholi": {
+    "name": "Acholi (Northern / Luo)",
+    "greeting": "Kop ango Maama! An aye MaamaCare AI me konyi i kom yotkom meri ki pa litino ma itye kwede i ici. Tye gin mo ma imito penyo tin?",
+    "placeholder": "Peny lapiny i kom ic ki litino...",
+    "listenText": "Winye dwon",
+    "quickChips": [
+      "🚨 Pwony me gemo",
+      "👶 Gayo pa litino",
+      "🥗 Cam me yotkom ki yat me remo",
+      "🏥 Cito i ot yat (ANC)"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "gemo",
+          "remo",
+          "wic",
+          "wang",
+          "lyeto",
+          "bleeding",
+          "headache",
+          "fever"
+        ],
+        "response": "⚠️ PWONY ME GEMO MADIT! Ka ineno remo cwer ki i dyere, wic abara madit marac atika, wangi bedo col, onyo lyeto me kom madit, citi i ot yat ma cok loyo oyotoyot! Go cim me nono 112 onyo 0800 100 200, onyo go cim pa daktari i +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": [
+          "gayo",
+          "litino",
+          "kicks",
+          "pe gayo",
+          "movement"
+        ],
+        "response": "👶 GAYO PA LITINO: Cakke ki i dwe me abic nyo abicel, litino myero ogoy cwinyi tyen apar (10) i cawa aryo ka itye ka yweyo maber. Ka litino ogik gayo onyo gayo manok atika, citi i ot yat oyotoyot me pimo cwinye."
+      },
+      "nutrition": {
+        "keywords": [
+          "cam",
+          "dek",
+          "alode",
+          "remo",
+          "yat",
+          "food",
+          "eat"
+        ],
+        "response": "🥗 CAM ME YOTKOM: Cam alode, boo, lakotkot, lapena, odii, ki cam dwe dwe. Mony yat me remo (iron and folic acid) ma kimiyi i ot yat nino ducu wek remo bed ma opong i komi."
+      },
+      "visits": {
+        "keywords": [
+          "ot yat",
+          "anc",
+          "daktari",
+          "cito",
+          "hospital"
+        ],
+        "response": "🏥 CITO I OT YAT (ANC): Citi i ot yat tyen angwen (4) i ic ma itye kwede. Go cim *920# me nongo nino me cito i ot yat meri."
+      }
+    },
+    "default": "Apwoyo tutwal maama! Yotkom meri ki pa litino tye gin madit adada. Itye ki twero me penyo lapiny mo keken i kom gayo pa litino, cam maber, nyo cito i ot yat. Go cim i +256 778 501 066."
+  },
+  "lango": {
+    "name": "Lango (Northern)",
+    "greeting": "Kop ango Maama! Atye kany me konyi i yotkom me ic meri kede me litino ame itye kede. Imito apenya i kom ngo tin?",
+    "placeholder": "Peny lapiny i yotkom me ic...",
+    "listenText": "Winye dwon",
+    "quickChips": [
+      "🚨 Obanga gema",
+      "👶 Kwano gayo pa litino",
+      "🥗 Cam me kelo remo",
+      "🏥 Nino me cito i ot yat"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "gema",
+          "remo",
+          "wiye",
+          "wang",
+          "lyeto",
+          "bleeding",
+          "headache"
+        ],
+        "response": "⚠️ OBANGA GEMA MALELE! Ka icwec remo, wiye obaro atek tutwal kede ceto col me wang, onyo komi olyet atek, wot i ot yat atotot! Pe igal bino cawa mo. Go cim me nono 112 onyo 0800 100 200."
+      },
+      "kicks": {
+        "keywords": [
+          "gayo",
+          "litino",
+          "kwano",
+          "kicks",
+          "move"
+        ],
+        "response": "👶 GAYO PA LITINO: Litino myero ogoy ic tyen apar (10) i kine me cawa aryo ka iweyo. Ka pe tye ka gayo, nyo ogik gayo woko, citi i ot yat wek daktari opim yotkom pa litino."
+      },
+      "nutrition": {
+        "keywords": [
+          "cam",
+          "dek",
+          "alode",
+          "cak",
+          "remo",
+          "food"
+        ],
+        "response": "🥗 CAM ME KONYO REMO: Cam dek cwaa, dek ngor, odii, alode, kede cak. Mwony yat me remo (iron/folic) ame amiyi i ot yat nino ducu wek remo pe dok piny."
+      },
+      "visits": {
+        "keywords": [
+          "ot yat",
+          "anc",
+          "nino",
+          "daktari"
+        ],
+        "response": "🏥 NINO ME CITO I OT YAT: Citi i ot yat tyen angwen (4) i ic ducu. Teere cim i *920# me ngeyo cawa me ot yat."
+      }
+    },
+    "default": "Apwoyo matek maama! Yotkom meri aye gin ma pigere tek tutwal. Peny lapiny i kom yotkom me ic, nino me ot yat, onyo go cim i +256 778 501 066 me lok kede midwife."
+  },
+  "ateso": {
+    "name": "Ateso (Eastern / Teso)",
+    "greeting": "Yoga noi Maama! Eong nesi MaamaCare AI ikepakoni kede aijar kon kede naka ikoku kotoma aberu. Anyoika bo inyikokit jo aisiom lolo?",
+    "placeholder": "Ingit aingiset nako aijar naka ikoku...",
+    "listenText": "Koko eporoto",
+    "quickChips": [
+      "🚨 Agogon naka akalany",
+      "👶 Aikeun naka ikoku",
+      "🥗 Inyamat ka edeka loka aokot",
+      "🏥 Airot ore loka eipone"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "akalany",
+          "aokot",
+          "akou",
+          "akwap",
+          "bleeding",
+          "headache"
+        ],
+        "response": "⚠️ AGOGON NAKA AKALANY! Arai ituru aokot, aipot akou kakwapi kede aitiyo na amoni, arai ekukuni akou noi kede amuranat, kotor ore loka eipone (hospital) atipet! Epedori jo aiyalam simu 112 arai 0800 100 200."
+      },
+      "kicks": {
+        "keywords": [
+          "ikoku",
+          "aikeun",
+          "kicks",
+          "movement"
+        ],
+        "response": "👶 AIKEUN NAKA IKOKU: Isubit ikoku aikeun akon akou irwan itomon (10) kotoma isaawan iarei ka iweiti. Arai mam ikoku ekukuni, kotor ore loka eipone atipet aanyun daktari."
+      },
+      "nutrition": {
+        "keywords": [
+          "inyamat",
+          "edeka",
+          "aokot",
+          "ebwolo",
+          "food"
+        ],
+        "response": "🥗 INYAMAT LUKAJOKAK: Inyam emorot, ebwolo, imare, kede ikiyai. Inyam edeka loka aokot (Iron and Folic Acid) loka apukot nesi ijaikitai ore loka eipone kinyam ka aponi aokot kanu ikoku."
+      },
+      "visits": {
+        "keywords": [
+          "eipone",
+          "ore",
+          "anc",
+          "daktari"
+        ],
+        "response": "🏥 AIROT ORE LOKA EIPONE (ANC): Kolot ore loka eipone irwan iwon (4) kotoma aberu kere. Kooma *920# aanyun apaaran kon nako airot."
+      }
+    },
+    "default": "Eyalama noi maama! Aijar kon kede naka ikoku nesi epol noi. Ingit aingiset kere nako aikeun naka ikoku, inyamat, arai koom simu mama ejaasi ikepakok wok ko +256 778 501 066."
+  },
+  "lugbara": {
+    "name": "Lugbara (West Nile)",
+    "greeting": "Mi ngoni Maama! Ma mini MaamaCare AI, aza koza mini kpere mva mini dria vule. E'yo azi mini ndazu ngo leero?",
+    "placeholder": "Zi e'yo mva kede ali vule...",
+    "listenText": "Eri o'du",
+    "quickChips": [
+      "🚨 E'yo ndri ka",
+      "👶 Mva saza (Kicks)",
+      "🥗 Enya kede aya ari nzeza",
+      "🏥 Muza osipitali sia"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "ndri",
+          "ari",
+          "dri",
+          "aza",
+          "bleeding",
+          "headache",
+          "fever"
+        ],
+        "response": "⚠️ E'YO NDRI KA! Ari ka le'e mi ti vule, dri ka sa nyari-nyari kede mi ma amveza, ko mva ka mu pe ku, mu osipitali sia azo amvu! Zaza simu 112 ko 0800 100 200 awu be ku, ko zaza midwife mini i +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": [
+          "mva",
+          "saza",
+          "pe",
+          "kicks",
+          "movement"
+        ],
+        "response": "👶 MVA SAZA: Mva leke mu sa mudri (10) sawa iri (2) alu ma alea mi ka iwe. Mva ka pe ku ko ka pe mudri ku, mu osipitali sia daktari ma ne mva ma o'du mve."
+      },
+      "nutrition": {
+        "keywords": [
+          "enya",
+          "aya",
+          "ari",
+          "nya",
+          "food"
+        ],
+        "response": "🥗 ENYA NYIRIKO: Nya enya nyiriko be (alode, enva endiirwa), anyapa nya, ebinyebe nya, kede aya ari nzeza (iron and folic acid) mini feza osipitali sia nya o'du dria."
+      },
+      "visits": {
+        "keywords": [
+          "osipitali",
+          "anc",
+          "muza",
+          "daktari"
+        ],
+        "response": "🏥 MUZA OSIPITALI SIA (ANC): Mi mu osipitali sia o'du su (4) ali mini dria. Zaza *920# simu si o'du mini nizu."
+      }
+    },
+    "default": "Awa'difo maama! Yotkom mini be mva mini be nesi e'yo eripi a'dusi. Zi e'yo azi mini lezuri dria, ko zaza daktari mini simu si i +256 778 501 066."
+  },
+  "runyoro": {
+    "name": "Runyoro-Rutooro (Western)",
+    "greeting": "Oraire ota Maama! Ninyowe MaamaCare AI, omuyambi waawe ow'eby'obwomeezi bwawe n'obw'omwana ori munda. Oine kibuuzo ki ekiro kya leero?",
+    "placeholder": "Buuza ekibuuzo kyona...",
+    "listenText": "Huuriza iraka",
+    "quickChips": [
+      "🚨 Obulumuna bw'amaani",
+      "👶 Omwana arikutera ata?",
+      "🥗 Eby'okulya eby'omusaayi",
+      "🏥 Ebiro by'okugenda ha ddwaliro"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "obulumuna",
+          "omusaayi",
+          "omutwe",
+          "amaisho",
+          "bleeding",
+          "headache"
+        ],
+        "response": "⚠️ OBULUMUNA BW'AMAANI! Obworaaba oine omusaayi ogurukukwija, omutwe ogurukukulema oine ebihoho omu maisho, nari omusujja gw'amaani, genda ha ddwaliro erikukira haihi ahonaaho! Nari oteere essimu 112 / 0800 100 200 ey'obwereere."
+      },
+      "kicks": {
+        "keywords": [
+          "kutera",
+          "omwana",
+          "kicks",
+          "movement"
+        ],
+        "response": "👶 OKUTERA KW'OMWANA: Omwana asemerire kutera emirundi ikumi (10) omu saaha ibiri obworaaba orukuhuumura. Obw'araareka kutera, iruka ha ddwaliro abasawo bakebere omutima gwe."
+      },
+      "nutrition": {
+        "keywords": [
+          "kulya",
+          "ebyokulya",
+          "iron",
+          "omusaayi",
+          "food"
+        ],
+        "response": "🥗 EBY'OKULYA: Lya emboga z'ebitakuri, doodo, ebihimba, n'amata. Mira obutole bwa ayoni na ffoliki obw'omusaayi obubakuhaire ha ddwaliro buli kiro."
+      },
+      "visits": {
+        "keywords": [
+          "ddwaliro",
+          "anc",
+          "omusawo",
+          "ebiro"
+        ],
+        "response": "🏥 EBIRO BY'OKUGENDA HA DDWALIRO: Oine kugenda ha ddwaliro emirundi ena (4) omu nda yoona. Teera *920# aha simu yawe kumanya ebiro byawe."
+      }
+    },
+    "default": "Webale muno maama! Obwomeezi bwawe n'obw'omwana nigo b'omugaso gw'amaani. Kumbuuza ekiro kyona nari oteere essimu aha +256 778 501 066."
+  },
+  "lumasaba": {
+    "name": "Lumasaba (Bugisu)",
+    "greeting": "Mulembe Maama! Inze MaamaCare AI, omuyambi wo khulwe bulamu bwoosi n'obwo mwana ori munda. Wangatsile kwi leero khulwe nda yiyo?",
+    "placeholder": "Buuza khulwe bulamu bwoosi...",
+    "listenText": "Wulila lilaka",
+    "quickChips": [
+      "🚨 Kamatsai n'obulabe",
+      "👶 Okhukuba khwo mwana",
+      "🥗 By'okhulia n'eddagala",
+      "🏥 Tsikhabado tsyo mu dwalilo"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "kamatsai",
+          "lilulu",
+          "kamoni",
+          "kamabeka",
+          "bleeding",
+          "headache"
+        ],
+        "response": "⚠️ LUBANGA LULULU! Wakhabona kamatsai kakhuvaamu, omutwe ogukulumina ng'obona kamoni kanyirirala, khenda mu dwalilo mangu mangu! Khuba lisiimu ku 112 naye 0800 100 200 y'obwereere."
+      },
+      "kicks": {
+        "keywords": [
+          "khukuba",
+          "mwana",
+          "kicks",
+          "movement"
+        ],
+        "response": "👶 OKHUKUBA KHWO MWANA: Pima okhukuba khwo mwana. Akube kamasiira likumi (10) mu ssaawa tsibili ng'owumulile. Namaleka okhukuba, khenda mu dwalilo omusawo apime omwoyo gwo mwana."
+      },
+      "nutrition": {
+        "keywords": [
+          "lia",
+          "khulia",
+          "doodo",
+          "kamatsai",
+          "food"
+        ],
+        "response": "🥗 EBY'OKHULIA: Lya lidodo, kamasindwa, biyanjaalo, kamagi, ne matsai. Manya okhunywa kimatwoli kye kamatsai (iron) kye bakhuwelesye mu dwalilo tsikhafu tsyoosi."
+      },
+      "visits": {
+        "keywords": [
+          "dwalilo",
+          "anc",
+          "omusawo",
+          "tsikhabado"
+        ],
+        "response": "🏥 TSIKHABADO TSYO MU DWALILO: Khenda mu dwalilo kamasiira kane (4) mu nda yiyo yoosi. Teera *920# khulwe tsikhabado tsyo."
+      }
+    },
+    "default": "Wanyala naabi maama! Obulamu bwo n'obwo mwana bwebufuna imbeli. Buuza khuri kyosi ky'oyenda kuteera lisiimu ku +256 778 501 066."
+  },
+  "english": {
+    "name": "English (Official)",
+    "greeting": "Hello Mama! I am MaamaCare AI, your maternal and newborn health assistant. How can I help you today with pregnancy signs, fetal kicks, or clinic visits?",
+    "placeholder": "Ask any maternal or baby question...",
+    "listenText": "Listen to Voice",
+    "quickChips": [
+      "🚨 Danger signs in pregnancy",
+      "👶 How to count baby kicks",
+      "🥗 Nutrition & Iron pills",
+      "🏥 Next clinic visit date"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "danger",
+          "bleeding",
+          "headache",
+          "vision",
+          "fever",
+          "swelling",
+          "pain"
+        ],
+        "response": "⚠️ CRITICAL EMERGENCY: If you experience vaginal bleeding, severe unyielding headache with blurred vision, or high fever, go to the nearest health centre immediately! Dial toll-free 112 or 0800 100 200, or call +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": [
+          "kicks",
+          "kick",
+          "movement",
+          "move"
+        ],
+        "response": "👶 BABY KICKS: Rest on your left side after a meal. You should feel at least 10 distinct movements within 2 hours. If movement decreases noticeably, visit your midwife right away."
+      },
+      "nutrition": {
+        "keywords": [
+          "food",
+          "nutrition",
+          "eat",
+          "iron",
+          "greens"
+        ],
+        "response": "🥗 NUTRITION: Eat green vegetables (doodo, nakati), beans, eggs, and take your daily Iron & Folic Acid supplements to build strong maternal blood and support baby development."
+      },
+      "visits": {
+        "keywords": [
+          "visit",
+          "anc",
+          "clinic",
+          "hospital",
+          "appointment"
+        ],
+        "response": "🏥 CLINIC VISITS: The Ministry of Health recommends at least 4 ANC visits. BabyHealth Guard automatically sends SMS reminders, or dial *920# on any phone to check your dates."
+      }
+    },
+    "default": "Thank you Mama! Your health and baby's care are our priority. Ask me about danger signs, counting kicks, or reach our midwife team at +256 778 501 066."
+  },
+  "swahili": {
+    "name": "Kiswahili (East Africa)",
+    "greeting": "Jambo Mama! Mimi ni MaamaCare AI, msaidizi wako wa afya ya uzazi na mtoto. Una swali lolote kuhusu ujauzito au mtoto leo?",
+    "placeholder": "Uliza swali kuhusu ujauzito au mtoto...",
+    "listenText": "Sikiliza sauti",
+    "quickChips": [
+      "🚨 Dalili za hatari",
+      "👶 Mateke ya mtoto",
+      "🥗 Lishe na vidonge vya damu",
+      "🏥 Tarehe ya kliniki"
+    ],
+    "intents": {
+      "danger": {
+        "keywords": [
+          "hatari",
+          "damu",
+          "kichwa",
+          "macho",
+          "homa",
+          "bleeding"
+        ],
+        "response": "⚠️ TAHADHARI YA HATARI! Ukiona damu inatoka, maumivu makali ya kichwa na kutoona vizuri, fika hospitalini haraka! Piga simu ya bure 112 au 0800 100 200, au piga +256 778 501 066."
+      },
+      "kicks": {
+        "keywords": [
+          "mateke",
+          "kucheza",
+          "mtoto",
+          "kicks"
+        ],
+        "response": "👶 MWENENDO WA MTOTO: Mtoto anapaswa kucheza angalau mara 10 ndani ya masaa mawili unapopumzika kwa ubavu wa kushoto."
+      },
+      "nutrition": {
+        "keywords": [
+          "chakula",
+          "lishe",
+          "mboga",
+          "chuma",
+          "food"
+        ],
+        "response": "🥗 LISHE BORA: Kula mboga za kijani kibichi (dodo, mchicha), maharagwe, mayai, na unywe vidonge vya Iron kila siku."
+      },
+      "visits": {
+        "keywords": [
+          "kliniki",
+          "hospitali",
+          "anc"
+        ],
+        "response": "🏥 KLINIKI (ANC): Hudhuria kliniki angalau mara 4. Piga *920# bure kupata tarehe yako."
+      }
+    },
+    "default": "Asante sana mama! Afya yako ndiyo kipaumbele chetu. Uliza kuhusu dalili za hatari, mateke ya mtoto, au piga simu kwa +256 778 501 066."
+  }
+}
