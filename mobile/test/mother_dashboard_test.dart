@@ -56,9 +56,14 @@ void main() {
       pregnancyStage: '4 - 6 Mo',
       parity: 'First Baby (1st)',
       conditions: ['None'],
-      midwifeName: 'Care team',
+      midwifeName: 'Registration Midwife',
       midwifePhone: '+256700000000',
       facilityName: 'Kagando Health Centre',
+      assignedStaffUid: 'staff-1',
+      assignedStaffName: 'Assigned Midwife',
+      assignedStaffPhone: '+256762653272',
+      assignedStaffRole: 'midwife',
+      assignedStaffFacilityName: 'Assigned Health Centre',
     );
 
     await tester.pumpWidget(
@@ -77,7 +82,8 @@ void main() {
     expect(find.text('10 kicks'), findsOneWidget);
     expect(find.text('118 / 76'), findsOneWidget);
     expect(find.text('Iron & Folic'), findsOneWidget);
-    expect(find.text('Care team'), findsOneWidget);
+    expect(find.text('Assigned Midwife'), findsOneWidget);
+    expect(find.text('Assigned Health Centre'), findsOneWidget);
 
     await tester.tap(find.text('+ Log Kick'));
     await tester.pumpAndSettle();

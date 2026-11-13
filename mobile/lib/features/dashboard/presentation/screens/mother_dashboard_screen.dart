@@ -48,6 +48,22 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
       .where((appointment) => appointment.status.toLowerCase() == 'completed')
       .length;
 
+  String? _firstNonEmpty(Iterable<String?> values) {
+    for (final value in values) {
+      final trimmed = value?.trim() ?? '';
+      if (trimmed.isNotEmpty) return trimmed;
+    }
+    return null;
+  }
+
+  bool get _hasAssignedCareTeam =>
+      _firstNonEmpty([
+        widget.profile.assignedStaffUid,
+        widget.profile.assignedStaffName,
+        widget.profile.assignedStaffPhone,
+      ]) !=
+      null;
+
   // Design Token Colors matching Tailwind Config
   static const Color colorBackground = Color(0xFFFAF8FF);
   static const Color colorPrimary = Color(0xFF005A71);
@@ -134,24 +150,34 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
   }
 
   String? get _assignedMidwifePhone {
-    final phone =
-        (widget.profile.assignedStaffPhone ?? widget.profile.midwifePhone ?? '')
-            .trim();
-    return phone.isEmpty ? null : phone;
+    return _firstNonEmpty([
+      widget.profile.assignedStaffPhone,
+      widget.profile.midwifePhone,
+    ]);
   }
 
   String get _careTeamName {
-    final name =
-        widget.profile.assignedStaffName ?? widget.profile.midwifeName ?? '';
-    return name.trim().isEmpty ? 'Care team not assigned' : name;
+    return _firstNonEmpty([
+          widget.profile.assignedStaffName,
+          widget.profile.midwifeName,
+        ]) ??
+        'Care team not assigned';
+  }
+
+  String get _careTeamFacility {
+    return _firstNonEmpty([
+          widget.profile.assignedStaffFacilityName,
+          widget.profile.facilityName,
+        ]) ??
+        'Health facility not assigned';
   }
 
   String? _appointmentContactPhone(Appointment appointment) {
-    final assignedPhone = widget.profile.assignedStaffPhone?.trim() ?? '';
-    if (assignedPhone.isNotEmpty) return assignedPhone;
-    final appointmentPhone = appointment.midwifePhone?.trim() ?? '';
-    if (appointmentPhone.isNotEmpty) return appointmentPhone;
-    return _assignedMidwifePhone;
+    return _firstNonEmpty([
+      widget.profile.assignedStaffPhone,
+      appointment.midwifePhone,
+      widget.profile.midwifePhone,
+    ]);
   }
 
   Future<void> _sendSms(String phoneNumber) async {
@@ -446,9 +472,7 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
             ),
             icon: const Icon(Icons.call, size: 16),
             label: Text(
-              widget.profile.assignedStaffRole == null
-                  ? 'Call Midwife'
-                  : 'Call Care Team',
+              _hasAssignedCareTeam ? 'Call Care Team' : 'Call Midwife',
             ),
           ),
         ],
@@ -1321,9 +1345,9 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
                           ),
                           icon: const Icon(Icons.call_rounded, size: 20),
                           label: Text(
-                            widget.profile.assignedStaffRole == null
-                                ? 'Call Clinic / Midwife'
-                                : 'Call Assigned Care Team',
+                            _hasAssignedCareTeam
+                                ? 'Call Assigned Care Team'
+                                : 'Call Clinic / Midwife',
                             style: const TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 14,
@@ -1850,9 +1874,7 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.profile.assignedStaffRole == null
-                      ? 'YOUR MIDWIFE'
-                      : 'YOUR CARE TEAM',
+                  _hasAssignedCareTeam ? 'YOUR CARE TEAM' : 'YOUR MIDWIFE',
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 10.5,
@@ -1872,9 +1894,7 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
                   ),
                 ),
                 Text(
-                  widget.profile.assignedStaffFacilityName ??
-                      widget.profile.facilityName ??
-                      'Health facility not assigned',
+                  _careTeamFacility,
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 11,

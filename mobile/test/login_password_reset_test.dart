@@ -1,5 +1,6 @@
 import 'package:babyhealth_guard_mobile/features/auth/data/auth_repository.dart';
 import 'package:babyhealth_guard_mobile/features/auth/presentation/screens/login_screen.dart';
+import 'package:babyhealth_guard_mobile/core/constants/app_colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,14 +35,22 @@ void main() {
     final inputDecorations =
         tester.widgetList<InputDecorator>(find.byType(InputDecorator)).toList();
     expect(inputDecorations, hasLength(2));
-    expect(inputDecorations[0].decoration.border, isA<OutlineInputBorder>());
-    expect(inputDecorations[1].decoration.border, isA<OutlineInputBorder>());
+    for (final input in inputDecorations) {
+      expect(input.decoration.enabledBorder, isA<OutlineInputBorder>());
+      expect(input.decoration.focusedBorder, isA<OutlineInputBorder>());
+      expect(input.decoration.filled, isTrue);
+      expect(input.decoration.fillColor, Colors.white);
+      expect(
+        (input.decoration.enabledBorder as OutlineInputBorder).borderSide.color,
+        AppColors.stone400,
+      );
+    }
 
-    final signInButton = find.widgetWithText(FilledButton, 'Sign in');
-    final forgotPasswordLink = find.text('Forgot Password');
+    final passwordField = find.byType(TextFormField).last;
+    final forgotPasswordLink = find.text('Forgot password?');
     expect(
       tester.getTopLeft(forgotPasswordLink).dy,
-      greaterThan(tester.getBottomLeft(signInButton).dy),
+      greaterThan(tester.getBottomLeft(passwordField).dy),
     );
     await tester.enterText(
         find.byType(TextFormField).first, 'mama@example.com');
@@ -77,7 +86,7 @@ void main() {
       MaterialApp(home: LoginScreen(authService: authService)),
     );
 
-    await tester.tap(find.text('Forgot Password'));
+    await tester.tap(find.text('Forgot password?'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Send reset link'));
     await tester.pumpAndSettle();
@@ -94,7 +103,7 @@ void main() {
       MaterialApp(home: LoginScreen(authService: authService)),
     );
 
-    await tester.tap(find.text('Forgot Password'));
+    await tester.tap(find.text('Forgot password?'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField).last, 'mama@example.com');
     await tester.tap(find.text('Send reset link'));
