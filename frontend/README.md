@@ -57,7 +57,15 @@ The SMS/USSD screen keeps USSD as a local simulator. Africa's Talking acceptance
 not carrier delivery confirmation. Outbound SMS uses only the server-side
 `AFRICASTALKING_USERNAME` and `AFRICASTALKING_API_KEY`; the app does not set a sender
 ID. Sending without a custom sender ID still depends on Africa's Talking account
-permissions and destination-country rules.
+permissions and destination-country rules. When a mother has an assigned staff
+member with a name and phone, every outbound SMS includes that contact and the
+staff member's current facility when available.
+
+Administrators can monitor the live Africa's Talking balance, SMS counts, recent
+activity, and estimated costs in **Settings → SMS billing & usage**. The billing
+API requires an admin account and keeps provider credentials on the server. Costs
+are estimates at UGX 25 per SMS segment; GSM-7 and Unicode segment capacities are
+accounted for, and estimated remaining messages assumes one segment per message.
 
 The reminder route is `POST /api/sms/reminders`; configure an external scheduler to
 call it with `Authorization: Bearer <SMS_REMINDER_CRON_SECRET>`. Reminders do not

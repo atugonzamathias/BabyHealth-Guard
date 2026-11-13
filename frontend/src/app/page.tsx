@@ -15,6 +15,7 @@ import { Referrals } from "@/components/referrals";
 import { Reports } from "@/components/reports";
 import { MaamaCareAssistant } from "@/components/maamacare-assistant";
 import { MotherCareAssignment } from "@/components/mother-care-assignment";
+import { SmsBilling } from "@/components/sms-billing";
 import {
   createMotherAppointment,
   updateMotherAppointmentStatus,
@@ -1631,6 +1632,8 @@ function AdminSettings() {
           </ul>
         )}
       </section>
+
+      <SmsBilling />
     </section>
   );
 }

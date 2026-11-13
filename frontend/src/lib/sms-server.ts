@@ -1,9 +1,49 @@
 import "server-only";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, type DocumentData } from "firebase-admin/firestore";
 import { ApiAuthError } from "@/lib/api-auth";
 import { getAdminDb } from "@/lib/firebase-admin";
+import { estimateSmsCost, smsSegmentCount } from "@/lib/sms-metrics";
 
 type SmsStatus = "accepted" | "failed";
+const STAFF_ROLES = new Set([
+  "doctor",
+  "admin",
+  "health_worker",
+  "health worker",
+  "nurse",
+  "midwife",
+]);
+
+function text(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+async function assignedStaffContact(
+  profile: DocumentData,
+): Promise<string> {
+  const staffUid = text(profile.assignedStaffUid);
+  let assignedStaff: DocumentData | undefined;
+
+  if (/^[A-Za-z0-9_-]{1,128}$/.test(staffUid)) {
+    const snapshot = await getAdminDb().doc(`users/${staffUid}`).get();
+    const staffProfile = snapshot.data();
+    if (
+      snapshot.exists &&
+      staffProfile?.disabled !== true &&
+      STAFF_ROLES.has(text(staffProfile?.role).toLowerCase())
+    ) {
+      assignedStaff = staffProfile;
+    }
+  }
+
+  const name = text(assignedStaff?.fullName) || text(profile.assignedStaffName);
+  const phone = text(assignedStaff?.phone) || text(profile.assignedStaffPhone);
+  const facility =
+    text(assignedStaff?.facilityName) || text(profile.assignedStaffFacilityName);
+  if (!name || !phone) return "";
+
+  return `\nYour assigned health worker: ${name}, ${phone}${facility ? ` (${facility})` : ""}.`;
+}
 
 export async function sendSmsToMother({
   motherUid,
@@ -42,27 +82,65 @@ export async function sendSmsToMother({
     );
   }
 
+  const finalMessage = `${message}${await assignedStaffContact(profile)}`;
   const apiKey = process.env.AFRICASTALKING_API_KEY;
   const username = process.env.AFRICASTALKING_USERNAME?.trim();
-  if (!apiKey || !username) {
-    throw new ApiAuthError("Africa's Talking is not configured on the server.", 503);
-  }
-
-  const logRef = motherRef.collection("smsLogs").doc();
-  const logBase = {
+  const db = getAdminDb();
+  const logId = motherRef.collection("smsLogs").doc().id;
+  const logEntry = {
+    motherUid,
+    recipient: phone,
     direction: "outbound",
-    message,
+    message: finalMessage,
     category,
     provider: "africas_talking",
     sentBy,
+    providerMessageId: null,
     consentConfirmed: true,
+    segmentCount: smsSegmentCount(finalMessage),
     consentRecordedAt: FieldValue.serverTimestamp(),
     createdAt: FieldValue.serverTimestamp(),
   };
-  const body = new URLSearchParams({ username, to: phone, message });
+  const nestedLogRef = motherRef.collection("smsLogs").doc(logId);
+  const billingLogRef = db.collection("sms_logs").doc(logId);
+  const writeLogs = async (
+    status: "accepted" | "failed",
+    extras: Record<string, unknown> = {},
+  ) => {
+    const entry = {
+      ...logEntry,
+      ...extras,
+      status,
+      cost: estimateSmsCost(finalMessage, status),
+    };
+    const batch = db.batch();
+    batch.set(nestedLogRef, entry);
+    batch.set(billingLogRef, entry);
+    await batch.commit();
+  };
+  if (!apiKey || !username) {
+    await writeLogs("failed", {
+      error: "Africa's Talking is not configured on the server.",
+    });
+    throw new ApiAuthError("Africa's Talking is not configured on the server.", 503);
+  }
 
+  const body = new URLSearchParams({ username, to: phone, message: finalMessage });
+
+  let response: Response;
+  let result:
+    | {
+        SMSMessageData?: {
+          Recipients?: Array<{
+            statusCode?: number | string;
+            messageId?: string;
+            status?: string;
+          }>;
+        };
+      }
+    | null;
   try {
-    const response = await fetch("https://api.africastalking.com/version1/messaging", {
+    response = await fetch("https://api.africastalking.com/version1/messaging", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -73,44 +151,30 @@ export async function sendSmsToMother({
       cache: "no-store",
       signal: AbortSignal.timeout(15_000),
     });
-    const result = (await response.json().catch(() => null)) as
-      | {
-          SMSMessageData?: {
-            Recipients?: Array<{
-              statusCode?: number | string;
-              messageId?: string;
-              status?: string;
-            }>;
-          };
-        }
-      | null;
-    const recipient = result?.SMSMessageData?.Recipients?.[0];
-    if (
-      !response.ok ||
-      !recipient ||
-      (String(recipient.statusCode) !== "101" &&
-        String(recipient.status).toLowerCase() !== "success")
-    ) {
-      await logRef.set({
-        ...logBase,
-        status: "failed",
-        providerStatus: recipient?.status ?? `HTTP ${response.status}`,
-      });
-      return { status: "failed" };
-    }
-
-    await logRef.set({
-      ...logBase,
-      status: "accepted",
-      providerMessageId: recipient.messageId ?? null,
-    });
-    return { status: "accepted", providerMessageId: recipient.messageId };
+    result = (await response.json().catch(() => null)) as typeof result;
   } catch (error) {
-    await logRef.set({
-      ...logBase,
-      status: "failed",
+    await writeLogs("failed", {
       error: error instanceof Error ? error.message.slice(0, 200) : "SMS request failed",
     });
     throw error;
   }
+
+  const recipient = result?.SMSMessageData?.Recipients?.[0];
+  if (
+    !response.ok ||
+    !recipient ||
+    (String(recipient.statusCode) !== "101" &&
+      String(recipient.status).toLowerCase() !== "success")
+  ) {
+    await writeLogs("failed", {
+      providerStatus: recipient?.status ?? `HTTP ${response.status}`,
+      providerMessageId: recipient?.messageId ?? null,
+    });
+    return { status: "failed" };
+  }
+
+  await writeLogs("accepted", {
+    providerMessageId: recipient.messageId ?? null,
+  });
+  return { status: "accepted", providerMessageId: recipient.messageId };
 }

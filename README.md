@@ -39,8 +39,14 @@ before live sending.
 
 The staff-authenticated `/api/sms` route loads the mother's phone from Firestore,
 requires the staff member to confirm consent, sends via Africa's Talking, and logs
-provider acceptance/failure in `users/{motherUid}/smsLogs`. Appointment creation and
-status updates are also handled server-side. The protected
+provider acceptance/failure in `users/{motherUid}/smsLogs`. When an assigned staff
+member has a name and phone number, all outbound SMS include their contact details
+and facility (when available); the current staff profile is fetched when sending.
+Administrators can view the Africa's Talking wallet and estimated SMS usage in
+**Settings**. The protected billing endpoint reads the live balance server-side and
+combines new `sms_logs` entries with existing per-mother SMS history. Message costs
+are estimates at UGX 25 per segment, using GSM-7 and Unicode SMS segment limits.
+Appointment creation and status updates are also handled server-side. The protected
 `POST /api/sms/reminders` endpoint processes due appointment reminders; configure an
 external scheduler to call it with `Authorization: Bearer <SMS_REMINDER_CRON_SECRET>`
 (for example, once per minute). A Next.js API route is not itself a scheduler, so
