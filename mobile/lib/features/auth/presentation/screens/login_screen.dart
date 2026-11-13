@@ -262,7 +262,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.email],
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
                     validator: AppValidators.email,
                   ),
                   const SizedBox(height: 14),
@@ -271,18 +274,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     obscureText: true,
                     textInputAction: TextInputAction.done,
                     autofillHints: const [AutofillHints.password],
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                    ),
                     validator: (value) => value == null || value.isEmpty
                         ? 'Password is required'
                         : null,
                     onFieldSubmitted: (_) => _signIn(),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: _isLoading ? null : _showForgotPasswordDialog,
-                      child: const Text('Forgot password?'),
-                    ),
                   ),
                   if (_errorMessage != null) ...[
                     const SizedBox(height: 12),
@@ -302,6 +301,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Text('Sign in'),
+                  ),
+                  TextButton(
+                    onPressed: _isLoading ? null : _showForgotPasswordDialog,
+                    child: const Text('Forgot Password'),
                   ),
                   TextButton(
                     onPressed: () =>

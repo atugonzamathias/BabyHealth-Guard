@@ -42,9 +42,12 @@ class _MaamaCareAssistantSheetState extends State<MaamaCareAssistantSheet> {
   }
 
   void _changeLanguage(MaamaCareLanguage language) {
+    unawaited(_speechToText.cancel());
     setState(() {
       _languageKey = language.key;
       _messages = [_ChatMessage(isUser: false, text: language.greeting)];
+      _isListening = false;
+      _speechNotice = '';
     });
   }
 
@@ -76,10 +79,11 @@ class _MaamaCareAssistantSheetState extends State<MaamaCareAssistantSheet> {
 
   Future<void> _speak(String text, String languageKey) async {
     try {
+      await _textToSpeech.stop();
       await _textToSpeech.setLanguage(
         languageKey == 'swahili' ? 'sw-KE' : 'en-UG',
       );
-      await _textToSpeech.setSpeechRate(0.45);
+      await _textToSpeech.setSpeechRate(0.93);
       await _textToSpeech.speak(text.replaceAll(RegExp(r'[⚠️👶🥗🏥🤱🚨]'), ''));
     } catch (_) {
       if (!mounted) return;
@@ -91,7 +95,7 @@ class _MaamaCareAssistantSheetState extends State<MaamaCareAssistantSheet> {
     }
   }
 
-  Future<void> _toggleVoiceInput() async {
+  Future<void> _toggleVoiceInput(MaamaCareLanguage language) async {
     if (_speechToText.isListening) {
       await _speechToText.stop();
       if (mounted) setState(() => _isListening = false);
@@ -128,18 +132,21 @@ class _MaamaCareAssistantSheetState extends State<MaamaCareAssistantSheet> {
           localeId: 'en_UG',
           listenFor: const Duration(seconds: 25),
           pauseFor: const Duration(seconds: 3),
-          partialResults: true,
+          partialResults: false,
         ),
         onResult: (result) {
           if (!mounted) return;
-          setState(() {
-            _questionController.value = TextEditingValue(
-              text: result.recognizedWords,
-              selection: TextSelection.collapsed(
-                offset: result.recognizedWords.length,
-              ),
-            );
-          });
+          if (!result.finalResult) return;
+          final transcript = result.recognizedWords.trim();
+          if (transcript.isEmpty) {
+            setState(() {
+              _isListening = false;
+              _speechNotice = 'No speech was recognized. Please try again.';
+            });
+            return;
+          }
+          setState(() => _isListening = false);
+          _sendMessage(transcript, language);
         },
       );
     } catch (error) {
@@ -424,6 +431,7 @@ class _MaamaCareAssistantSheetState extends State<MaamaCareAssistantSheet> {
                       children: [
                         Expanded(
                           child: TextField(
+                            key: const ValueKey('maamacare-question-input'),
                             controller: _questionController,
                             textInputAction: TextInputAction.send,
                             onSubmitted: (text) => _sendMessage(text, language),
@@ -443,7 +451,7 @@ class _MaamaCareAssistantSheetState extends State<MaamaCareAssistantSheet> {
                           tooltip: _isListening
                               ? 'Stop voice input'
                               : 'Speak a question in English',
-                          onPressed: _toggleVoiceInput,
+                          onPressed: () => _toggleVoiceInput(language),
                           color: _isListening ? Colors.red.shade700 : _primary,
                           icon: Icon(
                             _isListening ? Icons.mic : Icons.mic_none,
@@ -452,10 +460,12 @@ class _MaamaCareAssistantSheetState extends State<MaamaCareAssistantSheet> {
                         const SizedBox(width: 8),
                         IconButton.filled(
                           tooltip: 'Send question',
-                          onPressed: () => _sendMessage(
-                            _questionController.text,
-                            language,
-                          ),
+                          onPressed: _questionController.text.trim().isEmpty
+                              ? null
+                              : () => _sendMessage(
+                                    _questionController.text,
+                                    language,
+                                  ),
                           icon: const Icon(Icons.send_rounded),
                           style: IconButton.styleFrom(
                             backgroundColor: _primary,

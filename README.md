@@ -31,8 +31,11 @@ Copy `frontend/.env.example` to `frontend/.env.local` and set the Firebase Admin
 service-account JSON, `AFRICASTALKING_USERNAME`, `AFRICASTALKING_API_KEY`, and
 `SMS_REMINDER_CRON_SECRET` there. Set the same values as server-side environment
 variables on the Next.js hosting provider. These values must not use a
-`NEXT_PUBLIC_` prefix or be committed. The key previously shared in chat should be
-revoked and rotated before live sending.
+`NEXT_PUBLIC_` prefix or be committed. Outbound SMS uses only the Africa's Talking
+username and API key; no sender ID is required or sent by the app. Confirm that your
+Africa's Talking account is authorized to send without a custom sender ID in your
+destination country. The key previously shared in chat should be revoked and rotated
+before live sending.
 
 The staff-authenticated `/api/sms` route loads the mother's phone from Firestore,
 requires the staff member to confirm consent, sends via Africa's Talking, and logs

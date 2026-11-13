@@ -133,6 +133,19 @@ void main() {
             'General information only—not a diagnosis. If you may be in danger, seek care now or call 112.'),
         findsOneWidget);
     expect(find.text('Call emergency line 112'), findsOneWidget);
+    await tester.tap(find.text("🚨 Obubonero obw'obulabe"));
+    await tester.pumpAndSettle();
+    expect(find.textContaining("⚠️ OBULABE OBW'AMANGU!"), findsOneWidget);
+
+    await tester.enterText(
+      find.byKey(const ValueKey('maamacare-question-input')),
+      'I am bleeding',
+    );
+    await tester.tap(find.byTooltip('Send question'));
+    await tester.pumpAndSettle();
+    expect(find.text('I am bleeding'), findsOneWidget);
+    expect(find.textContaining("⚠️ OBULABE OBW'AMANGU!"), findsOneWidget);
+
     await tester.tap(find.byTooltip('Close MaamaCare'));
     await tester.pumpAndSettle();
   });

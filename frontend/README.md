@@ -54,7 +54,10 @@ in the mother's Firestore subcollections. Live SMS and appointment mutations use
 staff-authenticated Next.js API routes and Firebase Admin SDK on the server. Phone
 numbers are read from the mother profile; the browser never supplies the recipient.
 The SMS/USSD screen keeps USSD as a local simulator. Africa's Talking acceptance is
-not carrier delivery confirmation.
+not carrier delivery confirmation. Outbound SMS uses only the server-side
+`AFRICASTALKING_USERNAME` and `AFRICASTALKING_API_KEY`; the app does not set a sender
+ID. Sending without a custom sender ID still depends on Africa's Talking account
+permissions and destination-country rules.
 
 The reminder route is `POST /api/sms/reminders`; configure an external scheduler to
 call it with `Authorization: Bearer <SMS_REMINDER_CRON_SECRET>`. Reminders do not

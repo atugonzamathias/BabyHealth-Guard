@@ -60,8 +60,6 @@ export async function sendSmsToMother({
     createdAt: FieldValue.serverTimestamp(),
   };
   const body = new URLSearchParams({ username, to: phone, message });
-  const senderId = process.env.AFRICASTALKING_SENDER_ID?.trim();
-  if (senderId) body.set("from", senderId);
 
   try {
     const response = await fetch("https://api.africastalking.com/version1/messaging", {

@@ -31,9 +31,21 @@ void main() {
       MaterialApp(home: LoginScreen(authService: authService)),
     );
 
+    final inputDecorations =
+        tester.widgetList<InputDecorator>(find.byType(InputDecorator)).toList();
+    expect(inputDecorations, hasLength(2));
+    expect(inputDecorations[0].decoration.border, isA<OutlineInputBorder>());
+    expect(inputDecorations[1].decoration.border, isA<OutlineInputBorder>());
+
+    final signInButton = find.widgetWithText(FilledButton, 'Sign in');
+    final forgotPasswordLink = find.text('Forgot Password');
+    expect(
+      tester.getTopLeft(forgotPasswordLink).dy,
+      greaterThan(tester.getBottomLeft(signInButton).dy),
+    );
     await tester.enterText(
         find.byType(TextFormField).first, 'mama@example.com');
-    await tester.tap(find.text('Forgot password?'));
+    await tester.tap(forgotPasswordLink);
     await tester.pumpAndSettle();
 
     expect(find.text('Reset your password'), findsOneWidget);
@@ -65,7 +77,7 @@ void main() {
       MaterialApp(home: LoginScreen(authService: authService)),
     );
 
-    await tester.tap(find.text('Forgot password?'));
+    await tester.tap(find.text('Forgot Password'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Send reset link'));
     await tester.pumpAndSettle();
@@ -82,7 +94,7 @@ void main() {
       MaterialApp(home: LoginScreen(authService: authService)),
     );
 
-    await tester.tap(find.text('Forgot password?'));
+    await tester.tap(find.text('Forgot Password'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField).last, 'mama@example.com');
     await tester.tap(find.text('Send reset link'));
