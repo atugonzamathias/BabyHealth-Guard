@@ -53,8 +53,9 @@ Newborn records, check-up history, referrals, appointments, and SMS logs are sto
 in the mother's Firestore subcollections. Live SMS and appointment mutations use
 staff-authenticated Next.js API routes and Firebase Admin SDK on the server. Phone
 numbers are read from the mother profile; the browser never supplies the recipient.
-The **SMS & USSD** screen retains a local-only USSD simulator. Africa's Talking
-acceptance is not carrier delivery confirmation. Outbound SMS uses only the server-side
+The **SMS & USSD** screen provides live staff-initiated SMS; mothers use the
+Africa's Talking short code for USSD. Africa's Talking acceptance is not carrier
+delivery confirmation. Outbound SMS uses only the server-side
 `AFRICASTALKING_USERNAME` and `AFRICASTALKING_API_KEY`; the app does not set a sender
 ID. Sending without a custom sender ID still depends on Africa's Talking account
 permissions and destination-country rules. When a mother has an assigned staff

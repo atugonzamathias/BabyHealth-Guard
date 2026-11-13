@@ -67,9 +67,8 @@ Mother lookup uses `users/{uid}` profiles with `role: "mother"` and their
 international or local Uganda phone number. Visit requests are stored in the
 `ussd_requests` collection and appear in the admin **Settings** tab. Danger signs
 are recorded in each mother's `healthLogs`; an urgent SMS is sent to the assigned
-staff phone when available. The **SMS & USSD** tab still includes a local-only
-simulator for demonstration; use the Africa's Talking short code to test the live
-callback.
+staff phone when available. The **SMS & USSD** tab no longer includes a local
+simulator; use the Africa's Talking short code on a phone to test the live callback.
 
 Deploy only Firestore rules and indexes with:
 

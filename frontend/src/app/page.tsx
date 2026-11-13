@@ -594,7 +594,7 @@ export default function Home() {
             staffUid={session.user.uid}
           />
         ) : activeView === "communications" ? (
-          <Communications appointments={appointments} mothers={mothers} smsLogs={smsLogs} />
+          <Communications mothers={mothers} smsLogs={smsLogs} />
         ) : (
           <Reports
             appointments={appointments}
