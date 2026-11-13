@@ -1693,9 +1693,7 @@ function AppointmentManager({
 
   const selectedMotherUid = mothers.some((mother) => mother.uid === motherUid)
     ? motherUid
-    : mothers.some((mother) => mother.uid === initialMotherUid)
-      ? initialMotherUid
-      : (mothers[0]?.uid ?? "");
+    : "";
   const selectedMother = mothers.find((mother) => mother.uid === selectedMotherUid);
   const scheduledDate = new Date(scheduledAt);
   const remainingMilliseconds = scheduledDate.getTime() - currentTime.getTime();
@@ -1772,6 +1770,12 @@ function AppointmentManager({
         reminderMinutes,
         sendSms,
       });
+      setMotherUid("");
+      setType(APPOINTMENT_TYPES[0].value);
+      setScheduledAt(defaultAppointmentDate());
+      setReminderMinutes(60);
+      setSendSms(false);
+      setClinic("");
       setAgenda("");
       setNotice(
         result.confirmationStatus === "accepted"
@@ -1980,7 +1984,7 @@ function AppointmentManager({
               required
               value={selectedMotherUid}
             >
-              <option value="" disabled>Select a mother</option>
+              <option value="">Select a mother</option>
               {mothers.map((mother) => (
                 <option key={mother.uid} value={mother.uid}>
                   {mother.fullName}
