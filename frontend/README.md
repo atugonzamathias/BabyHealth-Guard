@@ -1,7 +1,7 @@
 # BabyHealth Guard Health Worker Dashboard
 
 The Next.js dashboard in `src/` supports staff sign-in, mother records, newborn care,
-appointments, referrals, SMS messaging, USSD simulation, and operational reports.
+appointments, referrals, SMS messaging, a live USSD callback, and operational reports.
 
 ## Run locally
 
@@ -53,8 +53,8 @@ Newborn records, check-up history, referrals, appointments, and SMS logs are sto
 in the mother's Firestore subcollections. Live SMS and appointment mutations use
 staff-authenticated Next.js API routes and Firebase Admin SDK on the server. Phone
 numbers are read from the mother profile; the browser never supplies the recipient.
-The SMS/USSD screen keeps USSD as a local simulator. Africa's Talking acceptance is
-not carrier delivery confirmation. Outbound SMS uses only the server-side
+The **SMS & USSD** screen retains a local-only USSD simulator. Africa's Talking
+acceptance is not carrier delivery confirmation. Outbound SMS uses only the server-side
 `AFRICASTALKING_USERNAME` and `AFRICASTALKING_API_KEY`; the app does not set a sender
 ID. Sending without a custom sender ID still depends on Africa's Talking account
 permissions and destination-country rules. When a mother has an assigned staff
@@ -74,3 +74,15 @@ environment-variable setup and deployment steps.
 
 Never put service-account credentials, `AFRICASTALKING_API_KEY`, or the scheduler
 secret in `NEXT_PUBLIC_*` variables or browser code.
+
+## Africa's Talking USSD callback
+
+Set the callback URL in Africa's Talking to
+`https://babyhealth-guard.onrender.com/api/ussd` and the service code to
+`*384*24073#`. The public `POST /api/ussd` route accepts form-encoded gateway
+requests and returns `CON`/`END` plain-text responses with HTTP 200. It uses
+Firebase Admin credentials and the existing server-only Africa's Talking username
+and API key. Mothers are matched from `users/{uid}` documents with `role: "mother"`;
+visit requests are queued in `ussd_requests` for admins in **Settings**, and urgent
+reports are written to the mother's `healthLogs` and sent by SMS to assigned staff
+when a valid phone is available.

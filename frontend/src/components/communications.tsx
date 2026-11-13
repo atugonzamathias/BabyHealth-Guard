@@ -82,7 +82,7 @@ export function Communications({ mothers, appointments, smsLogs }: Props) {
   function dialUssd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setUssdReply("");
-    if (ussdInput.trim() !== "*920#") {
+    if (ussdInput.trim() !== "*384*24073#") {
       setUssdScreen("invalid");
       return;
     }
@@ -132,7 +132,7 @@ export function Communications({ mothers, appointments, smsLogs }: Props) {
       <div className="grid gap-3 sm:grid-cols-3">
         <Metric label="Registered mothers" value={mothers.length} />
         <Metric label="Outbound SMS log entries" value={outboundCount} />
-        <Metric label="USSD short code (simulator)" value="*920#" />
+        <Metric label="USSD short code" value="*384*24073#" />
       </div>
 
       <div className="grid items-start gap-5 xl:grid-cols-2">
@@ -231,7 +231,7 @@ export function Communications({ mothers, appointments, smsLogs }: Props) {
                 </div>
               ) : (
                 <p className="text-sm text-slate-700">
-                  {ussdReply || (ussdScreen === "invalid" ? "Invalid code. Dial *920# to start the demo." : ussdScreen === "ended" ? "Session ended." : "Enter *920# to open the simulated menu.")}
+                  {ussdReply || (ussdScreen === "invalid" ? "Invalid code. Dial *384*24073# to start the demo." : ussdScreen === "ended" ? "Session ended." : "Enter *384*24073# to open the simulated menu.")}
                 </p>
               )}
               {ussdReply && ussdScreen === "menu" && (
@@ -239,7 +239,7 @@ export function Communications({ mothers, appointments, smsLogs }: Props) {
               )}
             </div>
             <form className="mt-3 flex gap-2" onSubmit={dialUssd}>
-              <input aria-label="USSD code to simulate" className="min-w-0 flex-1 rounded-lg px-3 py-2 text-sm" onChange={(event) => setUssdInput(event.target.value)} placeholder="*920#" value={ussdInput} />
+              <input aria-label="USSD code to simulate" className="min-w-0 flex-1 rounded-lg px-3 py-2 text-sm" onChange={(event) => setUssdInput(event.target.value)} placeholder="*384*24073#" value={ussdInput} />
               <button className="rounded-lg bg-cyan-700 px-3 py-2 text-sm font-semibold text-white" type="submit">Dial</button>
             </form>
           </div>

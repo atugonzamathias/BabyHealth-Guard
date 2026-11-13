@@ -16,6 +16,7 @@ import { Reports } from "@/components/reports";
 import { MaamaCareAssistant } from "@/components/maamacare-assistant";
 import { MotherCareAssignment } from "@/components/mother-care-assignment";
 import { SmsBilling } from "@/components/sms-billing";
+import { UssdRequests } from "@/components/ussd-requests";
 import {
   createMotherAppointment,
   updateMotherAppointmentStatus,
@@ -1634,6 +1635,7 @@ function AdminSettings() {
       </section>
 
       <SmsBilling />
+      <UssdRequests />
     </section>
   );
 }

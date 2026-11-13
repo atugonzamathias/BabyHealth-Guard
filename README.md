@@ -6,7 +6,7 @@ Digital maternal and newborn health monitoring system (MVP).
 - The migrated Next.js/TypeScript dashboard is in `frontend/src/`; `frontend/index.html` remains as a legacy behavior/layout reference.
 - Configure Firebase Web values in `frontend/.env.local` using `frontend/.env.example` as a template.
 - From `frontend/`, run `npm install` and `npm run dev`.
-- The Next.js dashboard supports Firebase staff sign-in, mother records, newborn care, appointment management, patient referrals, SMS messaging, USSD simulation, and operational analytics.
+- The Next.js dashboard supports Firebase staff sign-in, mother records, newborn care, appointment management, patient referrals, SMS messaging, a live USSD callback, and operational analytics.
 - Staff accounts must be provisioned in Firebase Authentication with a corresponding `users/{uid}` profile containing an approved staff `role`. Public staff self-registration is not enabled.
 - Deploy the access rules in `mobile/firestore.rules` before using real patient records.
 - Live SMS and appointment writes use authenticated Next.js API routes. No Firebase Functions or Cloud Storage are required.
@@ -51,7 +51,25 @@ Appointment creation and status updates are also handled server-side. The protec
 external scheduler to call it with `Authorization: Bearer <SMS_REMINDER_CRON_SECRET>`
 (for example, once per minute). A Next.js API route is not itself a scheduler, so
 reminders will not run until a scheduler is configured. Provider acceptance is not
-proof of handset delivery. USSD remains a local simulator.
+proof of handset delivery.
+
+## Africa's Talking USSD setup
+
+Configure the Africa's Talking USSD callback URL as
+`https://babyhealth-guard.onrender.com/api/ussd` and use the service code
+`*384*24073#`. The webhook is a public `POST` route that accepts Africa's Talking
+form-encoded requests and always responds with plain text and HTTP 200. It uses
+Firebase Admin credentials and the server-side `AFRICASTALKING_USERNAME` and
+`AFRICASTALKING_API_KEY` values already required for SMS. Keep those credentials
+server-only.
+
+Mother lookup uses `users/{uid}` profiles with `role: "mother"` and their
+international or local Uganda phone number. Visit requests are stored in the
+`ussd_requests` collection and appear in the admin **Settings** tab. Danger signs
+are recorded in each mother's `healthLogs`; an urgent SMS is sent to the assigned
+staff phone when available. The **SMS & USSD** tab still includes a local-only
+simulator for demonstration; use the Africa's Talking short code to test the live
+callback.
 
 Deploy only Firestore rules and indexes with:
 
