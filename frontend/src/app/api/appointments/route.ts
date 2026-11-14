@@ -85,6 +85,8 @@ export async function POST(request: Request) {
       sendConfirmation: sendSms,
       smsConsentConfirmed: sendSms && consentConfirmed,
       confirmationStatus: sendSms ? "queued" : "disabled",
+      confirmationSmsSent: false,
+      confirmationSmsSending: false,
       createdBy: context.uid,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
@@ -92,6 +94,24 @@ export async function POST(request: Request) {
 
     let confirmationStatus: "accepted" | "failed" | "disabled" = "disabled";
     if (sendSms) {
+      const confirmationClaimed = await getAdminDb().runTransaction(async (transaction) => {
+        const current = await transaction.get(appointmentRef);
+        if (!current.exists || current.data()?.confirmationSmsSent === true ||
+            current.data()?.confirmationSmsSending === true) {
+          return false;
+        }
+        transaction.update(appointmentRef, {
+          confirmationSmsSending: true,
+          confirmationAttemptedAt: FieldValue.serverTimestamp(),
+        });
+        return true;
+      });
+      if (!confirmationClaimed) {
+        return Response.json(
+          { appointmentId: appointmentRef.id, confirmationStatus: "failed" },
+          { status: 409 },
+        );
+      }
       const dateText = scheduledAt.toDate().toLocaleString("en-UG", {
         dateStyle: "medium",
         timeStyle: "short",
@@ -113,6 +133,8 @@ export async function POST(request: Request) {
       await appointmentRef.update({
         confirmationStatus,
         confirmationUpdatedAt: FieldValue.serverTimestamp(),
+        confirmationSmsSent: confirmationStatus === "accepted",
+        confirmationSmsSending: false,
       });
     }
     return Response.json({ appointmentId: appointmentRef.id, confirmationStatus });

@@ -71,6 +71,11 @@ ID. Sending without a custom sender ID still depends on Africa's Talking account
 permissions and destination-country rules. When a mother has an assigned staff
 member with a name and phone, every outbound SMS includes that contact and the
 staff member's current facility when available.
+Messages are rendered as one GSM-7 segment with a maximum of 160 septets;
+unsupported characters are replaced with `?`, and dynamic details are shortened
+before sending. Set `AT_SENDER_ID` only after registering that sender ID with
+Africa's Talking; when it is empty, the request omits `from` and uses the
+provider's default sender.
 Configure Africa's Talking to post delivery reports to
 `/api/sms/delivery?token=<SMS_DELIVERY_CALLBACK_SECRET>`. The callback updates each
 matching SMS log with the provider's final delivery status. A message shown as

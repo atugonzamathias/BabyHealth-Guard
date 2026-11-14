@@ -39,6 +39,7 @@ export async function POST(request: Request) {
       if (
         !current.exists ||
         data?.reminderStatus !== "pending" ||
+        data?.reminderSmsSent === true ||
         !(reminderAt instanceof Timestamp) ||
         reminderAt.toMillis() > Date.now()
       ) {
@@ -92,6 +93,7 @@ export async function POST(request: Request) {
       });
       await appointmentRef.update({
         reminderStatus: result.status,
+        reminderSmsSent: result.status === "accepted",
         reminderUpdatedAt: FieldValue.serverTimestamp(),
       });
       if (result.status === "accepted") accepted += 1;

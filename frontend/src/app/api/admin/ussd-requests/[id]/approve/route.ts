@@ -115,6 +115,9 @@ export async function POST(
       sendConfirmation: true,
       smsConsentConfirmed: true,
       confirmationStatus: "queued",
+      confirmationSmsSent: false,
+      confirmationSmsSending: false,
+      reminderSmsSent: false,
       createdBy: context.uid,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
@@ -149,19 +152,38 @@ export async function POST(
     });
     let confirmationStatus: "accepted" | "failed" = "failed";
     try {
-      const result = await sendSmsToMother({
-        motherUid,
-        message: `BabyHealth Guard: Your ${type.toLowerCase()} visit is scheduled for ${dateText} at ${clinic}. Please keep your phone nearby.`,
-        category: "ussd_appointment_confirmation",
-        sentBy: context.uid,
-        consentConfirmed: true,
+      const confirmationClaimed = await db.runTransaction(async (transaction) => {
+        const current = await transaction.get(appointmentRef);
+        if (
+          !current.exists ||
+          current.data()?.confirmationSmsSent === true ||
+          current.data()?.confirmationSmsSending === true
+        ) {
+          return false;
+        }
+        transaction.update(appointmentRef, {
+          confirmationSmsSending: true,
+          confirmationAttemptedAt: FieldValue.serverTimestamp(),
+        });
+        return true;
       });
-      confirmationStatus = result.status;
+      if (confirmationClaimed) {
+        const result = await sendSmsToMother({
+          motherUid,
+          message: `BabyHealth Guard: Your ${type.toLowerCase()} visit is scheduled for ${dateText} at ${clinic}. Please keep your phone nearby.`,
+          category: "ussd_appointment_confirmation",
+          sentBy: context.uid,
+          consentConfirmed: true,
+        });
+        confirmationStatus = result.status;
+      }
     } catch (error) {
       console.error("USSD appointment confirmation could not be sent", error);
     }
     await appointmentRef.update({
       confirmationStatus,
+      confirmationSmsSent: confirmationStatus === "accepted",
+      confirmationSmsSending: false,
       confirmationUpdatedAt: FieldValue.serverTimestamp(),
     });
     return Response.json({ appointmentId, confirmationStatus }, { status: 201 });

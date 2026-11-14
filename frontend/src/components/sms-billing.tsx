@@ -222,9 +222,7 @@ export function SmsBilling() {
                         >
                           {log.status === "failed"
                             ? "Failed"
-                            : log.deliveryStatus === "pending"
-                              ? "Pending delivery"
-                              : log.deliveryStatus}
+                            : "Success"}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right text-slate-600">

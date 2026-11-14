@@ -192,6 +192,8 @@ export async function GET(request: Request) {
       recipient: log.recipient || recipientByUid.get(log.motherUid) || "",
       category: log.category,
       status: log.status,
+      deliveryStatus: log.deliveryStatus,
+      providerStatus: log.providerStatus,
       segmentCount: log.segmentCount,
       cost: log.cost,
       createdAt: log.createdAt ? new Date(log.createdAt).toISOString() : null,

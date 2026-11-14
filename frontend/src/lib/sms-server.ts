@@ -9,6 +9,7 @@ import {
   MAX_SMS_CHARACTERS,
   MAX_STAFF_SUFFIX_CHARACTERS,
   smsSegmentCount,
+  truncateSmsMessage,
 } from "@/lib/sms-metrics";
 
 type SmsStatus = "accepted" | "failed";
@@ -23,10 +24,6 @@ const STAFF_ROLES = new Set([
 
 function text(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function truncateText(value: string, maximum: number): string {
-  return Array.from(value).slice(0, maximum).join("");
 }
 
 async function assignedStaffContact(
@@ -53,11 +50,11 @@ async function assignedStaffContact(
 
   const nameCharactersAvailable =
     MAX_STAFF_SUFFIX_CHARACTERS - phone.length - 2;
-  const compactName = truncateText(name, Math.max(0, nameCharactersAvailable));
+  const compactName = truncateSmsMessage(name, Math.max(0, nameCharactersAvailable));
   const suffix = compactName
     ? `\n${compactName},${phone}`
     : `\n${phone}`;
-  return truncateText(suffix, MAX_STAFF_SUFFIX_CHARACTERS);
+  return truncateSmsMessage(suffix, MAX_STAFF_SUFFIX_CHARACTERS);
 }
 
 export async function sendSmsToMother({
@@ -89,7 +86,14 @@ export async function sendSmsToMother({
       : typeof profile.phoneNumber === "string"
         ? profile.phoneNumber.trim()
         : "";
-  const phone = rawPhone.replace(/[ \t()-]/g, "");
+  const phoneDigits = rawPhone.replace(/[^\d+]/g, "");
+  const phone = phoneDigits.startsWith("+256")
+    ? phoneDigits
+    : phoneDigits.startsWith("256")
+      ? `+${phoneDigits}`
+      : phoneDigits.startsWith("0")
+        ? `+256${phoneDigits.slice(1)}`
+        : phoneDigits;
   if (!/^\+[1-9]\d{7,14}$/.test(phone)) {
     throw new ApiAuthError(
       "The mother's profile needs a valid international-format phone number.",
@@ -97,8 +101,8 @@ export async function sendSmsToMother({
     );
   }
 
-  const baseMessage = truncateText(message, MAX_BASE_MESSAGE_CHARACTERS);
-  const finalMessage = truncateText(
+  const baseMessage = truncateSmsMessage(message, MAX_BASE_MESSAGE_CHARACTERS);
+  const finalMessage = truncateSmsMessage(
     `${baseMessage}${await assignedStaffContact(profile)}`,
     MAX_SMS_CHARACTERS,
   );
@@ -149,6 +153,8 @@ export async function sendSmsToMother({
   }
 
   const body = new URLSearchParams({ username, to: phone, message: finalMessage });
+  const senderId = process.env.AT_SENDER_ID?.trim();
+  if (senderId) body.set("from", senderId);
 
   let response: Response;
   let result:
@@ -193,8 +199,9 @@ export async function sendSmsToMother({
       providerStatus: recipient?.status ?? `HTTP ${response.status}`,
       providerStatusCode: recipient?.statusCode ?? null,
       providerMessageId: recipient?.messageId ?? null,
-      providerResponse: JSON.stringify(result).slice(0, 500),
+      providerResponse: result,
     });
+    console.error("Africa's Talking SMS response", result?.SMSMessageData?.Recipients ?? []);
     return { status: "failed" };
   }
 
@@ -202,8 +209,10 @@ export async function sendSmsToMother({
     providerStatus: recipient.status ?? null,
     providerStatusCode: recipient.statusCode ?? null,
     providerMessageId: recipient.messageId ?? null,
+    providerResponse: result,
     deliveryStatus: "pending",
   });
+  console.info("Africa's Talking SMS response", result?.SMSMessageData?.Recipients ?? []);
   return { status: "accepted", providerMessageId: recipient.messageId };
 }
 
@@ -229,7 +238,7 @@ export async function sendSmsToStaff({
         ? `+256${phoneDigits.slice(1)}`
         : "";
   const validPhone = /^\+256\d{9}$/.test(phone);
-  const finalMessage = truncateText(message, MAX_SMS_CHARACTERS);
+  const finalMessage = truncateSmsMessage(message, MAX_SMS_CHARACTERS);
   const logId = `ussd_${createHash("sha256")
     .update(`${motherUid}:${sessionId}:staff-sms`)
     .digest("hex")
@@ -302,7 +311,12 @@ export async function sendSmsToStaff({
         "Content-Type": "application/x-www-form-urlencoded",
         apiKey,
       },
-      body: new URLSearchParams({ username, to: phone, message: finalMessage }),
+      body: (() => {
+        const body = new URLSearchParams({ username, to: phone, message: finalMessage });
+        const senderId = process.env.AT_SENDER_ID?.trim();
+        if (senderId) body.set("from", senderId);
+        return body;
+      })(),
       cache: "no-store",
       signal: AbortSignal.timeout(15_000),
     });
@@ -326,8 +340,12 @@ export async function sendSmsToStaff({
       providerStatus: recipient?.status ?? `HTTP ${response.status}`,
       providerStatusCode: recipient?.statusCode ?? null,
       providerMessageId: recipient?.messageId ?? null,
-      providerResponse: JSON.stringify(result).slice(0, 500),
+      providerResponse: result,
     });
+    console.error(
+      "Africa's Talking staff SMS response",
+      result?.SMSMessageData?.Recipients ?? [],
+    );
     return "failed";
   }
 
@@ -335,7 +353,12 @@ export async function sendSmsToStaff({
     providerStatus: recipient.status ?? null,
     providerStatusCode: recipient.statusCode ?? null,
     providerMessageId: recipient.messageId ?? null,
+    providerResponse: result,
     deliveryStatus: "pending",
   });
+  console.info(
+    "Africa's Talking staff SMS response",
+    result?.SMSMessageData?.Recipients ?? [],
+  );
   return "accepted";
 }
