@@ -16,9 +16,10 @@ const WINDOWS: Record<string, string> = {
 };
 const SYMPTOMS: Record<string, string> = {
   "1": "Severe headache or blurred vision",
-  "2": "Bleeding or fluid leak",
-  "3": "High fever or baby not moving",
-  "4": "Other urgent issue",
+  "2": "Heavy vaginal bleeding",
+  "3": "Severe abdominal pain",
+  "4": "Reduced fetal movement",
+  "5": "Fever or chills",
 };
 const STAFF_ROLES = new Set([
   "doctor",
@@ -62,10 +63,6 @@ function phoneCandidates(phone: string): string[] {
     `0${local.slice(0, 3)} ${local.slice(3)}`,
     `0${local.slice(0, 3)} ${local.slice(3, 6)} ${local.slice(6)}`,
   ];
-}
-
-function firstName(profile: MotherProfile): string {
-  return cleanText(profile.fullName, 100).split(" ")[0]?.slice(0, 24) || "Mother";
 }
 
 function stableId(sessionId: string, action: string): string {
@@ -190,18 +187,20 @@ async function recordDangerAlert(
   profile: MotherProfile,
   sessionId: string,
   serviceCode: string,
-  selection: string,
+  symptomNumber: string,
+  severity: "emergency" | "moderate" | "urgent",
 ) {
-  const symptom = SYMPTOMS[selection.slice(2)];
+  const symptom = SYMPTOMS[symptomNumber];
+  const alertSeverity = severity;
   const alertRef = getAdminDb()
-    .doc(`users/${motherUid}/healthLogs/${stableId(sessionId, `danger:${selection}`)}`);
+    .doc(`users/${motherUid}/healthLogs/${stableId(sessionId, `danger:${symptomNumber}:${alertSeverity}`)}`);
   let isNew = true;
   try {
     await alertRef.create({
       type: "danger_sign_reported",
       sign: symptom,
-      description: `Urgent danger sign reported by USSD: ${symptom}`,
-      severity: "urgent",
+      description: `Danger sign reported by USSD: ${symptom} (${alertSeverity})`,
+      severity: alertSeverity,
       source: "ussd",
       serviceCode,
       status: "open",
@@ -240,8 +239,8 @@ async function recordDangerAlert(
     motherUid,
     staffUid: staff.staffUid,
     staffPhone: staff.phone,
-    sessionId: stableId(sessionId, `danger:${selection}`),
-    message: `URGENT BabyHealth Guard: ${motherName} (${motherPhone}) reports ${symptom}. Contact her and arrange urgent care at ${clinic}.`,
+    sessionId: stableId(sessionId, `danger:${symptomNumber}:${alertSeverity}`),
+    message: `URGENT BabyHealth Guard: ${motherName} (${motherPhone}) reports ${symptom} (${alertSeverity}). Contact her and arrange urgent care at ${clinic}.`,
   });
   await alertRef.update({
     notificationStatus: smsStatus,
@@ -296,7 +295,7 @@ async function handleUssd(request: Request): Promise<Response> {
   if (text === "") {
     return response(
       "CON",
-      `Welcome ${firstName(profile)} to BabyHealth-Guard:\n1. Next Appointment\n2. Request / Reschedule Visit\n3. Report Danger Signs (Urgent)\n4. Pregnancy / Baby Tip`,
+      `Welcome to BabyHealth-Guard\n1. Next Appointment\n2. Request / Reschedule Visit\n3. Report Danger Sign\n4. Maternal & Baby Tips`,
     );
   }
   if (text === "1") {
@@ -351,20 +350,42 @@ async function handleUssd(request: Request): Promise<Response> {
   if (text === "3") {
     return response(
       "CON",
-      "Urgent Symptom Alert:\n1. Severe Headache / Blurred Vision\n2. Bleeding / Fluid Leak\n3. High Fever / Baby Not Moving\n4. Other Urgent Issue",
+      "Select main symptom:\n1. Severe headache / Blurred vision\n2. Heavy vaginal bleeding\n3. Severe abdominal pain\n4. Reduced fetal movement\n5. Fever / Chills",
     );
   }
-  if (/^3\*[1234]$/.test(text)) {
-    const alert = await recordDangerAlert(uid, profile, sessionId, serviceCode, text);
+  const dangerSelection = /^3\*([1-5])$/.exec(text);
+  if (dangerSelection && ["1", "2"].includes(dangerSelection[1])) {
+    return response(
+      "CON",
+      "Is this bleeding/pain heavy/severe?\n1. Yes (Emergency)\n2. Moderate",
+    );
+  }
+  const dangerSeveritySelection = /^3\*([12])\*([12])$/.exec(text);
+  const directDangerSelection = /^3\*([345])$/.exec(text);
+  if (dangerSeveritySelection || directDangerSelection) {
+    const symptomNumber = dangerSeveritySelection?.[1] ?? directDangerSelection?.[1] ?? "";
+    const severity = dangerSeveritySelection
+      ? dangerSeveritySelection[2] === "1"
+        ? "emergency"
+        : "moderate"
+      : "urgent";
+    const alert = await recordDangerAlert(
+      uid,
+      profile,
+      sessionId,
+      serviceCode,
+      symptomNumber,
+      severity,
+    );
     if (alert.notified) {
       return response(
         "END",
-        `URGENT ALERT SENT to ${alert.staffName}. Please go to ${alert.clinic} immediately if symptoms worsen.`,
+        "Alert sent to your clinic midwife. Please stay calm and keep your phone nearby for a callback.",
       );
     }
     return response(
       "END",
-      "Urgent alert was recorded, but staff SMS failed. Please go to your health facility now.",
+      "Alert recorded, but staff SMS failed. Please stay calm and keep your phone nearby for a callback.",
     );
   }
   if (text === "4") return response("END", healthTip(profile));
