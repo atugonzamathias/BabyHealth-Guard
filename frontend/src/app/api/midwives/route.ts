@@ -6,11 +6,10 @@ export const runtime = "nodejs";
 export async function GET(request: Request) {
   try {
     const context = await requireStaff(request);
-    const snapshot = await getAdminDb()
-      .collection("users")
-      .where("role", "==", "midwife")
-      .where("facilityId", "==", context.facilityId)
-      .get();
+    const midwifeQuery = getAdminDb().collection("users").where("role", "==", "midwife");
+    const snapshot = context.isSystemAdmin
+      ? await midwifeQuery.get()
+      : await midwifeQuery.where("facilityId", "==", context.facilityId).get();
     const midwives = snapshot.docs
       .map((entry) => {
         const data = entry.data();

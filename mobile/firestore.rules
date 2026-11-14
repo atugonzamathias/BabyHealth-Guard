@@ -21,15 +21,22 @@ service cloud.firestore {
           'health worker',
           'nurse',
           'midwife'
-        ] &&
+        ];
+    }
+
+    function globalAdmin(uid) {
+      return approvedStaff(uid) &&
+        profile(uid).role in ['admin', 'system_admin'];
+    }
+
+    function facilityStaff(uid) {
+      return approvedStaff(uid) &&
+        profile(uid).role != 'admin' &&
+        profile(uid).role != 'system_admin' &&
         profile(uid).facilityId is string &&
         profile(uid).facilityId != '' &&
         profile(uid).facilityName is string &&
         profile(uid).facilityName != '';
-    }
-
-    function systemAdministrator(uid) {
-      return approvedStaff(uid) && profile(uid).role == 'system_admin';
     }
 
     function motherProfile(uid) {
@@ -37,93 +44,62 @@ service cloud.firestore {
         profile(uid).role == 'mother';
     }
 
-    function sameFacilityAsStaff(motherUid) {
-      return approvedStaff(request.auth.uid) &&
-        motherProfile(motherUid) &&
-        profile(motherUid).facilityId is string &&
-        profile(motherUid).facilityId != '' &&
-        (systemAdministrator(request.auth.uid) ||
+    function canAccessMother(motherUid) {
+      return globalAdmin(request.auth.uid) ||
+        (facilityStaff(request.auth.uid) &&
+          motherProfile(motherUid) &&
+          profile(motherUid).facilityId is string &&
+          profile(motherUid).facilityId != '' &&
           profile(motherUid).facilityId == profile(request.auth.uid).facilityId);
-    }
-
-    function mutableMotherProfileFields() {
-      return [
-        'fullName',
-        'email',
-        'age',
-        'village',
-        'phone',
-        'language',
-        'maternalStatus',
-        'pregnancyStage',
-        'parity',
-        'conditions',
-        'midwifeName',
-        'midwifePhone',
-        'updatedAt'
-      ];
     }
 
     match /users/{userId} {
       allow get, list: if signedIn() && (
         request.auth.uid == userId ||
-        (sameFacilityAsStaff(userId) && resource.data.facilityId == profile(request.auth.uid).facilityId)
+        (motherProfile(userId) && canAccessMother(userId))
       );
 
       allow create: if signedIn() &&
         request.auth.uid == userId &&
-        request.resource.data.role == 'mother' &&
-        request.resource.data.facilityId is string &&
-        request.resource.data.facilityId != '' &&
-        request.resource.data.facilityName is string;
+        request.resource.data.role == 'mother';
 
       allow update: if signedIn() &&
         request.auth.uid == userId &&
-        resource.data.role == 'mother' &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(mutableMotherProfileFields());
+        resource.data.role == 'mother';
 
       allow delete: if false;
 
       match /{subcollection=**} {
-        allow read, write: if signedIn() && (
-          request.auth.uid == userId || sameFacilityAsStaff(userId)
-        );
+        allow read, write: if signedIn() &&
+          (request.auth.uid == userId || canAccessMother(userId));
       }
     }
 
     match /staffDirectory/{staffId} {
       allow read: if resource.data.active == true &&
-        resource.data.role == 'midwife' &&
-        resource.data.keys().hasOnly([
-          'fullName',
-          'phone',
-          'facilityId',
-          'facilityName',
-          'role',
-          'active'
-        ]);
+        resource.data.role == 'midwife';
       allow write: if false;
     }
 
     match /ussd_requests/{requestId} {
-      allow read: if approvedStaff(request.auth.uid) &&
-        (systemAdministrator(request.auth.uid) ||
+      allow read: if globalAdmin(request.auth.uid) ||
+        (facilityStaff(request.auth.uid) &&
           resource.data.facilityId == profile(request.auth.uid).facilityId);
       allow write: if false;
     }
 
     match /sms_logs/{logId} {
-      allow read: if approvedStaff(request.auth.uid) &&
-        (systemAdministrator(request.auth.uid) ||
+      allow read: if globalAdmin(request.auth.uid) ||
+        (facilityStaff(request.auth.uid) &&
           resource.data.facilityId == profile(request.auth.uid).facilityId);
       allow write: if false;
     }
 
     match /facilities/{facilityId} {
-      allow get: if approvedStaff(request.auth.uid) &&
-        (systemAdministrator(request.auth.uid) ||
+      allow get: if globalAdmin(request.auth.uid) ||
+        (facilityStaff(request.auth.uid) &&
           facilityId == profile(request.auth.uid).facilityId);
-      allow list: if false;
+      allow list: if globalAdmin(request.auth.uid);
       allow write: if false;
     }
 

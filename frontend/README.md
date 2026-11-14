@@ -42,13 +42,13 @@ and in each assigned staff profile. Staff accounts include a phone number;
 active midwife profiles publish only their name, phone, and facility in the
 read-only `staffDirectory` collection for registration and mobile calling.
 
-Facility administrators are restricted to their own facility. The `system_admin`
-role is the explicitly global administrator role and may manage facilities and
-view cross-facility operational aggregates. Records without a valid `facilityId`
-are intentionally denied to staff until they are migrated; do not infer a facility
-from `facilityName`. A migration should first map each legacy profile to an existing
-`facilities/{facilityId}` document, then write the validated `facilityId` and
-canonical `facilityName` before restoring access.
+The `admin` role is the global administrator role: it may view all mothers,
+including legacy profiles without a facility or assigned staff, and assign those
+mothers to staff. `system_admin` remains accepted as a compatible global role.
+Other staff roles are restricted to their own facility. Records without a valid
+`facilityId` remain unavailable to non-admin staff; an administrator should assign
+the mother to a validated staff member, which writes the mother's facility
+assignment. Do not infer a facility from `facilityName` alone.
 
 Any approved staff member can register a mother from the **Mothers** tab using
 the Flutter app's `MotherProfile` fields. Staff-entered profiles are saved with

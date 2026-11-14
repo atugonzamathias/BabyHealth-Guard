@@ -96,9 +96,10 @@ export async function requireStaffContext(request: Request): Promise<StaffContex
     throw new ApiAuthError("An approved staff account is required.", 403);
   }
 
+  const isSystemAdmin = role === "admin" || role === "system_admin";
   const facilityId = normalizeText(profileData.facilityId);
   const facilityName = normalizeText(profileData.facilityName);
-  if (!facilityId || !facilityName) {
+  if (!isSystemAdmin && (!facilityId || !facilityName)) {
     throw new ApiAuthError(
       "This staff account is missing a valid facility assignment. Contact your administrator.",
       403,
@@ -111,7 +112,7 @@ export async function requireStaffContext(request: Request): Promise<StaffContex
     role,
     facilityId,
     facilityName,
-    isSystemAdmin: role === "system_admin",
+    isSystemAdmin,
   };
 }
 
@@ -150,7 +151,7 @@ export async function getMotherInStaffFacility(
   if (!context.isSystemAdmin && motherFacilityId !== context.facilityId) {
     throw new ApiAuthError("This mother record is outside your facility.", 403);
   }
-  if (!motherFacilityId) {
+  if (!motherFacilityId && !context.isSystemAdmin) {
     throw new ApiAuthError("This mother record is missing a facility assignment.", 403);
   }
 
@@ -174,7 +175,7 @@ export function assertMotherFacility(
   if (!context.isSystemAdmin && motherFacilityId !== context.facilityId) {
     throw new ApiAuthError("This mother record is outside your facility.", 403);
   }
-  if (!motherFacilityId) {
+  if (!motherFacilityId && !context.isSystemAdmin) {
     throw new ApiAuthError("This mother record is missing a facility assignment.", 403);
   }
 

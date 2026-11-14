@@ -208,7 +208,8 @@ export default function Home() {
   useEffect(() => {
     if (session.status !== "staff") return;
     return watchMothers(
-      session.facilityId ?? session.facility,
+      session.facilityId,
+      session.role === "admin" || session.role === "system_admin",
       (nextMothers) => {
         setMothers(nextMothers);
         setSelectedUid((current) =>

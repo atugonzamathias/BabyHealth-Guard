@@ -198,14 +198,17 @@ async function authenticatedApiRequest<T>(
 
 export function watchMothers(
   facilityId: string,
+  isGlobalAdmin: boolean,
   onData: (mothers: MotherProfile[]) => void,
   onError: (error: Error) => void,
 ): Unsubscribe {
-  const mothersQuery = query(
-    collection(db, "users"),
-    where("role", "==", "mother"),
-    where("facilityId", "==", facilityId),
-  );
+  const mothersQuery = isGlobalAdmin
+    ? query(collection(db, "users"), where("role", "==", "mother"))
+    : query(
+        collection(db, "users"),
+        where("role", "==", "mother"),
+        where("facilityId", "==", facilityId),
+      );
 
   return onSnapshot(
     mothersQuery,

@@ -64,8 +64,8 @@ export async function POST(request: Request) {
     }
 
     const db = getAdminDb();
-    const facilityId = context.facilityId;
-    const facilityName = context.facilityName;
+    let facilityId = context.facilityId;
+    let facilityName = context.facilityName;
 
     let midwifeName = "";
     let midwifePhone = "";
@@ -78,14 +78,29 @@ export async function POST(request: Request) {
       if (!midwifeProfile.exists || role !== "midwife" || isDisabled) {
         return Response.json({ error: "Selected midwife is no longer active. Refresh the list." }, { status: 400 });
       }
-      if (text(midwifeProfile.data()?.facilityId) !== facilityId) {
+      const midwifeFacilityId = text(midwifeProfile.data()?.facilityId);
+      const midwifeFacilityName = text(midwifeProfile.data()?.facilityName);
+      if (!midwifeFacilityId || !midwifeFacilityName) {
+        return Response.json({ error: "Selected midwife has no valid facility assignment." }, { status: 403 });
+      }
+      if (!context.isSystemAdmin && midwifeFacilityId !== facilityId) {
         return Response.json({ error: "Selected midwife does not belong to your facility." }, { status: 403 });
+      }
+      if (context.isSystemAdmin) {
+        facilityId = midwifeFacilityId;
+        facilityName = midwifeFacilityName;
       }
       midwifeName = text(midwifeProfile.data()?.fullName);
       midwifePhone = text(midwifeProfile.data()?.phone);
       if (!midwifeName) {
         return Response.json({ error: "Selected midwife profile has no name." }, { status: 400 });
       }
+    }
+    if (!facilityId || !facilityName) {
+      return Response.json(
+        { error: "Select an active midwife so the mother can receive a valid facility assignment." },
+        { status: 400 },
+      );
     }
     const profileRef = db.collection("users").doc();
     const profile = {

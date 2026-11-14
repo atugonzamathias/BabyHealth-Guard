@@ -108,7 +108,7 @@ export async function PATCH(request: Request) {
     const db = getAdminDb();
     const motherData = await getMotherInStaffFacility(motherUid, context);
     const motherFacilityId = text(motherData.facilityId);
-    if (!motherFacilityId) {
+    if (!motherFacilityId && !context.isSystemAdmin && staffUid) {
       return Response.json({ error: "Mother profile is missing a facility assignment." }, { status: 403 });
     }
 
@@ -145,7 +145,7 @@ export async function PATCH(request: Request) {
         { status: 400 },
       );
     }
-    if (!staffFacilityId || staffFacilityId !== motherFacilityId) {
+    if (!staffFacilityId || (!context.isSystemAdmin && staffFacilityId !== motherFacilityId)) {
       return Response.json(
         { error: "Selected staff member does not belong to the same facility as the mother." },
         { status: 403 },
@@ -179,6 +179,8 @@ export async function PATCH(request: Request) {
       facilityName: text(staffProfile.facilityName),
     };
     await db.doc(`users/${motherUid}`).update({
+      facilityId: staffFacilityId,
+      facilityName: text(staffProfile.facilityName),
       assignedStaffUid: staffUid,
       assignedStaffName: fullName,
       assignedStaffPhone: phone,
