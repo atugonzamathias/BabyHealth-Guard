@@ -1,4 +1,4 @@
-import { FieldValue, Timestamp, type DocumentData } from "firebase-admin/firestore";
+import { Timestamp, type DocumentData } from "firebase-admin/firestore";
 import { apiError, getMotherInStaffFacility, requireAdmin } from "@/lib/api-auth";
 import { getAdminDb } from "@/lib/firebase-admin";
 
@@ -32,6 +32,7 @@ export async function GET(request: Request) {
           phone: text(data.phone),
           clinic: text(data.clinic),
           requestType: text(data.requestType),
+          appointmentType: text(data.appointmentType),
           preferredWindow: text(data.preferredWindow),
           createdAt,
         };
@@ -48,57 +49,9 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PATCH(request: Request) {
-  try {
-    const context = await requireAdmin(request);
-    const { uid } = context;
-    const payload = (await request.json().catch(() => null)) as
-      | Record<string, unknown>
-      | null;
-    const requestId = text(payload?.requestId);
-    const status = text(payload?.status);
-    if (
-      !payload ||
-      Array.isArray(payload) ||
-      !/^[A-Za-z0-9_-]{1,128}$/.test(requestId) ||
-      !["reviewed", "declined"].includes(status)
-    ) {
-      return Response.json({ error: "USSD request update is invalid." }, { status: 400 });
-    }
-
-    const ref = getAdminDb().collection("ussd_requests").doc(requestId);
-    const requestSnapshot = await ref.get();
-    if (!requestSnapshot.exists) {
-      return Response.json({ error: "USSD request was not found." }, { status: 404 });
-    }
-    const motherUid = text(requestSnapshot.data()?.motherId);
-    if (!motherUid) {
-      return Response.json({ error: "This USSD request has no valid mother facility." }, { status: 403 });
-    }
-    await getMotherInStaffFacility(motherUid, context);
-
-    const updated = await getAdminDb().runTransaction(async (transaction) => {
-      const current = await transaction.get(ref);
-      if (!current.exists) return "missing" as const;
-      if (current.data()?.status !== "pending") return "already-reviewed" as const;
-      transaction.update(ref, {
-        status,
-        reviewedBy: uid,
-        reviewedAt: FieldValue.serverTimestamp(),
-      });
-      return "updated" as const;
-    });
-    if (updated === "missing") {
-      return Response.json({ error: "USSD request was not found." }, { status: 404 });
-    }
-    if (updated !== "updated") {
-      return Response.json(
-        { error: "This USSD request has already been reviewed." },
-        { status: 409 },
-      );
-    }
-    return Response.json({ updated: true });
-  } catch (error) {
-    return apiError(error);
-  }
+export async function PATCH() {
+  return Response.json(
+    { error: "Use the approve or decline USSD request endpoint." },
+    { status: 410 },
+  );
 }

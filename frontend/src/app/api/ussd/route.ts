@@ -119,8 +119,16 @@ async function requestVisit(
   serviceCode: string,
   selection: string,
 ) {
-  const [, requestTypeNumber, windowNumber] = selection.split("*");
+  const [, requestTypeNumber, appointmentTypeNumber, windowNumber] = selection.split("*");
   const requestType = requestTypeNumber === "1" ? "new" : "reschedule";
+  const appointmentType =
+    appointmentTypeNumber === "1"
+      ? "ANTENATAL"
+      : appointmentTypeNumber === "2"
+        ? "DELIVERY"
+        : appointmentTypeNumber === "3"
+          ? "POSTNATAL"
+          : "IMMUNIZATION";
   const ref = getAdminDb()
     .collection("ussd_requests")
     .doc(stableId(`${motherUid}:${sessionId}`, `request:${selection}`));
@@ -133,6 +141,7 @@ async function requestVisit(
     midwifeId: cleanText(profile.assignedStaffUid),
     clinic: clinicFor(profile),
     requestType,
+    appointmentType,
     preferredWindow: WINDOWS[windowNumber],
     status: "pending",
     source: "ussd",
@@ -338,9 +347,15 @@ async function handleUssd(request: Request): Promise<Response> {
     return response("CON", "Choose visit option:\n1. Request New Visit\n2. Reschedule Existing Visit");
   }
   if (text === "2*1" || text === "2*2") {
+    return response(
+      "CON",
+      "Select visit type:\n1. Antenatal\n2. Delivery\n3. Postnatal\n4. Immunization",
+    );
+  }
+  if (/^2\*[12]\*[1234]$/.test(text)) {
     return response("CON", "Preferred day:\n1. Tomorrow\n2. In 3 Days\n3. Next Week");
   }
-  if (/^2\*[12]\*[123]$/.test(text)) {
+  if (/^2\*[12]\*[1234]\*[123]$/.test(text)) {
     await requestVisit(uid, profile, sessionId, serviceCode, text);
     return response(
       "END",
