@@ -1,5 +1,6 @@
 import { apiError, requireStaff, getMotherInStaffFacility } from "@/lib/api-auth";
 import { sendSmsToMother } from "@/lib/sms-server";
+import { MAX_BASE_MESSAGE_CHARACTERS } from "@/lib/sms-metrics";
 
 export const runtime = "nodejs";
 
@@ -18,9 +19,15 @@ export async function POST(request: Request) {
       typeof payload.category === "string"
         ? payload.category.trim().slice(0, 40)
         : "staff_message";
-    if (!/^[A-Za-z0-9_-]{1,128}$/.test(motherUid) || !message || message.length > 480) {
+    if (
+      !/^[A-Za-z0-9_-]{1,128}$/.test(motherUid) ||
+      !message ||
+      message.length > MAX_BASE_MESSAGE_CHARACTERS
+    ) {
       return Response.json(
-        { error: "Choose a mother and provide a message of 1–480 characters." },
+        {
+          error: `Choose a mother and provide a message of 1–${MAX_BASE_MESSAGE_CHARACTERS} characters. Staff details use the remaining SMS space.`,
+        },
         { status: 400 },
       );
     }

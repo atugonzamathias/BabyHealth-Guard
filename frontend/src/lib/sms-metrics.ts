@@ -2,6 +2,10 @@ const GSM_7_DEFAULT =
   "@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà";
 const GSM_7_EXTENDED = "\f^{}\\[~]|€";
 export const SMS_COST_PER_SEGMENT_UGX = 25;
+export const MAX_SMS_CHARACTERS = 180;
+export const MAX_BASE_MESSAGE_CHARACTERS = 150;
+export const MAX_STAFF_SUFFIX_CHARACTERS =
+  MAX_SMS_CHARACTERS - MAX_BASE_MESSAGE_CHARACTERS;
 
 export function smsSegmentCount(message: string): number {
   if (!message) return 0;

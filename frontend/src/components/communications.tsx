@@ -6,6 +6,7 @@ import {
   type MotherProfile,
   type MotherScopedRecord,
 } from "@/lib/care-data";
+import { MAX_BASE_MESSAGE_CHARACTERS } from "@/lib/sms-metrics";
 
 type Props = {
   mothers: MotherProfile[];
@@ -46,8 +47,10 @@ export function Communications({ mothers, smsLogs }: Props) {
       setError("Select a mother and enter a message.");
       return;
     }
-    if (message.trim().length > 480) {
-      setError("Keep the message to 480 characters or fewer.");
+    if (message.trim().length > MAX_BASE_MESSAGE_CHARACTERS) {
+      setError(
+        `Keep the message to ${MAX_BASE_MESSAGE_CHARACTERS} characters or fewer because staff details use the remaining SMS space.`,
+      );
       return;
     }
     if (!consentConfirmed) {
@@ -127,13 +130,15 @@ export function Communications({ mothers, smsLogs }: Props) {
               SMS message
               <textarea
                 className={fieldClass}
-                maxLength={480}
+                maxLength={MAX_BASE_MESSAGE_CHARACTERS}
                 onChange={(event) => setMessage(event.target.value)}
                 required
                 rows={5}
                 value={message}
               />
-              <span className="mt-1 block text-right text-xs text-slate-500">{message.length}/480</span>
+              <span className="mt-1 block text-right text-xs text-slate-500">
+                {message.length}/{MAX_BASE_MESSAGE_CHARACTERS}
+              </span>
             </label>
             <label className="flex items-start gap-2 text-sm text-slate-700">
               <input

@@ -3,7 +3,13 @@ import { createHash } from "node:crypto";
 import { FieldValue, type DocumentData } from "firebase-admin/firestore";
 import { ApiAuthError } from "@/lib/api-auth";
 import { getAdminDb } from "@/lib/firebase-admin";
-import { estimateSmsCost, smsSegmentCount } from "@/lib/sms-metrics";
+import {
+  estimateSmsCost,
+  MAX_BASE_MESSAGE_CHARACTERS,
+  MAX_SMS_CHARACTERS,
+  MAX_STAFF_SUFFIX_CHARACTERS,
+  smsSegmentCount,
+} from "@/lib/sms-metrics";
 
 type SmsStatus = "accepted" | "failed";
 const STAFF_ROLES = new Set([
@@ -17,6 +23,10 @@ const STAFF_ROLES = new Set([
 
 function text(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function truncateText(value: string, maximum: number): string {
+  return Array.from(value).slice(0, maximum).join("");
 }
 
 async function assignedStaffContact(
@@ -39,11 +49,15 @@ async function assignedStaffContact(
 
   const name = text(assignedStaff?.fullName) || text(profile.assignedStaffName);
   const phone = text(assignedStaff?.phone) || text(profile.assignedStaffPhone);
-  const facility =
-    text(assignedStaff?.facilityName) || text(profile.assignedStaffFacilityName);
   if (!name || !phone) return "";
 
-  return `\nYour assigned health worker: ${name}, ${phone}${facility ? ` (${facility})` : ""}.`;
+  const nameCharactersAvailable =
+    MAX_STAFF_SUFFIX_CHARACTERS - phone.length - 2;
+  const compactName = truncateText(name, Math.max(0, nameCharactersAvailable));
+  const suffix = compactName
+    ? `\n${compactName},${phone}`
+    : `\n${phone}`;
+  return truncateText(suffix, MAX_STAFF_SUFFIX_CHARACTERS);
 }
 
 export async function sendSmsToMother({
@@ -83,7 +97,11 @@ export async function sendSmsToMother({
     );
   }
 
-  const finalMessage = `${message}${await assignedStaffContact(profile)}`;
+  const baseMessage = truncateText(message, MAX_BASE_MESSAGE_CHARACTERS);
+  const finalMessage = truncateText(
+    `${baseMessage}${await assignedStaffContact(profile)}`,
+    MAX_SMS_CHARACTERS,
+  );
   const apiKey = process.env.AFRICASTALKING_API_KEY;
   const username = process.env.AFRICASTALKING_USERNAME?.trim();
   const db = getAdminDb();
@@ -100,6 +118,7 @@ export async function sendSmsToMother({
     sentBy,
     providerMessageId: null,
     consentConfirmed: true,
+    messageLength: Array.from(finalMessage).length,
     segmentCount: smsSegmentCount(finalMessage),
     consentRecordedAt: FieldValue.serverTimestamp(),
     createdAt: FieldValue.serverTimestamp(),
@@ -171,12 +190,16 @@ export async function sendSmsToMother({
   ) {
     await writeLogs("failed", {
       providerStatus: recipient?.status ?? `HTTP ${response.status}`,
+      providerStatusCode: recipient?.statusCode ?? null,
       providerMessageId: recipient?.messageId ?? null,
+      providerResponse: JSON.stringify(result).slice(0, 500),
     });
     return { status: "failed" };
   }
 
   await writeLogs("accepted", {
+    providerStatus: recipient.status ?? null,
+    providerStatusCode: recipient.statusCode ?? null,
     providerMessageId: recipient.messageId ?? null,
   });
   return { status: "accepted", providerMessageId: recipient.messageId };
@@ -204,7 +227,7 @@ export async function sendSmsToStaff({
         ? `+256${phoneDigits.slice(1)}`
         : "";
   const validPhone = /^\+256\d{9}$/.test(phone);
-  const finalMessage = message.slice(0, 1000);
+  const finalMessage = truncateText(message, MAX_SMS_CHARACTERS);
   const logId = `ussd_${createHash("sha256")
     .update(`${motherUid}:${sessionId}:staff-sms`)
     .digest("hex")
@@ -234,6 +257,7 @@ export async function sendSmsToStaff({
       sentBy: "ussd",
       staffUid,
       providerMessageId: null,
+      messageLength: Array.from(finalMessage).length,
       segmentCount: smsSegmentCount(finalMessage),
       createdAt: FieldValue.serverTimestamp(),
       ...extras,
@@ -297,12 +321,16 @@ export async function sendSmsToStaff({
   ) {
     await writeLogs("failed", {
       providerStatus: recipient?.status ?? `HTTP ${response.status}`,
+      providerStatusCode: recipient?.statusCode ?? null,
       providerMessageId: recipient?.messageId ?? null,
+      providerResponse: JSON.stringify(result).slice(0, 500),
     });
     return "failed";
   }
 
   await writeLogs("accepted", {
+    providerStatus: recipient.status ?? null,
+    providerStatusCode: recipient.statusCode ?? null,
     providerMessageId: recipient.messageId ?? null,
   });
   return "accepted";
