@@ -179,7 +179,12 @@ export function Communications({ mothers, smsLogs }: Props) {
               <li className="p-4" key={`${log.motherUid}-${log.id}`}>
                 <div className="flex flex-wrap justify-between gap-2">
                   <p className="text-sm font-semibold text-slate-900">{log.motherName} · {stringValue(log.values.direction, "outbound")}</p>
-                  <span className="text-xs capitalize text-slate-500">{stringValue(log.values.status, "queued")}</span>
+                  <span className="text-xs capitalize text-slate-500">
+                    {stringValue(
+                      log.values.deliveryStatus,
+                      stringValue(log.values.status, "queued"),
+                    )}
+                  </span>
                 </div>
                 <p className="mt-1 text-sm text-slate-700">{stringValue(log.values.message, "Message content not recorded")}</p>
                 <p className="mt-1 text-xs text-slate-500">{stringValue(log.values.category, "SMS")} · {formatDate(log.values.createdAt)}</p>

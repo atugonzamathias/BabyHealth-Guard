@@ -9,6 +9,8 @@ type SmsLog = {
   message: string;
   category: string;
   status: "accepted" | "failed";
+  deliveryStatus: string;
+  providerStatus: string | null;
   segmentCount: number;
   cost: number;
   createdAt: string | null;
@@ -211,12 +213,18 @@ export function SmsBilling() {
                       <td className="px-4 py-3">
                         <span
                           className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                            log.status === "accepted"
-                              ? "bg-emerald-50 text-emerald-800"
-                              : "bg-rose-50 text-rose-800"
+                            log.status === "failed"
+                              ? "bg-rose-50 text-rose-800"
+                              : log.deliveryStatus === "pending"
+                                ? "bg-amber-50 text-amber-800"
+                                : "bg-emerald-50 text-emerald-800"
                           }`}
                         >
-                          {log.status === "accepted" ? "Success" : "Failed"}
+                          {log.status === "failed"
+                            ? "Failed"
+                            : log.deliveryStatus === "pending"
+                              ? "Pending delivery"
+                              : log.deliveryStatus}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right text-slate-600">

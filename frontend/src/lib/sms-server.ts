@@ -117,6 +117,7 @@ export async function sendSmsToMother({
     provider: "africas_talking",
     sentBy,
     providerMessageId: null,
+    deliveryStatus: "pending",
     consentConfirmed: true,
     messageLength: Array.from(finalMessage).length,
     segmentCount: smsSegmentCount(finalMessage),
@@ -201,6 +202,7 @@ export async function sendSmsToMother({
     providerStatus: recipient.status ?? null,
     providerStatusCode: recipient.statusCode ?? null,
     providerMessageId: recipient.messageId ?? null,
+    deliveryStatus: "pending",
   });
   return { status: "accepted", providerMessageId: recipient.messageId };
 }
@@ -257,6 +259,7 @@ export async function sendSmsToStaff({
       sentBy: "ussd",
       staffUid,
       providerMessageId: null,
+      deliveryStatus: "pending",
       messageLength: Array.from(finalMessage).length,
       segmentCount: smsSegmentCount(finalMessage),
       createdAt: FieldValue.serverTimestamp(),
@@ -332,6 +335,7 @@ export async function sendSmsToStaff({
     providerStatus: recipient.status ?? null,
     providerStatusCode: recipient.statusCode ?? null,
     providerMessageId: recipient.messageId ?? null,
+    deliveryStatus: "pending",
   });
   return "accepted";
 }

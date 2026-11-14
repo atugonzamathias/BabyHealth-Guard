@@ -71,6 +71,11 @@ ID. Sending without a custom sender ID still depends on Africa's Talking account
 permissions and destination-country rules. When a mother has an assigned staff
 member with a name and phone, every outbound SMS includes that contact and the
 staff member's current facility when available.
+Configure Africa's Talking to post delivery reports to
+`/api/sms/delivery?token=<SMS_DELIVERY_CALLBACK_SECRET>`. The callback updates each
+matching SMS log with the provider's final delivery status. A message shown as
+**Pending delivery** means Africa's Talking accepted the submission but has not yet
+reported delivery; it is not treated as delivered.
 
 Administrators can monitor the live Africa's Talking balance, SMS counts, recent
 activity, and estimated costs in **Settings → SMS billing & usage**. The billing

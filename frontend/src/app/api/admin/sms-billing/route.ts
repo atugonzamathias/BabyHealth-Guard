@@ -62,6 +62,8 @@ function mapSmsLog(snapshot: QueryDocumentSnapshot<DocumentData>) {
     message,
     category: text(data.category) || "staff_message",
     status: normalizedStatus,
+    deliveryStatus: text(data.deliveryStatus) || (normalizedStatus === "failed" ? "failed" : "pending"),
+    providerStatus: text(data.providerStatus) || null,
     segmentCount:
       typeof data.segmentCount === "number"
         ? data.segmentCount
