@@ -25,8 +25,6 @@ export async function POST(
 
     const payload = (await request.json().catch(() => null)) as Record<string, unknown> | null;
     const scheduledAtText = text(payload?.scheduledAt);
-    const type = text(payload?.type).toUpperCase();
-    const clinic = text(payload?.clinic);
     const agenda = text(payload?.agenda);
     const reminderEnabled = payload?.reminderEnabled === true;
     const reminderMinutes =
@@ -34,11 +32,8 @@ export async function POST(
     const scheduledAtMillis = Date.parse(scheduledAtText);
     if (
       !payload ||
-      !TYPES.has(type) ||
       !Number.isFinite(scheduledAtMillis) ||
       scheduledAtMillis <= Date.now() ||
-      !clinic ||
-      clinic.length > 120 ||
       agenda.length > 500 ||
       (reminderEnabled && !REMINDERS.has(reminderMinutes)) ||
       (reminderEnabled && reminderMinutes * 60_000 > scheduledAtMillis - Date.now())
@@ -66,10 +61,38 @@ export async function POST(
     if (!facilityId || !facilityName) {
       return Response.json({ error: "Mother must have a valid facility before approval." }, { status: 422 });
     }
+    const type = text(requestData.appointmentType).toUpperCase();
+    if (!TYPES.has(type)) {
+      return Response.json({ error: "This request has no valid visit type. Ask the mother to submit it again." }, { status: 422 });
+    }
+    const clinic = facilityName;
+    const midwifeUid = text(requestData.midwifeId) || text(motherData.assignedStaffUid);
+    if (!midwifeUid || !/^[A-Za-z0-9_-]{1,128}$/.test(midwifeUid)) {
+      return Response.json(
+        { error: "This mother has no assigned midwife. Assign a midwife before approving the visit." },
+        { status: 422 },
+      );
+    }
+    const midwifeSnapshot = await db.doc(`users/${midwifeUid}`).get();
+    const midwifeData = midwifeSnapshot.data() ?? {};
+    const midwifeRole = text(midwifeData.role).toLowerCase();
+    const midwifeFacilityId = text(midwifeData.facilityId);
+    const midwifeName = text(midwifeData.fullName);
+    if (
+      !midwifeSnapshot.exists ||
+      midwifeData.disabled === true ||
+      midwifeRole !== "midwife" ||
+      !midwifeName ||
+      midwifeFacilityId !== facilityId
+    ) {
+      return Response.json(
+        { error: "The assigned midwife is inactive or does not belong to the mother's facility." },
+        { status: 422 },
+      );
+    }
     const scheduledAt = Timestamp.fromMillis(scheduledAtMillis);
     const appointmentRef = db.doc(`users/${motherUid}/appointments/${db.collection("_").doc().id}`);
     const appointmentId = appointmentRef.id;
-    const staffName = text((await db.doc(`users/${context.uid}`).get()).data()?.fullName) || "Clinic staff";
     const appointmentData = {
       type,
       scheduledAt,
@@ -80,7 +103,8 @@ export async function POST(
       motherUid,
       motherName: text(motherData.fullName) || text(requestData.motherName),
       phone: text(motherData.phone) || text(motherData.phoneNumber) || text(requestData.phone),
-      midwifeName: staffName,
+      midwifeName,
+      midwifeUid,
       status: "scheduled",
       source: "ussd_conversion",
       reminderMinutes: reminderEnabled ? reminderMinutes : 0,

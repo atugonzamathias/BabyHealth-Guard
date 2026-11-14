@@ -79,7 +79,7 @@ export function UssdRequests() {
   function openApproval(entry: UssdRequest) {
     setSelected(entry);
     setApproval({
-      type: entry.appointmentType || "ANTENATAL",
+      type: entry.appointmentType || "Not specified",
       scheduledAt: defaultDate(),
       clinic: entry.clinic,
       agenda: entry.requestType === "reschedule" ? "Rescheduled visit requested by mother via USSD." : "",
@@ -183,22 +183,29 @@ export function UssdRequests() {
         </div>
       )}
       {selected && (
-        <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-5">
-          <h4 className="font-bold text-slate-900">Review {selected.motherName}&apos;s request</h4>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <label className="text-sm font-semibold">Visit type<select className="mt-1 w-full rounded border p-2 font-normal" value={approval.type} onChange={(event) => setApproval({ ...approval, type: event.target.value })}><option value="ANTENATAL">Antenatal</option><option value="DELIVERY">Delivery</option><option value="POSTNATAL">Postnatal</option><option value="IMMUNIZATION">Immunization</option></select></label>
-            <label className="text-sm font-semibold">Date and time<input className="mt-1 w-full rounded border p-2 font-normal" type="datetime-local" value={approval.scheduledAt} onChange={(event) => setApproval({ ...approval, scheduledAt: event.target.value })} /></label>
-            <label className="text-sm font-semibold">Clinic<input className="mt-1 w-full rounded border p-2 font-normal" value={approval.clinic} onChange={(event) => setApproval({ ...approval, clinic: event.target.value })} /></label>
-            <label className="text-sm font-semibold">Agenda<input className="mt-1 w-full rounded border p-2 font-normal" value={approval.agenda} onChange={(event) => setApproval({ ...approval, agenda: event.target.value })} /></label>
-            <label className="flex items-center gap-2 text-sm font-semibold"><input checked={approval.reminderEnabled} onChange={(event) => setApproval({ ...approval, reminderEnabled: event.target.checked })} type="checkbox" /> Enable reminder SMS</label>
-            {approval.reminderEnabled && <label className="text-sm font-semibold">Reminder<select className="mt-1 w-full rounded border p-2 font-normal" value={approval.reminderMinutes} onChange={(event) => setApproval({ ...approval, reminderMinutes: Number(event.target.value) })}><option value={5}>5 minutes before</option><option value={30}>30 minutes before</option><option value={60}>1 hour before</option><option value={720}>12 hours before</option><option value={1440}>1 day before</option></select></label>}
-          </div>
-          <p className="mt-3 text-xs text-slate-600">The mother name, phone, and confirmation SMS are automatic. The mother&apos;s requested visit type is prefilled.</p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <button className="rounded bg-cyan-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60" disabled={pendingId !== ""} onClick={() => void approve()} type="button">Approve &amp; schedule</button>
-            <input className="min-w-64 flex-1 rounded border p-2 text-sm" placeholder="Reason for declining" value={declineReason} onChange={(event) => setDeclineReason(event.target.value)} />
-            <button className="rounded border border-rose-300 px-4 py-2 text-sm font-semibold text-rose-700 disabled:opacity-60" disabled={pendingId !== ""} onClick={() => void decline()} type="button">Decline &amp; notify</button>
-            <button className="rounded border px-4 py-2 text-sm" onClick={() => setSelected(null)} type="button">Cancel</button>
+        <div aria-labelledby="ussd-review-title" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4" role="dialog">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div><h4 className="text-lg font-bold text-slate-900" id="ussd-review-title">Review visit request</h4><p className="mt-1 text-sm text-slate-600">Confirm the schedule or decline this request.</p></div>
+              <button aria-label="Close review dialog" className="text-2xl text-slate-500" onClick={() => setSelected(null)} type="button">×</button>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <label className="text-sm font-semibold">Mother<input className="mt-1 w-full rounded border bg-slate-100 p-2 font-normal" readOnly value={selected.motherName} /></label>
+              <label className="text-sm font-semibold">Phone<input className="mt-1 w-full rounded border bg-slate-100 p-2 font-normal" readOnly value={selected.phone} /></label>
+              <label className="text-sm font-semibold">Visit type<input className="mt-1 w-full rounded border bg-slate-100 p-2 font-normal" readOnly value={approval.type} /></label>
+              <label className="text-sm font-semibold">Facility<input className="mt-1 w-full rounded border bg-slate-100 p-2 font-normal" readOnly value={approval.clinic} /></label>
+              <label className="text-sm font-semibold">Date and time<input className="mt-1 w-full rounded border p-2 font-normal" type="datetime-local" value={approval.scheduledAt} onChange={(event) => setApproval({ ...approval, scheduledAt: event.target.value })} /></label>
+              <label className="text-sm font-semibold">Agenda<input className="mt-1 w-full rounded border p-2 font-normal" value={approval.agenda} onChange={(event) => setApproval({ ...approval, agenda: event.target.value })} /></label>
+              <label className="flex items-center gap-2 text-sm font-semibold"><input checked={approval.reminderEnabled} onChange={(event) => setApproval({ ...approval, reminderEnabled: event.target.checked })} type="checkbox" /> Enable reminder SMS</label>
+              {approval.reminderEnabled && <label className="text-sm font-semibold">Reminder<select className="mt-1 w-full rounded border p-2 font-normal" value={approval.reminderMinutes} onChange={(event) => setApproval({ ...approval, reminderMinutes: Number(event.target.value) })}><option value={5}>5 minutes before</option><option value={30}>30 minutes before</option><option value={60}>1 hour before</option><option value={720}>12 hours before</option><option value={1440}>1 day before</option></select></label>}
+            </div>
+            <p className="mt-3 text-xs text-slate-500">Mother, phone, visit type, and facility are taken from the USSD request and cannot be edited.</p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <button className="rounded bg-cyan-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60" disabled={pendingId !== ""} onClick={() => void approve()} type="button">Approve &amp; schedule</button>
+              <input className="min-w-64 flex-1 rounded border p-2 text-sm" placeholder="Required reason for declining" value={declineReason} onChange={(event) => setDeclineReason(event.target.value)} />
+              <button className="rounded border border-rose-300 px-4 py-2 text-sm font-semibold text-rose-700 disabled:opacity-60" disabled={pendingId !== ""} onClick={() => void decline()} type="button">Decline &amp; notify</button>
+              <button className="rounded border px-4 py-2 text-sm" onClick={() => setSelected(null)} type="button">Cancel</button>
+            </div>
           </div>
         </div>
       )}

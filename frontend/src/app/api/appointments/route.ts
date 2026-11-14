@@ -54,6 +54,22 @@ export async function POST(request: Request) {
     const motherRef = getAdminDb().doc(`users/${motherUid}`);
     const appointmentRef = motherRef.collection("appointments").doc();
     const scheduledAt = Timestamp.fromMillis(scheduledAtMillis);
+    const assignedStaffUid =
+      typeof motherData.assignedStaffUid === "string" ? motherData.assignedStaffUid.trim() : "";
+    let midwifeName =
+      typeof motherData.assignedStaffName === "string" ? motherData.assignedStaffName.trim() : "";
+    if (assignedStaffUid) {
+      const assignedStaff = await getAdminDb().doc(`users/${assignedStaffUid}`).get();
+      const assignedData = assignedStaff.data() ?? {};
+      if (
+        assignedStaff.exists &&
+        assignedData.disabled !== true &&
+        String(assignedData.role ?? "").trim().toLowerCase() === "midwife" &&
+        typeof assignedData.fullName === "string"
+      ) {
+        midwifeName = assignedData.fullName.trim();
+      }
+    }
     await appointmentRef.create({
       type,
       scheduledAt,
@@ -61,8 +77,7 @@ export async function POST(request: Request) {
       agenda,
       facilityId: motherData.facilityId,
       facilityName: motherData.facilityName,
-      midwifeName:
-        typeof payload.staffName === "string" ? payload.staffName.slice(0, 100) : "",
+      midwifeName,
       status: "scheduled",
       reminderMinutes,
       reminderAt: Timestamp.fromMillis(scheduledAtMillis - reminderMinutes * 60_000),

@@ -105,8 +105,15 @@ export async function POST(request: Request) {
       failed += 1;
     }
   }
-  return Response.json({ processed: accepted + failed + skipped, accepted, failed, skipped });
+  return Response.json({
+    processed: accepted + failed + skipped,
+    accepted,
+    failed,
+    skipped,
+    checkedAt: new Date().toISOString(),
+  });
   } catch (error) {
+    console.error("Appointment reminder scheduler failed", error);
     return apiError(error);
   }
 }
