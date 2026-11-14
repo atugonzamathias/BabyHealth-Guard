@@ -1353,6 +1353,7 @@ function StaffManagement() {
 }
 
 function AdminSettings() {
+  const [settingsTab, setSettingsTab] = useState<"facilities" | "sms" | "ussd">("ussd");
   const [facilities, setFacilities] = useState<FacilityOption[]>([]);
   const [facilityName, setFacilityName] = useState("");
   const [editingId, setEditingId] = useState("");
@@ -1526,6 +1527,48 @@ function AdminSettings() {
         </p>
       </div>
 
+      <div className="flex flex-wrap gap-2 rounded-xl border border-slate-200 bg-white p-2" role="tablist" aria-label="Settings sections">
+        <button
+          aria-selected={settingsTab === "ussd"}
+          className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${
+            settingsTab === "ussd"
+              ? "bg-violet-700 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+          onClick={() => setSettingsTab("ussd")}
+          role="tab"
+          type="button"
+        >
+          USSD visit requests
+        </button>
+        <button
+          aria-selected={settingsTab === "sms"}
+          className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${
+            settingsTab === "sms"
+              ? "bg-cyan-800 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+          onClick={() => setSettingsTab("sms")}
+          role="tab"
+          type="button"
+        >
+          SMS billing &amp; top up
+        </button>
+        <button
+          aria-selected={settingsTab === "facilities"}
+          className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${
+            settingsTab === "facilities"
+              ? "bg-slate-800 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+          onClick={() => setSettingsTab("facilities")}
+          role="tab"
+          type="button"
+        >
+          Facilities
+        </button>
+      </div>
+
       {error && (
         <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-800">
           {error}
@@ -1537,6 +1580,8 @@ function AdminSettings() {
         </p>
       )}
 
+      {settingsTab === "facilities" ? (
+        <>
       <form
         className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-5 sm:flex-row sm:items-end"
         onSubmit={handleAddFacility}
@@ -1641,9 +1686,12 @@ function AdminSettings() {
           </ul>
         )}
       </section>
-
-      <SmsBilling />
-      <UssdRequests />
+        </>
+      ) : settingsTab === "sms" ? (
+        <SmsBilling />
+      ) : (
+        <UssdRequests />
+      )}
     </section>
   );
 }
