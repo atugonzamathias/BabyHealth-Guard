@@ -24,12 +24,12 @@ export async function POST(
     }
 
     const payload = (await request.json().catch(() => null)) as Record<string, unknown> | null;
-    const scheduledAtText = text(payload?.scheduledAt);
     const agenda = text(payload?.agenda);
     const reminderEnabled = payload?.reminderEnabled === true;
     const reminderMinutes =
       typeof payload?.reminderMinutes === "number" ? payload.reminderMinutes : NaN;
-    const scheduledAtMillis = Date.parse(scheduledAtText);
+    const scheduledAtMillis =
+      typeof payload?.scheduledAtMillis === "number" ? payload.scheduledAtMillis : NaN;
     if (
       !payload ||
       !Number.isFinite(scheduledAtMillis) ||

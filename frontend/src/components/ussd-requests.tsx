@@ -26,7 +26,15 @@ type ApprovalForm = {
 function defaultDate(): string {
   const date = new Date(Date.now() + 24 * 60 * 60 * 1000);
   date.setMinutes(0, 0, 0);
-  return date.toISOString().slice(0, 16);
+  return localDateTimeValue(date);
+}
+
+function localDateTimeValue(date: Date): string {
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return [
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`,
+    `${pad(date.getHours())}:${pad(date.getMinutes())}`,
+  ].join("T");
 }
 
 export function UssdRequests() {
@@ -102,7 +110,10 @@ export function UssdRequests() {
           Authorization: `Bearer ${await user.getIdToken()}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(approval),
+        body: JSON.stringify({
+          ...approval,
+          scheduledAtMillis: new Date(approval.scheduledAt).getTime(),
+        }),
       });
       const result = (await response.json().catch(() => null)) as { error?: string } | null;
       if (!response.ok) throw new Error(result?.error ?? "Could not schedule the visit.");
