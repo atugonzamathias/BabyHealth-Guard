@@ -5,10 +5,11 @@ export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   try {
-    await requireStaff(request);
+    const context = await requireStaff(request);
     const snapshot = await getAdminDb()
       .collection("users")
       .where("role", "==", "midwife")
+      .where("facilityId", "==", context.facilityId)
       .get();
     const midwives = snapshot.docs
       .map((entry) => {
@@ -18,6 +19,7 @@ export async function GET(request: Request) {
           uid: entry.id,
           fullName: typeof data.fullName === "string" ? data.fullName : "",
           phone: typeof data.phone === "string" ? data.phone : "",
+          facilityId: typeof data.facilityId === "string" ? data.facilityId : "",
           facilityName: typeof data.facilityName === "string" ? data.facilityName : "",
         };
       })

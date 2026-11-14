@@ -1,5 +1,5 @@
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
-import { apiError, requireStaff } from "@/lib/api-auth";
+import { apiError, requireStaff, getMotherInStaffFacility } from "@/lib/api-auth";
 import { getAdminDb } from "@/lib/firebase-admin";
 import { sendSmsToMother } from "@/lib/sms-server";
 
@@ -10,7 +10,7 @@ const allowedReminderMinutes = new Set([5, 30, 60, 720, 1440]);
 
 export async function POST(request: Request) {
   try {
-    const { uid } = await requireStaff(request);
+    const context = await requireStaff(request);
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
@@ -50,11 +50,8 @@ export async function POST(request: Request) {
       );
     }
 
+    const motherData = await getMotherInStaffFacility(motherUid, context);
     const motherRef = getAdminDb().doc(`users/${motherUid}`);
-    const mother = await motherRef.get();
-    if (!mother.exists || mother.data()?.role !== "mother") {
-      return Response.json({ error: "Mother profile was not found." }, { status: 404 });
-    }
     const appointmentRef = motherRef.collection("appointments").doc();
     const scheduledAt = Timestamp.fromMillis(scheduledAtMillis);
     await appointmentRef.create({
@@ -62,6 +59,8 @@ export async function POST(request: Request) {
       scheduledAt,
       clinic,
       agenda,
+      facilityId: motherData.facilityId,
+      facilityName: motherData.facilityName,
       midwifeName:
         typeof payload.staffName === "string" ? payload.staffName.slice(0, 100) : "",
       status: "scheduled",
@@ -71,7 +70,7 @@ export async function POST(request: Request) {
       sendConfirmation: sendSms,
       smsConsentConfirmed: sendSms && consentConfirmed,
       confirmationStatus: sendSms ? "queued" : "disabled",
-      createdBy: uid,
+      createdBy: context.uid,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
@@ -88,7 +87,7 @@ export async function POST(request: Request) {
           motherUid,
           message: `BabyHealth Guard: Your ${type.toLowerCase()} visit is scheduled for ${dateText} at ${clinic || "your clinic"}. Contact your health worker if you need to change it.`,
           category: "appointment_confirmation",
-          sentBy: uid,
+          sentBy: context.uid,
           consentConfirmed: true,
         });
         confirmationStatus = result.status;
@@ -109,7 +108,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const { uid } = await requireStaff(request);
+    const context = await requireStaff(request);
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
@@ -127,11 +126,7 @@ export async function PATCH(request: Request) {
     ) {
       return Response.json({ error: "Appointment status update is invalid." }, { status: 400 });
     }
-    const motherRef = getAdminDb().doc(`users/${motherUid}`);
-    const mother = await motherRef.get();
-    if (!mother.exists || mother.data()?.role !== "mother") {
-      return Response.json({ error: "Mother profile was not found." }, { status: 404 });
-    }
+    const motherData = await getMotherInStaffFacility(motherUid, context);
     const appointmentRef = getAdminDb().doc(
       `users/${motherUid}/appointments/${appointmentId}`,
     );
@@ -139,10 +134,13 @@ export async function PATCH(request: Request) {
     if (!appointment.exists) {
       return Response.json({ error: "Appointment was not found." }, { status: 404 });
     }
+    if (appointment.data()?.facilityId && appointment.data()?.facilityId !== motherData.facilityId) {
+      return Response.json({ error: "This appointment is outside your facility." }, { status: 403 });
+    }
     await appointmentRef.update({
       status,
       updatedAt: FieldValue.serverTimestamp(),
-      updatedBy: uid,
+      updatedBy: context.uid,
       ...(status === "cancelled" && appointment.data()?.reminderStatus === "pending"
         ? { reminderStatus: "cancelled" }
         : {}),

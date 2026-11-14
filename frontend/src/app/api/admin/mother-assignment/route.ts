@@ -1,6 +1,6 @@
 import { getAuth } from "firebase-admin/auth";
 import { FieldValue } from "firebase-admin/firestore";
-import { apiError, requireAdmin } from "@/lib/api-auth";
+import { apiError, requireAdmin, getMotherInStaffFacility } from "@/lib/api-auth";
 import { getAdminApp, getAdminDb } from "@/lib/firebase-admin";
 
 export const runtime = "nodejs";
@@ -28,13 +28,13 @@ function validPhone(value: string): boolean {
 
 export async function GET(request: Request) {
   try {
-    await requireAdmin(request);
+    const context = await requireAdmin(request);
     const adminAuth = getAuth(getAdminApp());
+    const staffQuery = getAdminDb().collection("users").where("role", "in", STAFF_ROLES);
     const [staffSnapshot, authUsers] = await Promise.all([
-      getAdminDb()
-        .collection("users")
-        .where("role", "in", STAFF_ROLES)
-        .get(),
+      context.isSystemAdmin
+        ? staffQuery.get()
+        : staffQuery.where("facilityId", "==", context.facilityId).get(),
       (async () => {
         const users: Awaited<ReturnType<typeof adminAuth.listUsers>>["users"] = [];
         let pageToken: string | undefined;
@@ -70,6 +70,7 @@ export async function GET(request: Request) {
           fullName,
           phone,
           role,
+          facilityId: text(profile.facilityId),
           facilityName: text(profile.facilityName),
         };
       })
@@ -84,7 +85,7 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    await requireAdmin(request);
+    const context = await requireAdmin(request);
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
@@ -105,18 +106,19 @@ export async function PATCH(request: Request) {
     }
 
     const db = getAdminDb();
-    const motherRef = db.doc(`users/${motherUid}`);
-    const motherSnapshot = await motherRef.get();
-    if (!motherSnapshot.exists || text(motherSnapshot.data()?.role).toLowerCase() !== "mother") {
-      return Response.json({ error: "Mother profile was not found." }, { status: 404 });
+    const motherData = await getMotherInStaffFacility(motherUid, context);
+    const motherFacilityId = text(motherData.facilityId);
+    if (!motherFacilityId) {
+      return Response.json({ error: "Mother profile is missing a facility assignment." }, { status: 403 });
     }
 
     if (!staffUid) {
-      await motherRef.update({
+      await db.doc(`users/${motherUid}`).update({
         assignedStaffUid: FieldValue.delete(),
         assignedStaffName: FieldValue.delete(),
         assignedStaffPhone: FieldValue.delete(),
         assignedStaffRole: FieldValue.delete(),
+        assignedStaffFacilityId: FieldValue.delete(),
         assignedStaffFacilityName: FieldValue.delete(),
         updatedAt: FieldValue.serverTimestamp(),
       });
@@ -133,6 +135,7 @@ export async function PATCH(request: Request) {
     const role = text(staffProfile.role).toLowerCase();
     const fullName = text(staffProfile.fullName);
     const phone = text(staffProfile.phone);
+    const staffFacilityId = text(staffProfile.facilityId);
     if (staffProfile.disabled === true || !STAFF_ROLES.includes(role)) {
       return Response.json({ error: "Selected staff member is not active." }, { status: 400 });
     }
@@ -140,6 +143,12 @@ export async function PATCH(request: Request) {
       return Response.json(
         { error: "Selected staff member must have a name and valid phone number." },
         { status: 400 },
+      );
+    }
+    if (!staffFacilityId || staffFacilityId !== motherFacilityId) {
+      return Response.json(
+        { error: "Selected staff member does not belong to the same facility as the mother." },
+        { status: 403 },
       );
     }
 
@@ -166,14 +175,16 @@ export async function PATCH(request: Request) {
       fullName,
       phone,
       role,
+      facilityId: staffFacilityId,
       facilityName: text(staffProfile.facilityName),
     };
-    await motherRef.update({
+    await db.doc(`users/${motherUid}`).update({
       assignedStaffUid: staffUid,
       assignedStaffName: fullName,
       assignedStaffPhone: phone,
       assignedStaffRole: role,
-      assignedStaffFacilityName: assignedStaff.facilityName,
+      assignedStaffFacilityId: staffFacilityId,
+      assignedStaffFacilityName: text(staffProfile.facilityName),
       updatedAt: FieldValue.serverTimestamp(),
     });
 

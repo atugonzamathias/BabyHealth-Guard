@@ -129,6 +129,8 @@ async function requestVisit(
     .doc(stableId(`${motherUid}:${sessionId}`, `request:${selection}`));
   await ref.create({
     motherId: motherUid,
+    facilityId: cleanText(profile.facilityId),
+    facilityName: cleanText(profile.facilityName),
     motherName: cleanText(profile.fullName, 120),
     phone: cleanText(profile.phone) || cleanText(profile.phoneNumber),
     midwifeId: cleanText(profile.assignedStaffUid),

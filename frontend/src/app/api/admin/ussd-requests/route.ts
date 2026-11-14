@@ -1,5 +1,5 @@
 import { FieldValue, Timestamp, type DocumentData } from "firebase-admin/firestore";
-import { apiError, requireAdmin } from "@/lib/api-auth";
+import { apiError, getMotherInStaffFacility, requireAdmin } from "@/lib/api-auth";
 import { getAdminDb } from "@/lib/firebase-admin";
 
 export const runtime = "nodejs";
@@ -10,14 +10,20 @@ function text(value: unknown): string {
 
 export async function GET(request: Request) {
   try {
-    await requireAdmin(request);
+    const context = await requireAdmin(request);
     const snapshot = await getAdminDb()
       .collection("ussd_requests")
       .where("status", "==", "pending")
       .get();
-    const requests = snapshot.docs
-      .map((document) => {
+    const requests = (await Promise.all(snapshot.docs.map(async (document) => {
         const data = document.data() as DocumentData;
+        const motherUid = text(data.motherId);
+        if (!motherUid) return null;
+        try {
+          await getMotherInStaffFacility(motherUid, context);
+        } catch {
+          return null;
+        }
         const createdAt =
           data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : null;
         return {
@@ -29,7 +35,7 @@ export async function GET(request: Request) {
           preferredWindow: text(data.preferredWindow),
           createdAt,
         };
-      })
+      }))).filter((request): request is NonNullable<typeof request> => Boolean(request))
       .sort(
         (left, right) =>
           new Date(right.createdAt ?? 0).getTime() -
@@ -44,7 +50,8 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const { uid } = await requireAdmin(request);
+    const context = await requireAdmin(request);
+    const { uid } = context;
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
@@ -60,16 +67,26 @@ export async function PATCH(request: Request) {
     }
 
     const ref = getAdminDb().collection("ussd_requests").doc(requestId);
+    const requestSnapshot = await ref.get();
+    if (!requestSnapshot.exists) {
+      return Response.json({ error: "USSD request was not found." }, { status: 404 });
+    }
+    const motherUid = text(requestSnapshot.data()?.motherId);
+    if (!motherUid) {
+      return Response.json({ error: "This USSD request has no valid mother facility." }, { status: 403 });
+    }
+    await getMotherInStaffFacility(motherUid, context);
+
     const updated = await getAdminDb().runTransaction(async (transaction) => {
       const current = await transaction.get(ref);
-      if (!current.exists) return "missing";
-      if (current.data()?.status !== "pending") return "already-reviewed";
+      if (!current.exists) return "missing" as const;
+      if (current.data()?.status !== "pending") return "already-reviewed" as const;
       transaction.update(ref, {
         status,
         reviewedBy: uid,
         reviewedAt: FieldValue.serverTimestamp(),
       });
-      return "updated";
+      return "updated" as const;
     });
     if (updated === "missing") {
       return Response.json({ error: "USSD request was not found." }, { status: 404 });

@@ -76,7 +76,7 @@ type SessionState =
   | { status: "loading" }
   | { status: "signed-out" }
   | { status: "unauthorized"; message: string }
-  | { status: "staff"; user: User; name: string; role: string; facility: string };
+  | { status: "staff"; user: User; name: string; role: string; facility: string; facilityId: string };
 
 type RecordsState = {
   dailyVitals: CareRecord[];
@@ -184,6 +184,12 @@ export default function Home() {
               : typeof profile.facilityId === "string"
                 ? profile.facilityId
                 : "Health facility",
+          facilityId:
+            typeof profile.facilityId === "string"
+              ? profile.facilityId
+              : typeof profile.facilityName === "string"
+                ? profile.facilityName
+                : "",
         });
       } catch (error) {
         if (!active || auth.currentUser?.uid !== user.uid) return;
@@ -202,6 +208,7 @@ export default function Home() {
   useEffect(() => {
     if (session.status !== "staff") return;
     return watchMothers(
+      session.facilityId ?? session.facility,
       (nextMothers) => {
         setMothers(nextMothers);
         setSelectedUid((current) =>
@@ -514,8 +521,8 @@ export default function Home() {
                         "Contact details not recorded"}
                     </span>
                   </button>
-                ))
-              )}
+                )))
+              }
             </div>
           </section>
 

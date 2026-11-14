@@ -90,6 +90,8 @@ export async function sendSmsToMother({
   const logId = motherRef.collection("smsLogs").doc().id;
   const logEntry = {
     motherUid,
+    facilityId: text(profile.facilityId),
+    facilityName: text(profile.facilityName),
     recipient: phone,
     direction: "outbound",
     message: finalMessage,
@@ -209,6 +211,8 @@ export async function sendSmsToStaff({
     .slice(0, 40)}`;
   const db = getAdminDb();
   const motherRef = db.doc(`users/${motherUid}`);
+  const motherSnapshot = await motherRef.get();
+  const motherProfile = motherSnapshot.data() ?? {};
   const nestedLogRef = motherRef.collection("smsLogs").doc(logId);
   const billingLogRef = db.collection("sms_logs").doc(logId);
   const username = process.env.AFRICASTALKING_USERNAME?.trim();
@@ -220,6 +224,8 @@ export async function sendSmsToStaff({
   ) => {
     const entry = {
       motherUid,
+      facilityId: text(motherProfile.facilityId),
+      facilityName: text(motherProfile.facilityName),
       recipient: validPhone ? phone : "",
       direction: "outbound",
       message: finalMessage,

@@ -32,12 +32,12 @@ function isAllowedRole(value: string): boolean {
 
 export async function GET(request: Request) {
   try {
-    await requireAdmin(request);
+    const context = await requireAdmin(request);
     const db = getAdminDb();
-    const usersSnapshot = await db
-      .collection("users")
-      .where("role", "in", [...VALID_STAFF_ROLES])
-      .get();
+    const usersQuery = db.collection("users").where("role", "in", [...VALID_STAFF_ROLES]);
+    const usersSnapshot = context.isSystemAdmin
+      ? await usersQuery.get()
+      : await usersQuery.where("facilityId", "==", context.facilityId).get();
     const authUsers = await getAuth(getAdminApp()).listUsers();
     const disabledByUid = new Map<string, boolean>();
     for (const user of authUsers.users) {
@@ -86,6 +86,7 @@ export async function GET(request: Request) {
           fullName: midwife.fullName,
           phone: midwife.phone,
           facilityName: midwife.facilityName,
+          facilityId: midwife.facilityId,
           role: "midwife",
           active: true,
           updatedAt: FieldValue.serverTimestamp(),
@@ -109,7 +110,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    await requireAdmin(request);
+    const context = await requireAdmin(request);
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
@@ -155,6 +156,12 @@ export async function POST(request: Request) {
       return Response.json({ error: "The selected facility has no valid name." }, { status: 400 });
     }
     const facilityId = facilitySnapshot.id;
+    if (!context.isSystemAdmin && facilityId !== context.facilityId) {
+      return Response.json(
+        { error: "You can only create staff in your own facility." },
+        { status: 403 },
+      );
+    }
 
     const adminAuth = getAuth(getAdminApp());
     const existingUser = await adminAuth.getUserByEmail(email).catch(() => null);
@@ -188,6 +195,7 @@ export async function POST(request: Request) {
         fullName,
         phone,
         facilityName,
+        facilityId,
         role,
         active: true,
         updatedAt: FieldValue.serverTimestamp(),
@@ -214,7 +222,8 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const { uid: adminUid } = await requireAdmin(request);
+    const context = await requireAdmin(request);
+    const { uid: adminUid } = context;
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
@@ -240,6 +249,13 @@ export async function PATCH(request: Request) {
     const currentProfile = await staffProfileRef.get();
     if (!currentProfile.exists) {
       return Response.json({ error: "Staff profile was not found." }, { status: 404 });
+    }
+    const currentData = currentProfile.data() ?? {};
+    if (
+      !context.isSystemAdmin &&
+      normalizeText(currentData.facilityId) !== context.facilityId
+    ) {
+      return Response.json({ error: "Staff member is outside your facility." }, { status: 403 });
     }
 
     if (
@@ -293,6 +309,7 @@ export async function PATCH(request: Request) {
         fullName: normalizeText(refreshedData?.fullName),
         phone: normalizeText(refreshedData?.phone),
         facilityName: normalizeText(refreshedData?.facilityName),
+        facilityId: normalizeText(refreshedData?.facilityId),
         role: "midwife",
         active: true,
         updatedAt: FieldValue.serverTimestamp(),

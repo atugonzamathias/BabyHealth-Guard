@@ -16,7 +16,9 @@ appointments, referrals, SMS messaging, a live USSD callback, and operational re
 2. Enable Email/Password sign-in in Firebase Authentication.
 3. Create staff accounts in Firebase Authentication and provision matching
    `users/{uid}` documents with an approved `role` (`doctor`, `admin`, `health_worker`,
-   `nurse`, or `midwife`). Staff roles must not be assigned by public self-registration.
+   `nurse`, `midwife`, or `system_admin`). Staff roles must not be assigned by public
+   self-registration. Every approved staff profile must also contain a valid
+   `facilityId` and `facilityName`.
 4. From the repository root, deploy the Firestore rules and indexes with
    `firebase deploy --only firestore:rules,firestore:indexes`.
 5. From `frontend/`, run `npm install` and `npm run dev`.
@@ -39,6 +41,14 @@ sequential IDs such as `FAC-001`, which are stored as the facility document ID
 and in each assigned staff profile. Staff accounts include a phone number;
 active midwife profiles publish only their name, phone, and facility in the
 read-only `staffDirectory` collection for registration and mobile calling.
+
+Facility administrators are restricted to their own facility. The `system_admin`
+role is the explicitly global administrator role and may manage facilities and
+view cross-facility operational aggregates. Records without a valid `facilityId`
+are intentionally denied to staff until they are migrated; do not infer a facility
+from `facilityName`. A migration should first map each legacy profile to an existing
+`facilities/{facilityId}` document, then write the validated `facilityId` and
+canonical `facilityName` before restoring access.
 
 Any approved staff member can register a mother from the **Mothers** tab using
 the Flutter app's `MotherProfile` fields. Staff-entered profiles are saved with

@@ -1,11 +1,11 @@
-import { apiError, requireStaff } from "@/lib/api-auth";
+import { apiError, requireStaff, getMotherInStaffFacility } from "@/lib/api-auth";
 import { sendSmsToMother } from "@/lib/sms-server";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    const { uid } = await requireStaff(request);
+    const context = await requireStaff(request);
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
@@ -31,11 +31,12 @@ export async function POST(request: Request) {
       );
     }
 
+    await getMotherInStaffFacility(motherUid, context);
     const result = await sendSmsToMother({
       motherUid,
       message,
       category,
-      sentBy: uid,
+      sentBy: context.uid,
       consentConfirmed: true,
     });
     return Response.json({

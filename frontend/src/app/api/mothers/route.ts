@@ -17,7 +17,7 @@ function text(value: unknown): string {
 
 export async function POST(request: Request) {
   try {
-    const { uid: staffUid } = await requireStaff(request);
+    const context = await requireStaff(request);
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
@@ -64,16 +64,22 @@ export async function POST(request: Request) {
     }
 
     const db = getAdminDb();
-    const staffProfile = await db.doc(`users/${staffUid}`).get();
-    const facilityName = text(staffProfile.data()?.facilityName);
+    const facilityId = context.facilityId;
+    const facilityName = context.facilityName;
+
     let midwifeName = "";
     let midwifePhone = "";
     if (midwifeUid) {
       const midwifeProfile = await db.doc(`users/${midwifeUid}`).get();
-      const isDisabled = midwifeProfile.data()?.disabled === true ||
+      const role = text(midwifeProfile.data()?.role).toLowerCase();
+      const isDisabled =
+        midwifeProfile.data()?.disabled === true ||
         (await getAuth(getAdminApp()).getUser(midwifeUid)).disabled;
-      if (!midwifeProfile.exists || midwifeProfile.data()?.role !== "midwife" || isDisabled) {
+      if (!midwifeProfile.exists || role !== "midwife" || isDisabled) {
         return Response.json({ error: "Selected midwife is no longer active. Refresh the list." }, { status: 400 });
+      }
+      if (text(midwifeProfile.data()?.facilityId) !== facilityId) {
+        return Response.json({ error: "Selected midwife does not belong to your facility." }, { status: 403 });
       }
       midwifeName = text(midwifeProfile.data()?.fullName);
       midwifePhone = text(midwifeProfile.data()?.phone);
@@ -94,10 +100,11 @@ export async function POST(request: Request) {
       parity,
       conditions: [...new Set(conditions)],
       role: "mother",
+      facilityId,
+      facilityName,
       midwifeName,
       midwifePhone,
-      facilityName,
-      createdBy: staffUid,
+      createdBy: context.uid,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     };

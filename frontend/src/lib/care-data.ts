@@ -28,6 +28,7 @@ export type MotherProfile = {
   pregnancyStage: string;
   parity: string;
   conditions: string[];
+  facilityId: string;
   facilityName: string;
   midwifeName?: string;
   midwifePhone?: string;
@@ -35,6 +36,7 @@ export type MotherProfile = {
   assignedStaffName?: string;
   assignedStaffPhone?: string;
   assignedStaffRole?: string;
+  assignedStaffFacilityId?: string;
   assignedStaffFacilityName?: string;
 };
 
@@ -137,6 +139,7 @@ function motherFromData(uid: string, data: DocumentData): MotherProfile {
     conditions: Array.isArray(data.conditions)
       ? data.conditions.filter((value): value is string => typeof value === "string")
       : [],
+    facilityId: typeof data.facilityId === "string" ? data.facilityId : "",
     facilityName: typeof data.facilityName === "string" ? data.facilityName : "",
     midwifeName: typeof data.midwifeName === "string" ? data.midwifeName : undefined,
     midwifePhone: typeof data.midwifePhone === "string" ? data.midwifePhone : undefined,
@@ -148,6 +151,10 @@ function motherFromData(uid: string, data: DocumentData): MotherProfile {
       typeof data.assignedStaffPhone === "string" ? data.assignedStaffPhone : undefined,
     assignedStaffRole:
       typeof data.assignedStaffRole === "string" ? data.assignedStaffRole : undefined,
+    assignedStaffFacilityId:
+      typeof data.assignedStaffFacilityId === "string"
+        ? data.assignedStaffFacilityId
+        : undefined,
     assignedStaffFacilityName:
       typeof data.assignedStaffFacilityName === "string"
         ? data.assignedStaffFacilityName
@@ -190,12 +197,14 @@ async function authenticatedApiRequest<T>(
 }
 
 export function watchMothers(
+  facilityId: string,
   onData: (mothers: MotherProfile[]) => void,
   onError: (error: Error) => void,
 ): Unsubscribe {
   const mothersQuery = query(
     collection(db, "users"),
     where("role", "==", "mother"),
+    where("facilityId", "==", facilityId),
   );
 
   return onSnapshot(

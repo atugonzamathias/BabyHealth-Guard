@@ -74,7 +74,7 @@ function mapSmsLog(snapshot: QueryDocumentSnapshot<DocumentData>) {
 
 export async function GET(request: Request) {
   try {
-    await requireAdmin(request);
+    const context = await requireAdmin(request);
 
     const apiKey = process.env.AFRICASTALKING_API_KEY?.trim();
     const username = process.env.AFRICASTALKING_USERNAME?.trim();
@@ -145,15 +145,29 @@ export async function GET(request: Request) {
     const logs = [...deduplicated.values()].sort(
       (left, right) => right.createdAt - left.createdAt,
     );
-    const successful = logs.filter((log) => log.status === "accepted");
-    const failed = logs.filter((log) => log.status === "failed");
+    const motherProfiles = new Map(
+      await Promise.all(
+        [...new Set(logs.map((log) => log.motherUid))].map(async (uid) => {
+          const snapshot = await getAdminDb().doc(`users/${uid}`).get();
+          return [uid, snapshot.data() ?? null] as const;
+        }),
+      ),
+    );
+    const scopedLogs = context.isSystemAdmin
+      ? logs
+      : logs.filter(
+          (log) =>
+            text(motherProfiles.get(log.motherUid)?.facilityId) === context.facilityId,
+        );
+    const successful = scopedLogs.filter((log) => log.status === "accepted");
+    const failed = scopedLogs.filter((log) => log.status === "failed");
     const estimatedCost = successful.reduce((total, log) => total + log.cost, 0);
     const totalSegments = successful.reduce(
       (total, log) => total + log.segmentCount,
       0,
     );
     const start = (page - 1) * pageSize;
-    const pageLogs = logs.slice(start, start + pageSize);
+    const pageLogs = scopedLogs.slice(start, start + pageSize);
     const missingRecipientUids = [
       ...new Set(
         pageLogs
@@ -191,7 +205,7 @@ export async function GET(request: Request) {
             )
           : null,
       totalSent: successful.length,
-      totalAttempts: logs.length,
+      totalAttempts: scopedLogs.length,
       successful: successful.length,
       failed: failed.length,
       totalSegments,
@@ -200,8 +214,8 @@ export async function GET(request: Request) {
       smsLogs: recentLogs,
       page,
       pageSize,
-      totalLogs: logs.length,
-      hasMore: start + pageSize < logs.length,
+      totalLogs: scopedLogs.length,
+      hasMore: start + pageSize < scopedLogs.length,
     });
   } catch (error) {
     return apiError(error);

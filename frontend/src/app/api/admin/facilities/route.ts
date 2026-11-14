@@ -10,11 +10,16 @@ function normalizeName(value: unknown): string {
 
 export async function GET(request: Request) {
   try {
-    await requireAdmin(request);
-    const snapshot = await getAdminDb().collection("facilities").orderBy("name").get();
+    const context = await requireAdmin(request);
+    const query = getAdminDb().collection("facilities").orderBy("name");
+    const snapshot = context.isSystemAdmin
+      ? await query.get()
+      : await getAdminDb().collection("facilities").doc(context.facilityId).get().then((doc) => ({
+          docs: doc.exists ? [doc] : [],
+        }));
     const facilities = snapshot.docs.map((facility) => ({
       id: facility.id,
-      name: normalizeName(facility.data().name),
+      name: normalizeName(facility.data()?.name),
     }));
     return Response.json({ facilities });
   } catch (error) {
@@ -24,7 +29,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    await requireAdmin(request);
+    const context = await requireAdmin(request);
+    if (!context.isSystemAdmin) {
+      return Response.json({ error: "Only a system administrator can manage facilities." }, { status: 403 });
+    }
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
@@ -87,7 +95,10 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    await requireAdmin(request);
+    const context = await requireAdmin(request);
+    if (!context.isSystemAdmin) {
+      return Response.json({ error: "Only a system administrator can manage facilities." }, { status: 403 });
+    }
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
@@ -154,7 +165,10 @@ export async function PATCH(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    await requireAdmin(request);
+    const context = await requireAdmin(request);
+    if (!context.isSystemAdmin) {
+      return Response.json({ error: "Only a system administrator can manage facilities." }, { status: 403 });
+    }
     const payload = (await request.json().catch(() => null)) as
       | Record<string, unknown>
       | null;
