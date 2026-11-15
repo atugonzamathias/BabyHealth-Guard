@@ -26,6 +26,18 @@ function text(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
+export function normalizeE164(value: string): string {
+  const digits = value.trim().replace(/[^\d+]/g, "");
+  const normalized = digits.startsWith("+256")
+    ? digits
+    : digits.startsWith("256")
+      ? `+${digits}`
+      : digits.startsWith("0")
+        ? `+256${digits.slice(1)}`
+        : "";
+  return /^\+256\d{9}$/.test(normalized) ? normalized : "";
+}
+
 async function assignedStaffContact(
   profile: DocumentData,
 ): Promise<string> {

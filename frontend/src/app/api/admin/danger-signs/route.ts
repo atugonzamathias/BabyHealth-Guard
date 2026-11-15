@@ -2,7 +2,7 @@ import { getAdminDb } from "@/lib/firebase-admin";
 import type { DocumentData } from "firebase-admin/firestore";
 import { apiError, requireStaffContext } from "@/lib/api-auth";
 
-const OPEN_STATUSES = new Set(["PENDING_ACTION", "ACKNOWLEDGED"]);
+const OPEN_STATUSES = new Set(["PENDING_ACTION", "ACKNOWLEDGED", "REFERRED"]);
 
 export async function GET(request: Request): Promise<Response> {
   try {

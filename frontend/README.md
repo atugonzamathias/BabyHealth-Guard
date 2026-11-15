@@ -15,7 +15,11 @@ server-derived mother, phone, facility, and visit-type fields. Declines require
 a reason, and both outcomes send an SMS to the mother.
 
 Option 3 records danger signs and severity in the mother's `healthLogs` and
-notifies the assigned staff member by SMS. USSD appointments use the standard
+creates a facility-scoped emergency triage report and notifies the assigned
+staff member by SMS. Assigned staff can acknowledge the alert, log a referral
+from the triage modal, optionally notify the mother and receiving desk by
+single-segment SMS, and resolve it after safe transfer. Referral details are
+audited in the mother's `healthLogs`. USSD appointments use the standard
 `users/{motherUid}/appointments/{appointmentId}` path, preserve the selected
 local time through epoch milliseconds, and resolve the actual active midwife
 server-side.

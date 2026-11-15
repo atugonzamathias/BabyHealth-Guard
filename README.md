@@ -33,6 +33,7 @@ reminders use Firestore idempotency flags to prevent duplicate sends.
 - Configure Firebase Web values in `frontend/.env.local` using `frontend/.env.example` as a template.
 - From `frontend/`, run `npm install` and `npm run dev`.
 - The Next.js dashboard supports Firebase staff sign-in, mother records, newborn care, appointment management, patient referrals, SMS messaging, a live USSD callback, and operational analytics.
+- Emergency danger-sign alerts are facility-scoped and recipient-scoped: assigned staff handle the alert, while global administrators handle unassigned alerts. The triage workflow supports acknowledgement, referral to a receiving facility with optional transport-desk SMS, and resolution with a permanent health-log audit.
 - Staff accounts must be provisioned in Firebase Authentication with a corresponding `users/{uid}` profile containing an approved staff `role`. Public staff self-registration is not enabled.
 - Settings is organized into **USSD visit requests**, **SMS billing & top up**, and **Facilities** tabs; USSD requests are shown first.
 - Deploy the access rules in `mobile/firestore.rules` before using real patient records.
