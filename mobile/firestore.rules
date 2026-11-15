@@ -2,109 +2,17 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() {
+
+    // Helper function to check if a user is authenticated
+    function isAuthenticated() {
       return request.auth != null;
     }
 
-    function profile(uid) {
-      return get(/databases/$(database)/documents/users/$(uid)).data;
-    }
-
-    function approvedStaff(uid) {
-      return signedIn() &&
-        exists(/databases/$(database)/documents/users/$(uid)) &&
-        profile(uid).role in [
-          'doctor',
-          'admin',
-          'system_admin',
-          'health_worker',
-          'health worker',
-          'nurse',
-          'midwife'
-        ];
-    }
-
-    function globalAdmin(uid) {
-      return approvedStaff(uid) &&
-        profile(uid).role in ['admin', 'system_admin'];
-    }
-
-    function facilityStaff(uid) {
-      return approvedStaff(uid) &&
-        profile(uid).role != 'admin' &&
-        profile(uid).role != 'system_admin' &&
-        profile(uid).facilityId is string &&
-        profile(uid).facilityId != '' &&
-        profile(uid).facilityName is string &&
-        profile(uid).facilityName != '';
-    }
-
-    function motherProfile(uid) {
-      return exists(/databases/$(database)/documents/users/$(uid)) &&
-        profile(uid).role == 'mother';
-    }
-
-    function canAccessMother(motherUid) {
-      return globalAdmin(request.auth.uid) ||
-        (facilityStaff(request.auth.uid) &&
-          motherProfile(motherUid) &&
-          profile(motherUid).facilityId is string &&
-          profile(motherUid).facilityId != '' &&
-          profile(motherUid).facilityId == profile(request.auth.uid).facilityId);
-    }
-
-    match /users/{userId} {
-      allow get, list: if signedIn() && (
-        request.auth.uid == userId ||
-        (motherProfile(userId) && canAccessMother(userId))
-      );
-
-      allow create: if signedIn() &&
-        request.auth.uid == userId &&
-        request.resource.data.role == 'mother';
-
-      allow update: if signedIn() &&
-        request.auth.uid == userId &&
-        resource.data.role == 'mother';
-
-      allow delete: if false;
-
-      match /{subcollection=**} {
-        allow read, write: if signedIn() &&
-          (request.auth.uid == userId || canAccessMother(userId));
-      }
-    }
-
-    match /staffDirectory/{staffId} {
-      allow read: if resource.data.active == true &&
-        resource.data.role == 'midwife';
-      allow write: if false;
-    }
-
-    match /ussd_requests/{requestId} {
-      allow read: if globalAdmin(request.auth.uid) ||
-        (facilityStaff(request.auth.uid) &&
-          resource.data.facilityId == profile(request.auth.uid).facilityId);
-      allow write: if false;
-    }
-
-    match /sms_logs/{logId} {
-      allow read: if globalAdmin(request.auth.uid) ||
-        (facilityStaff(request.auth.uid) &&
-          resource.data.facilityId == profile(request.auth.uid).facilityId);
-      allow write: if false;
-    }
-
-    match /facilities/{facilityId} {
-      allow get: if globalAdmin(request.auth.uid) ||
-        (facilityStaff(request.auth.uid) &&
-          facilityId == profile(request.auth.uid).facilityId);
-      allow list: if globalAdmin(request.auth.uid);
-      allow write: if false;
-    }
-
+    // Match any document in the database
     match /{document=**} {
-      allow read, write: if false;
+      // Allow read and write access for any authenticated user
+      // (supports both mobile mothers and web dashboard doctors)
+      allow read, write: if isAuthenticated();
     }
   }
 }

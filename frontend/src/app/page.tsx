@@ -10,6 +10,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { auth, db } from "@/lib/firebase";
 import { Communications } from "@/components/communications";
+import { EmergencyTriage } from "@/components/emergency-triage";
 import { EnterRecord } from "@/components/enter-record";
 import { NewbornCare } from "@/components/newborn-care";
 import { Referrals } from "@/components/referrals";
@@ -430,6 +431,7 @@ export default function Home() {
       </header>
 
       <div className="mx-auto max-w-7xl px-5 py-6">
+        <EmergencyTriage user={session.user} />
         {dataError && (
           <p role="alert" className="mb-5 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">
             {dataError}

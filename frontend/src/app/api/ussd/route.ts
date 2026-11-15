@@ -21,15 +21,6 @@ const SYMPTOMS: Record<string, string> = {
   "4": "Reduced fetal movement",
   "5": "Fever or chills",
 };
-const STAFF_ROLES = new Set([
-  "doctor",
-  "admin",
-  "health_worker",
-  "health worker",
-  "nurse",
-  "midwife",
-]);
-
 type MotherProfile = Record<string, unknown>;
 
 function cleanText(value: unknown, maxLength = 100): string {
@@ -168,36 +159,6 @@ async function requestVisit(
     }
     throw error;
   });
-}
-
-async function assignedHealthWorker(profile: MotherProfile) {
-  const db = getAdminDb();
-  const staffUid = cleanText(profile.assignedStaffUid);
-  let staffProfile: MotherProfile = {};
-  if (/^[A-Za-z0-9_-]{1,128}$/.test(staffUid)) {
-    const snapshot = await db.doc(`users/${staffUid}`).get();
-    const data = snapshot.data() as MotherProfile | undefined;
-    if (
-      snapshot.exists &&
-      data &&
-      data?.disabled !== true &&
-      STAFF_ROLES.has(cleanText(data?.role).toLowerCase())
-    ) {
-      staffProfile = data;
-    }
-  }
-  return {
-    staffUid,
-    name:
-      cleanText(staffProfile.fullName) ||
-      cleanText(profile.assignedStaffName) ||
-      cleanText(profile.midwifeName) ||
-      "your health worker",
-    phone:
-      cleanText(staffProfile.phone) ||
-      cleanText(profile.assignedStaffPhone) ||
-      cleanText(profile.midwifePhone),
-  };
 }
 
 async function recordDangerAlert(
