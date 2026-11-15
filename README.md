@@ -3,11 +3,38 @@
 Digital maternal and newborn health monitoring system (MVP).
 
 ## Frontend (health-worker dashboard)
+
+### Current web-app updates
+
+The dashboard now enforces server-side facility isolation. The global `admin`
+role (and compatible `system_admin`) can access all mothers, including legacy
+profiles without a facility, so administrators can assign them safely. Other
+approved staff can access only records belonging to their own valid facility.
+Browser-supplied role, facility, mother, and staff values are not trusted.
+
+Settings is organized into **USSD visit requests**, **SMS billing & top up**, and
+**Facilities** tabs, with USSD requests shown first. USSD option 2 collects a
+visit type, then administrators can schedule or decline the request in a dialog.
+Declines require a reason and both outcomes notify the mother by SMS. Option 3
+records danger signs and severity in `healthLogs` and notifies assigned staff.
+The **Enter record** tab lets staff record the same mobile care activities on a
+mother's behalf: daily blood pressure and kick totals, additional kick counts,
+iron/folic adherence, and danger signs. The server re-checks the mother's
+facility before writing both the canonical daily record and an auditable health
+log with the staff member and facility metadata. Appointments, newborn care,
+referrals, and SMS remain available in their existing dashboard tabs.
+
+All SMS recipients are normalized to Uganda E.164 format. Messages are limited
+to one GSM-7 segment of at most 160 septets, dynamic values are shortened, and
+the optional `AT_SENDER_ID` is sent only when configured. Full Africa's Talking
+recipient responses are stored in the SMS logs. Appointment confirmations and
+reminders use Firestore idempotency flags to prevent duplicate sends.
 - The migrated Next.js/TypeScript dashboard is in `frontend/src/`; `frontend/index.html` remains as a legacy behavior/layout reference.
 - Configure Firebase Web values in `frontend/.env.local` using `frontend/.env.example` as a template.
 - From `frontend/`, run `npm install` and `npm run dev`.
 - The Next.js dashboard supports Firebase staff sign-in, mother records, newborn care, appointment management, patient referrals, SMS messaging, a live USSD callback, and operational analytics.
 - Staff accounts must be provisioned in Firebase Authentication with a corresponding `users/{uid}` profile containing an approved staff `role`. Public staff self-registration is not enabled.
+- Settings is organized into **USSD visit requests**, **SMS billing & top up**, and **Facilities** tabs; USSD requests are shown first.
 - Deploy the access rules in `mobile/firestore.rules` before using real patient records.
 - Live SMS and appointment writes use authenticated Next.js API routes. No Firebase Functions or Cloud Storage are required.
 
@@ -29,13 +56,13 @@ The mobile app and the Next.js dashboard use Firebase for authentication and car
 
 Copy `frontend/.env.example` to `frontend/.env.local` and set the Firebase Admin
 service-account JSON, `AFRICASTALKING_USERNAME`, `AFRICASTALKING_API_KEY`, and
-`SMS_REMINDER_CRON_SECRET` there. Set the same values as server-side environment
+`SMS_REMINDER_CRON_SECRET`, `SMS_DELIVERY_CALLBACK_SECRET`, and optional
+`AT_SENDER_ID` there. Set the same values as server-side environment
 variables on the Next.js hosting provider. These values must not use a
-`NEXT_PUBLIC_` prefix or be committed. Outbound SMS uses only the Africa's Talking
-username and API key; no sender ID is required or sent by the app. Confirm that your
-Africa's Talking account is authorized to send without a custom sender ID in your
-destination country. The key previously shared in chat should be revoked and rotated
-before live sending.
+`NEXT_PUBLIC_` prefix or be committed. Outbound SMS uses the Africa's Talking
+username and API key. `AT_SENDER_ID` is optional; when empty, the app omits the
+`from` parameter and uses Africa's Talking's default shared shortcode. Configure
+only a registered sender ID.
 
 The staff-authenticated `/api/sms` route loads the mother's phone from Firestore,
 requires the staff member to confirm consent, sends via Africa's Talking, and logs

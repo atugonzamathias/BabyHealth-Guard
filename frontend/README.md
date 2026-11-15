@@ -3,6 +3,72 @@
 The Next.js dashboard in `src/` supports staff sign-in, mother records, newborn care,
 appointments, referrals, SMS messaging, a live USSD callback, and operational reports.
 
+## Current web-app behavior
+
+### Settings and USSD
+
+Settings is divided into **USSD visit requests**, **SMS billing & top up**, and
+**Facilities** tabs. USSD requests are shown first. Option 2 collects a visit
+type (Antenatal, Delivery, Postnatal, or Immunization); only administrators can
+schedule or decline requests. Approval uses a dialog with locked,
+server-derived mother, phone, facility, and visit-type fields. Declines require
+a reason, and both outcomes send an SMS to the mother.
+
+Option 3 records danger signs and severity in the mother's `healthLogs` and
+notifies the assigned staff member by SMS. USSD appointments use the standard
+`users/{motherUid}/appointments/{appointmentId}` path, preserve the selected
+local time through epoch milliseconds, and resolve the actual active midwife
+server-side.
+
+### Enter record
+
+The **Enter record** dashboard tab supports staff who are recording care for a
+mother who does not use the mobile app. It mirrors the mobile app's writable
+care activities:
+
+- daily blood pressure and kick totals;
+- additional kick counts;
+- iron and folic acid taken/not-taken status;
+- danger sign, severity, and description.
+
+`POST /api/mother-records` re-loads the mother with the shared authorization
+layer before writing. It writes facility and staff attribution to the daily
+vitals or health-log record, so staff cannot use the browser to record data for
+a different facility. Appointments, newborn records, referrals, and SMS already
+have dedicated staff dashboard surfaces.
+
+### Facility authorization
+
+The `admin` role is global and can access all mothers, including legacy mothers
+without a facility, so they can assign them safely. `system_admin` is a compatible
+global role. All other approved staff are restricted to their own valid facility.
+Records without `facilityId` are denied to non-admin staff. Server routes load
+authorization data from `users/{uid}` and do not trust browser-supplied role,
+facility, mother, or staff values. Firestore rules provide the client-side
+enforcement boundary.
+
+### SMS integration
+
+The shared SMS helper is used by `/api/sms`, `/api/appointments`,
+`/api/sms/reminders`, and USSD notifications. It normalizes Uganda numbers to
+E.164, omits `from` unless `AT_SENDER_ID` is configured, and limits every message
+to one GSM-7 segment of at most 160 septets. Dynamic names, facilities, dates,
+and phone numbers are shortened as needed. The complete Africa's Talking
+recipient response (`status`, `statusCode`, and `messageId`) is written to both
+SMS log paths and server logs.
+
+Appointment confirmations and reminders use Firestore idempotency flags
+(`confirmationSmsSent` and `reminderSmsSent`) to prevent duplicate sends.
+Configure Africa's Talking delivery callbacks as:
+
+```text
+https://<your-domain>/api/sms/delivery?token=<SMS_DELIVERY_CALLBACK_SECRET>
+```
+
+Configure an external scheduler to call `POST /api/sms/reminders` with
+`Authorization: Bearer <SMS_REMINDER_CRON_SECRET>` at least once per minute.
+The reminder route is not scheduled automatically by Next.js.
+
 ## Run locally
 
 1. Copy `.env.example` to `.env.local` and configure the Firebase Web App and

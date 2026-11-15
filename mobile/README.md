@@ -50,7 +50,7 @@ The shared Firestore rules allow mothers to access their own profiles and health
 
 Mother registration can select an active midwife from this directory. The chosen midwife's stored phone number is saved to the mother profile and used by the dashboard's call/SMS actions; emergency-call actions continue to use `112`.
 
-On the sign-in screen, **Forgot password?** sends Firebase Authentication's password-reset email to the entered address. Check the Firebase Authentication email template and authorized domains in the Firebase Console if reset emails do not arrive.
+On the sign-in screen, **Forgot password?** opens a reset dialog with the current sign-in email prefilled. The email is validated before sending, and the dialog shows a confirmation message after the request completes without revealing whether an address has an account. Network, rate-limit, configuration, and validation errors are shown in the dialog; successful requests keep the dialog open so the user can close it after checking the inbox and spam folder. Configure the Firebase Authentication password-reset email template and authorized domains in the Firebase Console if reset emails do not arrive.
 
 The mother dashboard uses the administrator-assigned care-team staff member's saved phone number for its call/SMS actions, falling back to the midwife chosen at registration when no assignment has been made.
 

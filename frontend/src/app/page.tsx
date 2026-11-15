@@ -10,6 +10,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { auth, db } from "@/lib/firebase";
 import { Communications } from "@/components/communications";
+import { EnterRecord } from "@/components/enter-record";
 import { NewbornCare } from "@/components/newborn-care";
 import { Referrals } from "@/components/referrals";
 import { Reports } from "@/components/reports";
@@ -122,7 +123,7 @@ export default function Home() {
   >({});
   const [search, setSearch] = useState("");
   const [activeView, setActiveView] = useState<
-    "mothers" | "newborns" | "appointments" | "referrals" | "communications" | "reports" | "staff" | "settings"
+    "mothers" | "enter-record" | "newborns" | "appointments" | "referrals" | "communications" | "reports" | "staff" | "settings"
   >("mothers");
   const [appointments, setAppointments] = useState<AppointmentRecord[]>([]);
   const [newborns, setNewborns] = useState<MotherScopedRecord[]>([]);
@@ -438,6 +439,7 @@ export default function Home() {
           {(canManageStaff
             ? ([
                 ["mothers", "Mothers"],
+                ["enter-record", "Enter record"],
                 ["staff", "Staff management"],
                 ["settings", "Settings"],
                 ["newborns", "Newborn care"],
@@ -448,6 +450,7 @@ export default function Home() {
               ] as const)
             : ([
                 ["mothers", "Mothers"],
+                ["enter-record", "Enter record"],
                 ["newborns", "Newborn care"],
                 ["appointments", "Appointments"],
                 ["referrals", "Referrals"],
@@ -582,6 +585,8 @@ export default function Home() {
           canManageStaff ? <StaffManagement /> : null
         ) : activeView === "settings" ? (
           canManageStaff ? <AdminSettings /> : null
+        ) : activeView === "enter-record" ? (
+          <EnterRecord mothers={mothers} />
         ) : activeView === "appointments" ? (
           <AppointmentManager
             appointments={appointments}
