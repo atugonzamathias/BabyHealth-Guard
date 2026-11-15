@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase-admin";
-import { sendSmsToStaff } from "@/lib/sms-server";
+import { sendSmsToMother, sendSmsToStaff } from "@/lib/sms-server";
 
 export const runtime = "nodejs";
 
@@ -104,6 +104,15 @@ function clinicFor(profile: MotherProfile): string {
   );
 }
 
+function strictFacility(profile: MotherProfile): {
+  id: string;
+  name: string;
+} | null {
+  const id = cleanText(profile.facilityId, 120);
+  const name = cleanText(profile.facilityName, 120);
+  return id && name ? { id, name } : null;
+}
+
 function dateLabel(date: Date): string {
   return date.toLocaleString("en-UG", {
     dateStyle: "medium",
@@ -201,20 +210,59 @@ async function recordDangerAlert(
 ) {
   const symptom = SYMPTOMS[symptomNumber];
   const alertSeverity = severity;
-  const alertRef = getAdminDb()
-    .doc(`users/${motherUid}/healthLogs/${stableId(sessionId, `danger:${symptomNumber}:${alertSeverity}`)}`);
+  const facility = strictFacility(profile);
+  if (!facility) {
+    console.error("USSD danger alert rejected: mother has no valid facilityId", {
+      motherUid,
+      sessionId,
+    });
+    return { notified: false, staffName: "your health worker", clinic: "your clinic" };
+  }
+  const db = getAdminDb();
+  const reportId = stableId(`${motherUid}:${sessionId}`, `danger-report:${symptomNumber}:${alertSeverity}`);
+  const reportRef = db.collection("dangerSignReports").doc(reportId);
+  const alertRef = db.doc(`users/${motherUid}/healthLogs/${reportId}`);
+  const motherName = cleanText(profile.fullName, 120) || "A mother";
+  const motherPhone = normalizedPhone(
+    cleanText(profile.phone) || cleanText(profile.phoneNumber),
+  );
+  if (!motherPhone) {
+    console.error("USSD danger alert rejected: mother has no valid phone", { motherUid });
+    return { notified: false, staffName: "your health worker", clinic: facility.name };
+  }
   let isNew = true;
   try {
+    await reportRef.create({
+      motherId: motherUid,
+      motherName,
+      phone: motherPhone,
+      symptom,
+      urgency: "CRITICAL",
+      facilityId: facility.id,
+      facilityName: facility.name,
+      assignedMidwifeId: cleanText(profile.assignedStaffUid),
+      status: "PENDING_ACTION",
+      source: "ussd",
+      serviceCode,
+      sessionId,
+      createdAt: FieldValue.serverTimestamp(),
+    });
     await alertRef.create({
       type: "danger_sign_reported",
       sign: symptom,
       description: `Danger sign reported by USSD: ${symptom} (${alertSeverity})`,
       severity: alertSeverity,
+      urgency: "CRITICAL",
       source: "ussd",
       serviceCode,
-      status: "open",
-      midwifeId: cleanText(profile.assignedStaffUid),
-      clinic: clinicFor(profile),
+      status: "PENDING_ACTION",
+      motherId: motherUid,
+      motherName,
+      phone: motherPhone,
+      facilityId: facility.id,
+      facilityName: facility.name,
+      assignedMidwifeId: cleanText(profile.assignedStaffUid),
+      clinic: facility.name,
       createdAt: FieldValue.serverTimestamp(),
       notificationStatus: "pending",
     });
@@ -231,33 +279,74 @@ async function recordDangerAlert(
     }
   }
 
-  const clinic = clinicFor(profile);
   if (!isNew) {
-    const existing = (await alertRef.get()).data();
+    const existing = (await reportRef.get()).data();
     return {
-      notified: existing?.notificationStatus === "accepted",
-      staffName: cleanText(existing?.staffName) || "your health worker",
-      clinic: cleanText(existing?.clinic) || clinic,
+      notified: existing?.motherSmsStatus === "accepted" || existing?.staffSmsStatus === "accepted",
+      staffName: cleanText(existing?.assignedMidwifeName) || "your health worker",
+      clinic: cleanText(existing?.facilityName) || facility.name,
     };
   }
 
-  const staff = await assignedHealthWorker(profile);
-  const motherName = cleanText(profile.fullName, 120) || "A mother";
-  const motherPhone = cleanText(profile.phone) || cleanText(profile.phoneNumber);
-  const smsStatus = await sendSmsToStaff({
-    motherUid,
-    staffUid: staff.staffUid,
-    staffPhone: staff.phone,
-    sessionId: stableId(sessionId, `danger:${symptomNumber}:${alertSeverity}`),
-    message: `URGENT BabyHealth Guard: ${motherName} (${motherPhone}) reports ${symptom} (${alertSeverity}). Contact her and arrange urgent care at ${clinic}.`,
-  });
-  await alertRef.update({
-    notificationStatus: smsStatus,
-    staffName: staff.name,
-    staffPhone: staff.phone,
+  const assignedUid = cleanText(profile.assignedStaffUid);
+  const assigned = assignedUid ? await db.doc(`users/${assignedUid}`).get() : null;
+  const assignedData = assigned?.data() ?? {};
+  const staff = assigned?.exists && assignedData.disabled !== true &&
+      cleanText(assignedData.facilityId) === facility.id
+    ? [{ uid: assignedUid, name: cleanText(assignedData.fullName), phone: normalizedPhone(cleanText(assignedData.phone)) }]
+    : [];
+  const recipients = staff.length
+    ? staff
+    : (await db.collection("users")
+        .where("role", "==", "midwife")
+        .where("facilityId", "==", facility.id)
+        .get()).docs
+        .filter((document) => document.data().disabled !== true)
+        .map((document) => ({
+          uid: document.id,
+          name: cleanText(document.data().fullName),
+          phone: normalizedPhone(cleanText(document.data().phone)),
+        }))
+        .filter((recipient) => recipient.phone);
+  let motherSmsStatus: "accepted" | "failed" = "failed";
+  try {
+    const motherSms = await sendSmsToMother({
+      motherUid,
+      message: `BabyHealthGuard: Emergency alert received at ${facility.name}. Stay calm; a midwife has been alerted and will call you shortly.`,
+      category: "ussd_danger_confirmation",
+      sentBy: "ussd",
+      consentConfirmed: true,
+    });
+    motherSmsStatus = motherSms.status;
+  } catch (error) {
+    console.error("USSD danger mother SMS failed", error);
+  }
+  const staffResults = await Promise.all(recipients.map((recipient) =>
+    sendSmsToStaff({
+      motherUid,
+      staffUid: recipient.uid,
+      staffPhone: recipient.phone,
+      sessionId: `${reportId}:${recipient.uid}`,
+      message: `URGENT: ${motherName} (${motherPhone}) reported ${symptom} at ${facility.name} via USSD. Check BabyHealth-Guard dashboard now.`,
+    }),
+  ));
+  const staffSmsStatus = staffResults.includes("accepted") ? "accepted" : "failed";
+  const assignedRecipient = recipients.find((recipient) => recipient.uid === assignedUid);
+  await reportRef.update({
+    motherSmsStatus,
+    staffSmsStatus,
+    assignedMidwifeName: assignedRecipient?.name || null,
     notificationUpdatedAt: FieldValue.serverTimestamp(),
   });
-  return { notified: smsStatus === "accepted", staffName: staff.name, clinic };
+  await alertRef.update({
+    notificationStatus: staffSmsStatus,
+    notificationUpdatedAt: FieldValue.serverTimestamp(),
+  });
+  return {
+    notified: motherSmsStatus === "accepted" || staffSmsStatus === "accepted",
+    staffName: assignedRecipient?.name || "your health worker",
+    clinic: facility.name,
+  };
 }
 
 function healthTip(profile: MotherProfile): string {
