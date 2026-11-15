@@ -19,7 +19,8 @@ creates a facility-scoped emergency triage report and notifies the assigned
 staff member by SMS. Assigned staff can acknowledge the alert, log a referral
 from the triage modal, optionally notify the mother and receiving desk by
 single-segment SMS, and resolve it after safe transfer. Referral details are
-audited in the mother's `healthLogs`. USSD appointments use the standard
+audited in the mother's `healthLogs` and copied into the mother's `referrals`
+collection so they appear in the web app's Referrals tab. USSD appointments use the standard
 `users/{motherUid}/appointments/{appointmentId}` path, preserve the selected
 local time through epoch milliseconds, and resolve the actual active midwife
 server-side.
