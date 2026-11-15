@@ -37,6 +37,7 @@ import {
 const STAFF_ROLES = new Set([
   "doctor",
   "admin",
+  "system_admin",
   "health_worker",
   "health worker",
   "nurse",
@@ -302,7 +303,9 @@ export default function Home() {
   const selectedMother =
     mothers.find((mother) => mother.uid === selectedUid) ?? null;
   const records = recordsByMother[selectedUid] ?? EMPTY_RECORDS;
-  const canManageStaff = session.status === "staff" && session.role === "admin";
+  const canManageStaff =
+    session.status === "staff" &&
+    (session.role === "admin" || session.role === "system_admin");
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

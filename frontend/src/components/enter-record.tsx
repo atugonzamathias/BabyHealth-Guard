@@ -65,7 +65,7 @@ export function EnterRecord({ mothers }: Props) {
       const response = await fetch("/api/mother-records", {
         method: "POST",
         headers: {
-          Authorization: `****** user.getIdToken()}`,
+          Authorization: `Bearer ${await user.getIdToken()}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
