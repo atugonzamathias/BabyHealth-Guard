@@ -87,6 +87,25 @@ export async function POST(
       recordedByName: referringName,
       createdAt: FieldValue.serverTimestamp(),
     });
+    await db.doc(`users/${alert.motherId}/referrals/${id}`).set({
+      patientName: alert.motherName,
+      patientType: "mother",
+      reason: alert.symptom,
+      destination: referredToFacility,
+      receivingUnit: "Emergency referral",
+      receivingContact: transportPhone || "",
+      urgency: "emergency",
+      notes: referralNotes,
+      status: "referred",
+      source: "danger_sign_triage",
+      dangerSignReportId: id,
+      facilityId: alert.facilityId,
+      facilityName: alert.facilityName,
+      createdBy: context.uid,
+      createdByName: referringName,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
 
     const smsResults: string[] = [];
     if (body.notifyMother !== false) {
