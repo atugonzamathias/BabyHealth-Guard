@@ -55,8 +55,6 @@ export function BabyVisionScanner({
   const [escalatedSuccess, setEscalatedSuccess] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const selectedMother = mothers.find((m) => m.id === selectedMotherId);
-
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -223,7 +221,7 @@ export function BabyVisionScanner({
               >
                 <option value="">-- Anonymous / Walk-in Triage --</option>
                 {mothers.map((m) => (
-                  <option key={m.id} value={m.id}>
+                  <option key={m.uid} value={m.uid}>
                     {m.fullName || "Unnamed Mother"} ({m.phone || "No phone"}) - {m.village || "Village N/A"}
                   </option>
                 ))}
@@ -590,7 +588,7 @@ export function BabyVisionScanner({
                 Awaiting Newborn Image
               </h4>
               <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-                Take or upload a clear photo of the baby's skin or eye, or click one of the quick test samples on the left to see live AI diagnostic predictions.
+                Take or upload a clear photo of the baby&apos;s skin or eye, or click one of the quick test samples on the left to see live AI diagnostic predictions.
               </p>
             </div>
           )}
