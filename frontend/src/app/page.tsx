@@ -94,6 +94,19 @@ const EMPTY_RECORDS: RecordsState = {
   appointments: [],
 };
 
+const DASHBOARD_NAV_COLORS = [
+  { idle: "bg-sky-50 text-sky-900 hover:bg-sky-100", active: "bg-sky-300 text-sky-950 ring-2 ring-white/70" },
+  { idle: "bg-emerald-50 text-emerald-900 hover:bg-emerald-100", active: "bg-emerald-300 text-emerald-950 ring-2 ring-white/70" },
+  { idle: "bg-violet-50 text-violet-900 hover:bg-violet-100", active: "bg-violet-300 text-violet-950 ring-2 ring-white/70" },
+  { idle: "bg-amber-50 text-amber-900 hover:bg-amber-100", active: "bg-amber-300 text-amber-950 ring-2 ring-white/70" },
+  { idle: "bg-rose-50 text-rose-900 hover:bg-rose-100", active: "bg-rose-300 text-rose-950 ring-2 ring-white/70" },
+  { idle: "bg-teal-50 text-teal-900 hover:bg-teal-100", active: "bg-teal-300 text-teal-950 ring-2 ring-white/70" },
+  { idle: "bg-orange-50 text-orange-900 hover:bg-orange-100", active: "bg-orange-300 text-orange-950 ring-2 ring-white/70" },
+  { idle: "bg-indigo-50 text-indigo-900 hover:bg-indigo-100", active: "bg-indigo-300 text-indigo-950 ring-2 ring-white/70" },
+  { idle: "bg-lime-50 text-lime-900 hover:bg-lime-100", active: "bg-lime-300 text-lime-950 ring-2 ring-white/70" },
+  { idle: "bg-pink-50 text-pink-900 hover:bg-pink-100", active: "bg-pink-300 text-pink-950 ring-2 ring-white/70" },
+] as const;
+
 function displayDate(value: unknown): string {
   if (!value || typeof value !== "object" || !("toDate" in value)) return "Date not recorded";
   const date = (value as { toDate: () => Date }).toDate();
@@ -406,31 +419,78 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-800">
-              BabyHealth Guard
-            </p>
-            <h1 className="mt-1 text-lg font-bold text-slate-900">
-              Health worker dashboard
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="hidden text-right sm:block">
-              <p className="text-sm font-semibold text-slate-800">{session.name}</p>
-              <p className="text-xs capitalize text-slate-500">
-                {session.role.replaceAll("_", " ")} · {session.facility}
+      <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white shadow-lg">
+        <div className="mx-auto max-w-7xl px-5 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-200">
+                BabyHealth Guard
               </p>
+              <h1 className="mt-1 text-lg font-bold text-white">
+                Health worker dashboard
+              </h1>
             </div>
-            <button
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-              onClick={() => signOut(auth)}
-              type="button"
-            >
-              Sign out
-            </button>
+            <div className="flex items-center gap-4">
+              <div className="hidden text-right sm:block">
+                <p className="text-sm font-semibold text-white">{session.name}</p>
+                <p className="text-xs capitalize text-blue-100">
+                  {session.role.replaceAll("_", " ")} · {session.facility}
+                </p>
+              </div>
+              <button
+                className="rounded-xl border border-white/30 bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-white/20 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                onClick={() => signOut(auth)}
+                type="button"
+              >
+                Sign out
+              </button>
+            </div>
           </div>
+          <nav
+            aria-label="Dashboard sections"
+            className="mt-4 flex gap-2 overflow-x-auto rounded-2xl border border-white/15 bg-white/10 p-2"
+          >
+            {(canManageStaff
+              ? ([
+                  ["mothers", "Mothers"],
+                  ["enter-record", "Enter record"],
+                  ["baby-vision", "Baby AI Scanner"],
+                  ["staff", "Staff management"],
+                  ["settings", "Settings"],
+                  ["newborns", "Newborn care"],
+                  ["appointments", "Appointments"],
+                  ["referrals", "Referrals"],
+                  ["communications", "SMS & USSD"],
+                  ["reports", "Reports"],
+                ] as const)
+              : ([
+                  ["mothers", "Mothers"],
+                  ["enter-record", "Enter record"],
+                  ["baby-vision", "Baby AI Scanner"],
+                  ["newborns", "Newborn care"],
+                  ["appointments", "Appointments"],
+                  ["referrals", "Referrals"],
+                  ["communications", "SMS & USSD"],
+                  ["reports", "Reports"],
+                ] as const)
+            ).map(([view, label], index) => {
+              const isActive = activeView === view;
+              const colors = DASHBOARD_NAV_COLORS[index % DASHBOARD_NAV_COLORS.length];
+              return (
+                <button
+                  aria-current={isActive ? "page" : undefined}
+                  className={`shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+                    isActive ? colors.active : colors.idle
+                  }`}
+                  key={view}
+                  onClick={() => setActiveView(view)}
+                  type="button"
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </nav>
         </div>
       </header>
 
@@ -441,47 +501,6 @@ export default function Home() {
             {dataError}
           </p>
         )}
-        <nav aria-label="Dashboard sections" className="mb-5 flex gap-2 overflow-x-auto border-b border-slate-200">
-          {(canManageStaff
-            ? ([
-                ["mothers", "Mothers"],
-                ["enter-record", "Enter record"],
-                ["baby-vision", "Baby AI Scanner"],
-                ["staff", "Staff management"],
-                ["settings", "Settings"],
-                ["newborns", "Newborn care"],
-                ["appointments", "Appointments"],
-                ["referrals", "Referrals"],
-                ["communications", "SMS & USSD"],
-                ["reports", "Reports"],
-              ] as const)
-            : ([
-                ["mothers", "Mothers"],
-                ["enter-record", "Enter record"],
-                ["baby-vision", "Baby AI Scanner"],
-                ["newborns", "Newborn care"],
-                ["appointments", "Appointments"],
-                ["referrals", "Referrals"],
-                ["communications", "SMS & USSD"],
-                ["reports", "Reports"],
-              ] as const)
-          ).map(([view, label]) => (
-            <button
-              aria-current={activeView === view ? "page" : undefined}
-              className={`shrink-0 border-b-2 px-4 py-3 text-sm font-semibold ${
-                activeView === view
-                  ? "border-cyan-800 text-cyan-900"
-                  : "border-transparent text-slate-500 hover:text-slate-800"
-              }`}
-              key={view}
-              onClick={() => setActiveView(view)}
-              type="button"
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
-
         {activeView === "mothers" ? (
         <>
         <MotherRegistration facility={session.facility} />
