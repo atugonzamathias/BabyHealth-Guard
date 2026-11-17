@@ -4,10 +4,23 @@ import os
 import sys
 import uuid
 import urllib.parse
+import base64
+import io
 from datetime import datetime
 
 PORT = 8080
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+
+# Initialize BabyHealth Vision Predictor
+try:
+    sys.path.append(os.path.join(DIRECTORY, "ml_service"))
+    from inference import BabyHealthPredictor
+    from train import generate_skin_sample, generate_eye_sample, generate_invalid_sample
+    VISION_PREDICTOR = BabyHealthPredictor()
+    print("BabyHealth Vision Predictor loaded successfully in server.py")
+except Exception as e:
+    print("Notice: Vision predictor running in standalone mode:", e)
+    VISION_PREDICTOR = None
 
 # In-memory mock database for live API interaction
 MOTHERS = [
@@ -394,6 +407,42 @@ class BabyHealthHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         path = self.path.split("?")[0]
         data = self._read_json()
+
+        if path in ("/api/v1/analyze", "/api/ml/analyze"):
+            if not VISION_PREDICTOR:
+                self._send_json({"error": "Vision predictor not initialized"}, status=503)
+                return
+            sample_type = data.get("sample")
+            modality = data.get("modality", "auto")
+            base64_img = data.get("image")
+            try:
+                if sample_type == "jaundice":
+                    img = generate_skin_sample("jaundice_skin")
+                    mod = "skin"
+                elif sample_type == "healthy":
+                    img = generate_skin_sample("healthy_skin")
+                    mod = "skin"
+                elif sample_type == "ophthalmia":
+                    img = generate_eye_sample("ophthalmia_neonatorum")
+                    mod = "eyes"
+                elif sample_type == "invalid":
+                    img = generate_invalid_sample()
+                    mod = "auto"
+                elif base64_img:
+                    if "," in base64_img:
+                        base64_img = base64_img.split(",", 1)[1]
+                    img_bytes = base64.b64decode(base64_img)
+                    from PIL import Image
+                    img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+                    mod = modality
+                else:
+                    self._send_json({"error": "No image or sample provided"}, status=400)
+                    return
+                result = VISION_PREDICTOR.predict(img, requested_modality=mod)
+                self._send_json(result)
+            except Exception as ex:
+                self._send_json({"error": str(ex)}, status=500)
+            return
 
         if path in ("/api/auth/login", "/api/auth/register"):
             email = data.get("email", "nurse@babyhealth.local")
