@@ -75,7 +75,7 @@ async def analyze_baby_image(
 
     try:
         contents = await file.read()
-        if len(contents) > 15 * 1024 * 1024:  # 15 MB limit
+        if len(contents) > 15 * 1024 * 1024:  # 15 MB limit fixed
             raise HTTPException(status_code=400, detail="Image file exceeds the 15 MB size limit.")
 
         image = Image.open(io.BytesIO(contents)).convert("RGB")

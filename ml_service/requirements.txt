@@ -1,8 +1,10 @@
-fastapi 
-uvicorn 
-python-multipart 
-pillow 
-numpy 
-scikit-learn 
-xgboost 
-joblib 
+--extra-index-url https://download.pytorch.org/whl/cpu
+fastapi
+uvicorn
+python-multipart
+pillow
+numpy
+scikit-learn
+xgboost
+joblib
+torch
