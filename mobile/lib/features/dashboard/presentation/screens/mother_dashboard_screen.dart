@@ -251,7 +251,7 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
                   SizedBox(width: 10),
                   Text(
                     "Record Today's Vitals",
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -263,7 +263,7 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
               const SizedBox(height: 16),
               const Text(
                 'Blood Pressure (Systolic / Diastolic mmHg)',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
@@ -641,21 +641,120 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
     );
   }
 
+  void _openBabyVisionScanner() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BabyVisionScannerScreen(
+          motherUid: widget.profile.uid,
+          midwifePhone:
+              widget.profile.assignedStaffPhone ?? widget.profile.midwifePhone,
+          onSaveLog: (title, description) {
+            widget.careRepository.logDangerSign(
+              uid: widget.profile.uid,
+              sign: title,
+              description: description,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Widget _buildNavigationDrawer() {
-    final drawerWidth = MediaQuery.sizeOf(context).width * 0.4;
+    final drawerWidth = (MediaQuery.sizeOf(context).width * 0.82)
+        .clamp(280.0, 360.0)
+        .toDouble();
     return Drawer(
       width: drawerWidth,
+      backgroundColor: const Color(0xFFF6FAFC),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.horizontal(right: Radius.circular(24)),
+      ),
       child: SafeArea(
         child: Column(
           children: [
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.fromLTRB(12, 12, 12, 18),
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF075985),
+                    Color(0xFF0E7490),
+                    Color(0xFF14B8A6)
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: colorPrimary.withValues(alpha: 0.2),
+                    blurRadius: 16,
+                    offset: const Offset(0, 7),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: const Icon(
+                      Icons.favorite_rounded,
+                      color: Colors.white,
+                      size: 25,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'BabyHealth Guard',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          widget.profile.fullName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.85),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Text(
-                'Menu',
-                maxLines: 1,
-                style: TextStyle(
-                  color: colorPrimary,
-                  fontWeight: FontWeight.w700,
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'YOUR CARE',
+                  style: TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
             ),
@@ -663,30 +762,27 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
             _buildDrawerItem(1, 'My Health', Icons.health_and_safety_rounded),
             _buildDrawerItem(2, 'Warning Signs', Icons.warning_amber_rounded),
             _buildDrawerItem(3, 'Visits', Icons.calendar_month_rounded),
+            _buildDrawerActionItem(
+              'Baby Vision AI',
+              Icons.auto_awesome_rounded,
+              subtitle: 'Skin & eye photo screening',
+              onTap: () {
+                Navigator.of(context).pop();
+                _openBabyVisionScanner();
+              },
+            ),
             const Spacer(),
-            const Divider(height: 1),
-            InkWell(
+            const Divider(height: 1, indent: 18, endIndent: 18),
+            _buildDrawerActionItem(
+              'Sign out',
+              Icons.logout_rounded,
+              color: const Color(0xFFB42318),
               onTap: () {
                 Navigator.of(context).pop();
                 widget.onSignOut();
               },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 12,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.logout_rounded, size: 14),
-                    const SizedBox(width: 3),
-                    Flexible(
-                      child: _drawerLabel('Logout'),
-                    ),
-                  ],
-                ),
-              ),
             ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -695,22 +791,9 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
 
   Widget _buildDrawerItem(int index, String label, IconData icon) {
     final isSelected = _currentTab == index;
-    return ListTile(
-      dense: true,
-      minVerticalPadding: 8,
-      minLeadingWidth: 24,
-      horizontalTitleGap: 8,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-      leading: Icon(
-        icon,
-        size: 20,
-        color: isSelected ? colorPrimaryContainer : colorOnSurfaceVariant,
-      ),
-      title: _drawerLabel(
-        label,
-        color: isSelected ? colorPrimaryContainer : colorOnSurface,
-        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-      ),
+    return _buildDrawerActionItem(
+      label,
+      icon,
       selected: isSelected,
       onTap: () {
         Navigator.of(context).pop();
@@ -719,21 +802,65 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
     );
   }
 
-  Widget _drawerLabel(
-    String label, {
+  Widget _buildDrawerActionItem(
+    String label,
+    IconData icon, {
+    String? subtitle,
     Color color = colorOnSurface,
-    FontWeight fontWeight = FontWeight.normal,
+    bool selected = false,
+    required VoidCallback onTap,
   }) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Text(
-        label,
-        maxLines: 1,
-        softWrap: false,
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: fontWeight,
+    final tileColor = selected ? const Color(0xFFDDF4F4) : Colors.transparent;
+    final iconColor =
+        selected ? colorPrimaryContainer : color.withValues(alpha: 0.78);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+      child: Material(
+        color: tileColor,
+        borderRadius: BorderRadius.circular(15),
+        child: ListTile(
+          minLeadingWidth: 40,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          leading: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: selected
+                  ? Colors.white.withValues(alpha: 0.8)
+                  : const Color(0xFFEAF2F6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 20, color: iconColor),
+          ),
+          title: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: color,
+              fontSize: 14,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+            ),
+          ),
+          subtitle: subtitle == null
+              ? null
+              : Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 11,
+                  ),
+                ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+            side: BorderSide(
+              color: selected ? const Color(0xFFB7E5E5) : Colors.transparent,
+            ),
+          ),
+          onTap: onTap,
         ),
       ),
     );
@@ -1690,7 +1817,8 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.auto_awesome, color: Colors.white, size: 22),
+                child: const Icon(Icons.auto_awesome,
+                    color: Colors.white, size: 22),
               ),
               const SizedBox(width: 10),
               const Expanded(
@@ -1723,25 +1851,7 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BabyVisionScannerScreen(
-                      motherUid: widget.profile.uid,
-                      midwifePhone: widget.profile.assignedStaffPhone ??
-                          widget.profile.midwifePhone,
-                      onSaveLog: (title, description) {
-                        widget.careRepository.logDangerSign(
-                          uid: widget.profile.uid,
-                          sign: title,
-                          description: description,
-                        );
-                      },
-                    ),
-                  ),
-                );
-              },
+              onPressed: _openBabyVisionScanner,
               icon: const Icon(Icons.photo_camera_rounded, size: 18),
               label: const Text('Open Baby Vision Scanner'),
               style: ElevatedButton.styleFrom(

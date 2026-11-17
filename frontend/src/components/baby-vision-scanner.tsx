@@ -84,14 +84,23 @@ export function BabyVisionScanner({
       });
 
       if (!response.ok) {
-        throw new Error("Analysis failed. Server responded with an error.");
+        const errorBody = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(
+          errorBody?.error || `Image analysis failed (HTTP ${response.status}).`
+        );
       }
 
       const data: AnalysisResult = await response.json();
       setResult(data);
     } catch (err) {
       console.error(err);
-      alert("Failed to analyze image. Please ensure the ML service or internet is active.");
+      alert(
+        err instanceof Error
+          ? err.message
+          : "Failed to analyze image. Please check the ML service connection."
+      );
     } finally {
       setAnalyzing(false);
     }
@@ -193,7 +202,7 @@ export function BabyVisionScanner({
           <p className="mt-2 text-sm text-cyan-100 leading-relaxed">
             Screen newborn babies for cutaneous jaundice, severe scleral icterus, ophthalmia neonatorum,
             bacterial impetigo, and congenital cataracts. Non-baby pictures are automatically validated
-            and rejected to preserve clinical integrity.
+            and rejected to preserve clinical integrity. Results are experimental and are not a diagnosis.
           </p>
         </div>
       </div>

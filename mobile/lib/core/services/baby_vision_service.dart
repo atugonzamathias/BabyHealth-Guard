@@ -56,38 +56,20 @@ class BabyVisionAnalysisResult {
       severity: json['severity'] as String? ?? 'SAFE',
       dangerSignTriggered: json['danger_sign_triggered'] as bool? ?? false,
       clinicalExplanation: json['clinical_explanation'] as String? ?? '',
-      motherGuidance: json['mother_guidance'] as String? ?? '',
-      guidanceLuganda: translations?['luganda'] as String?,
-      guidanceSwahili: translations?['swahili'] as String?,
-    );
-  }
-
-  factory BabyVisionAnalysisResult.offlineFallback({required String modality}) {
-    final isEye = modality == 'eyes';
-    return BabyVisionAnalysisResult(
-      isNewbornValid: true,
-      status: 'success',
-      modality: modality,
-      conditionId: isEye ? 'healthy_eye' : 'healthy_skin',
-      conditionName: isEye ? 'Healthy Newborn Eye' : 'Healthy Newborn Skin',
-      confidence: 90.0,
-      severity: 'SAFE',
-      dangerSignTriggered: false,
-      clinicalExplanation:
-          'Normal neonatal appearance. Skin and sclera appear appropriately hydrated and free of acute lesions.',
-      motherGuidance:
-          'Baby appears healthy and comfortable. Continue routine warm water sponge baths and exclusive breastfeeding.',
-      guidanceLuganda:
-          'Olususu oba eriiso ly\'omwana lulabika bulungi. Bikkirira okumuwa ebbugumu n\'okuyonsa.',
-      guidanceSwahili:
-          'Mtoto anaonekana kuwa na afya njema. Endelea kumtunza kwa usafi na kumnyonyesha.',
+      motherGuidance: json['mother_guidance'] as String? ??
+          json['message'] as String? ??
+          '',
+      guidanceLuganda: translations?['luganda'] as String? ??
+          json['message_luganda'] as String?,
+      guidanceSwahili: translations?['swahili'] as String? ??
+          json['message_swahili'] as String?,
     );
   }
 }
 
 class BabyVisionService {
-  // 10.0.2.2 maps to host localhost in Android Emulator; 127.0.0.1 for desktop/web
-  static const String defaultEndpoint = 'http://10.0.2.2:8000/api/v1/analyze';
+  static const String defaultEndpoint =
+      'https://babyhealth-guard-ml.onrender.com/api/v1/analyze';
 
   static Future<BabyVisionAnalysisResult> analyzeBabyImage({
     required File imageFile,
@@ -96,32 +78,38 @@ class BabyVisionService {
   }) async {
     final endpoint = customEndpoint ?? defaultEndpoint;
 
-    try {
-      final request = http.MultipartRequest('POST', Uri.parse(endpoint));
-      request.fields['modality'] = modality;
-      request.files.add(
-        await http.MultipartFile.fromPath('file', imageFile.path),
-      );
+    final request = http.MultipartRequest('POST', Uri.parse(endpoint));
+    request.fields['modality'] = modality;
+    request.files.add(
+      await http.MultipartFile.fromPath('file', imageFile.path),
+    );
 
+    try {
       final streamedResponse = await request.send().timeout(
-            const Duration(seconds: 12),
+            const Duration(seconds: 90),
           );
       final response = await http.Response.fromStream(streamedResponse);
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        return BabyVisionAnalysisResult.fromJson(data);
-      } else {
-        if (kDebugMode) {
-          print('ML server responded with code ${response.statusCode}: ${response.body}');
+      if (response.statusCode != 200) {
+        var detail = 'Image analysis failed (HTTP ${response.statusCode}).';
+        try {
+          final body = jsonDecode(response.body);
+          if (body is Map<String, dynamic>) {
+            detail = (body['detail'] ?? body['error'] ?? detail).toString();
+          }
+        } on FormatException {
+          if (response.body.isNotEmpty) detail = response.body;
         }
-        return BabyVisionAnalysisResult.offlineFallback(modality: modality);
+        throw Exception(detail);
       }
-    } catch (e) {
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return BabyVisionAnalysisResult.fromJson(data);
+    } catch (error) {
       if (kDebugMode) {
-        print('Could not reach remote ML server ($e). Using clinical fallback.');
+        debugPrint('Baby vision analysis request failed: $error');
       }
-      return BabyVisionAnalysisResult.offlineFallback(modality: modality);
+      rethrow;
     }
   }
 }

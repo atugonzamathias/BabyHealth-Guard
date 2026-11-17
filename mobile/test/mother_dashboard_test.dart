@@ -92,18 +92,28 @@ void main() {
     await tester.tap(find.byTooltip('Open navigation menu'));
     await tester.pumpAndSettle();
     final drawer = find.byType(Drawer);
-    expect(tester.getSize(drawer).width, 390 * 0.4);
+    expect(tester.getSize(drawer).width, closeTo(390 * 0.82, 0.01));
     for (final icon in [
       Icons.home_rounded,
       Icons.health_and_safety_rounded,
       Icons.warning_amber_rounded,
       Icons.calendar_month_rounded,
+      Icons.auto_awesome_rounded,
     ]) {
       expect(
         find.descendant(of: drawer, matching: find.byIcon(icon)),
         findsOneWidget,
       );
     }
+    await tester.tap(find.text('Baby Vision AI'));
+    await tester.pumpAndSettle();
+    expect(find.text('Baby Skin & Eye AI Checker'), findsOneWidget);
+    expect(find.text('Choose photo'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Open navigation menu'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('My Health').last);
     await tester.pumpAndSettle();
     expect(find.text("Today's Vitals"), findsOneWidget);

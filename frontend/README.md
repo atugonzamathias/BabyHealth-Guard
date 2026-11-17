@@ -79,6 +79,10 @@ The reminder route is not scheduled automatically by Next.js.
 1. Copy `.env.example` to `.env.local` and configure the Firebase Web App and
    server-only values. Revoke and replace any Firebase service-account key or
    Africa's Talking key that has been shared publicly.
+   Set `ML_SERVICE_URL=https://babyhealth-guard-ml.onrender.com` to use the
+   deployed neonatal vision API, or set it to `http://127.0.0.1:8000` when
+   running that API locally. Configure the same variable in the web service's
+   Render environment; `.env.local` is only used for local development.
    For Firebase Admin credentials, save the replacement JSON as
    `frontend/firebase-admin-service-account.json` and set
    `FIREBASE_ADMIN_SERVICE_ACCOUNT_FILE=./firebase-admin-service-account.json`

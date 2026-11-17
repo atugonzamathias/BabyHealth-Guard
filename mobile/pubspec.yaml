@@ -18,6 +18,8 @@ dependencies:
   cloud_firestore: ^7.1.0
   flutter_tts: 4.2.5
   speech_to_text: ^7.5.0
+  image_picker: ^1.2.4
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

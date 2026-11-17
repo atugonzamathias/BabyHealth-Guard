@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../core/services/baby_vision_service.dart';
 
 class BabyVisionScannerScreen extends StatefulWidget {
@@ -21,101 +21,61 @@ class BabyVisionScannerScreen extends StatefulWidget {
 }
 
 class _BabyVisionScannerScreenState extends State<BabyVisionScannerScreen> {
+  final ImagePicker _imagePicker = ImagePicker();
   String _selectedModality = 'auto'; // 'auto', 'skin', 'eyes'
   bool _isAnalyzing = false;
   BabyVisionAnalysisResult? _result;
+  File? _selectedImage;
+  String? _analysisError;
   String _language = 'en'; // 'en', 'lg', 'sw'
   bool _savedToLog = false;
 
-  void _runMockSample(String conditionType) {
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final pickedImage = await _imagePicker.pickImage(
+        source: source,
+        imageQuality: 85,
+        maxWidth: 1600,
+        maxHeight: 1600,
+      );
+      if (pickedImage == null || !mounted) return;
+      setState(() {
+        _selectedImage = File(pickedImage.path);
+        _result = null;
+        _analysisError = null;
+        _savedToLog = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _analysisError = 'Could not open the image: $error');
+    }
+  }
+
+  Future<void> _analyzeSelectedImage() async {
+    final image = _selectedImage;
+    if (image == null || _isAnalyzing) return;
     setState(() {
       _isAnalyzing = true;
       _result = null;
+      _analysisError = null;
       _savedToLog = false;
     });
 
-    Future.delayed(const Duration(milliseconds: 900), () {
+    try {
+      final result = await BabyVisionService.analyzeBabyImage(
+        imageFile: image,
+        modality: _selectedModality,
+      );
+      if (!mounted) return;
+      setState(() => _result = result);
+    } catch (error) {
       if (!mounted) return;
       setState(() {
-        _isAnalyzing = false;
-        if (conditionType == 'jaundice_skin') {
-          _result = BabyVisionAnalysisResult(
-            isNewbornValid: true,
-            status: 'success',
-            modality: 'skin',
-            conditionId: 'jaundice_skin',
-            conditionName: 'Neonatal Cutaneous Jaundice (Icterus)',
-            confidence: 99.7,
-            severity: 'URGENT_CLINIC',
-            dangerSignTriggered: true,
-            clinicalExplanation:
-                'Hyperbilirubinemia manifesting as noticeable yellow pigmentation of neonatal skin. Correlates with Kramer zones.',
-            motherGuidance:
-                'Yellowish skin detected. Neonatal jaundice needs prompt clinical check. Take the baby to your health center today for a bilirubin check and possible phototherapy.',
-            guidanceLuganda:
-                '⚠️ OBULWADDE BW\'ENJANO KU LUSUSU: Olususu luliko langi ya kyenvu. Omwana ayinza okuba n\'enjano. Mutwale ku ddwaliro leero bamukebe omusaayi.',
-            guidanceSwahili:
-                '⚠️ MANJANO KWENYE NGOZI: Ngozi ina rangi ya manjano inayoashiria homa ya manjano. Mpeleke mtoto zahanati leo kupimwa bilirubin.',
-          );
-        } else if (conditionType == 'healthy_skin') {
-          _result = BabyVisionAnalysisResult(
-            isNewbornValid: true,
-            status: 'success',
-            modality: 'skin',
-            conditionId: 'healthy_skin',
-            conditionName: 'Healthy Newborn Skin',
-            confidence: 98.4,
-            severity: 'SAFE',
-            dangerSignTriggered: false,
-            clinicalExplanation:
-                'Normal physiological newborn skin appearance with expected hydration and absence of acute lesions.',
-            motherGuidance:
-                'Baby\'s skin appears healthy and well cared for. Continue gentle sponge baths with warm water and skin-to-skin kangaroo care.',
-            guidanceLuganda:
-                'Olususu lw\'omwana lulabika bulungi era lwa bulamu. Bikkirira okumuwa amazzi amabugumu n\'okumukwata ku kifuba.',
-            guidanceSwahili:
-                'Ngozi ya mtoto ina afya njema. Endelea kumuosha kwa maji vuguvugu na kumpa joto la ngozi kwa ngozi.',
-          );
-        } else if (conditionType == 'ophthalmia') {
-          _result = BabyVisionAnalysisResult(
-            isNewbornValid: true,
-            status: 'success',
-            modality: 'eyes',
-            conditionId: 'ophthalmia_neonatorum',
-            conditionName: 'Ophthalmia Neonatorum (Eye Infection)',
-            confidence: 99.9,
-            severity: 'EMERGENCY_DANGER',
-            dangerSignTriggered: true,
-            clinicalExplanation:
-                'Acute purulent ocular discharge with conjunctival hyperemia and eyelid swelling within first 28 days.',
-            motherGuidance:
-                '🚨 EMERGENCY: Heavy pus, swelling, or redness in baby\'s eye. This can cause permanent blindness without urgent treatment. Visit your clinic immediately!',
-            guidanceLuganda:
-                '🚨 OBULABE BW\'AMAASO: Amaaso gazimbye oba gafulumya amasira. Omwana yeetaaga eddagala ly\'amaaso mangu ddala ku ddwaliro!',
-            guidanceSwahili:
-                '🚨 DHARURA YA MACHO: Macho yana usaha au yamevimba. Mpeleke mtoto hospitalini haraka kwa matone ya antibiotic!',
-          );
-        } else {
-          // Rejection
-          _result = BabyVisionAnalysisResult(
-            isNewbornValid: false,
-            status: 'rejected',
-            rejectionReason: 'IMAGE_NOT_NEWBORN',
-            confidence: 99.8,
-            severity: 'SAFE',
-            dangerSignTriggered: false,
-            clinicalExplanation:
-                'Gatekeeper neural network rejected image: pattern does not match neonatal skin or eye morphology.',
-            motherGuidance:
-                'The uploaded photo does not appear to be a newborn baby\'s skin or eye. Please ensure you photograph a newborn baby under clear lighting.',
-            guidanceLuganda:
-                'Ekifaananyi kino tekirabika nga lususu oba liiso ly\'omwana omuwere. Nsaba okube ekifaananyi eky\'omwana omuwere.',
-            guidanceSwahili:
-                'Picha hii haionekani kuwa ngozi au jicho la mtoto mchanga. Tafadhali piga picha wazi ya mtoto mchanga.',
-          );
-        }
+        _analysisError = error.toString().replaceFirst('Exception: ', '');
       });
-    });
+    } finally {
+      if (mounted) setState(() => _isAnalyzing = false);
+    }
   }
 
   void _saveResultToHealthLog() {
@@ -190,7 +150,7 @@ class _BabyVisionScannerScreenState extends State<BabyVisionScannerScreen> {
                         ),
                         SizedBox(height: 3),
                         Text(
-                          'Instantly checks baby skin & eyes for jaundice, rashes, or infections. Only accepts newborn photos.',
+                          'Experimental image screening for newborn skin and eyes, not a diagnosis. Seek clinical care for any concerning symptoms.',
                           style: TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                       ],
@@ -244,8 +204,8 @@ class _BabyVisionScannerScreenState extends State<BabyVisionScannerScreen> {
                   Container(
                     width: 72,
                     height: 72,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFECFEFF),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFECFEFF),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -266,73 +226,89 @@ class _BabyVisionScannerScreenState extends State<BabyVisionScannerScreen> {
                     style: TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => _runMockSample('jaundice_skin'),
-                    icon: const Icon(Icons.photo_camera_rounded),
-                    label: const Text('Take Photo / Test Jaundice'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0E7490),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                  if (_selectedImage != null) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.file(
+                        _selectedImage!,
+                        height: 190,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 12),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: _isAnalyzing
+                            ? null
+                            : () => _pickImage(ImageSource.camera),
+                        icon: const Icon(Icons.camera_alt_rounded),
+                        label: const Text('Take photo'),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: _isAnalyzing
+                            ? null
+                            : () => _pickImage(ImageSource.gallery),
+                        icon: const Icon(Icons.photo_library_outlined),
+                        label: const Text('Choose photo'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _selectedImage == null || _isAnalyzing
+                          ? null
+                          : _analyzeSelectedImage,
+                      icon: const Icon(Icons.auto_awesome),
+                      label: const Text('Analyze with BabyHealth AI'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0E7490),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 16),
-
-            // Demo Quick-Test Chips
-            const Text(
-              'TEST CLINICAL CASES',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF64748B),
-                letterSpacing: 0.8,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ActionChip(
-                  avatar: const Text('🟡'),
-                  label: const Text('Jaundice Skin'),
-                  onPressed: () => _runMockSample('jaundice_skin'),
-                ),
-                ActionChip(
-                  avatar: const Text('🟢'),
-                  label: const Text('Healthy Skin'),
-                  onPressed: () => _runMockSample('healthy_skin'),
-                ),
-                ActionChip(
-                  avatar: const Text('🔴'),
-                  label: const Text('Eye Infection (Pus)'),
-                  onPressed: () => _runMockSample('ophthalmia'),
-                ),
-                ActionChip(
-                  avatar: const Text('⬛'),
-                  label: const Text('Non-Baby (Reject)'),
-                  onPressed: () => _runMockSample('invalid'),
-                ),
-              ],
-            ),
-
             const SizedBox(height: 24),
+
+            if (_analysisError != null)
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF1F2),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFFECDD3)),
+                ),
+                child: Text(
+                  _analysisError!,
+                  style: const TextStyle(
+                    color: Color(0xFF9F1239),
+                    fontSize: 13,
+                  ),
+                ),
+              ),
 
             // Loader
             if (_isAnalyzing)
-              Center(
+              const Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  padding: EdgeInsets.symmetric(vertical: 24),
                   child: Column(
-                    children: const [
+                    children: [
                       CircularProgressIndicator(color: Color(0xFF0E7490)),
                       SizedBox(height: 12),
                       Text(
@@ -359,16 +335,20 @@ class _BabyVisionScannerScreenState extends State<BabyVisionScannerScreen> {
     final isSelected = _selectedModality == key;
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _selectedModality = key),
+        onTap: () => setState(() {
+          _selectedModality = key;
+          _result = null;
+          _analysisError = null;
+          _savedToLog = false;
+        }),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: isSelected ? const Color(0xFF0E7490) : Colors.white,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isSelected
-                  ? const Color(0xFF0E7490)
-                  : Colors.grey.shade300,
+              color:
+                  isSelected ? const Color(0xFF0E7490) : Colors.grey.shade300,
             ),
           ),
           child: Text(
@@ -400,12 +380,11 @@ class _BabyVisionScannerScreenState extends State<BabyVisionScannerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(Icons.cancel_rounded,
-                    color: Color(0xFFE11D48), size: 28),
-                const SizedBox(width: 10),
-                const Expanded(
+                Icon(Icons.cancel_rounded, color: Color(0xFFE11D48), size: 28),
+                SizedBox(width: 10),
+                Expanded(
                   child: Text(
                     'Photo Ineligible for Baby Screening',
                     style: TextStyle(

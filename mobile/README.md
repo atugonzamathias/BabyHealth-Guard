@@ -56,6 +56,16 @@ The mother dashboard uses the administrator-assigned care-team staff member's sa
 
 The mother dashboard includes MaamaCare, a locally matched scripted assistant with the legacy 12-language reply catalog, quick questions, text-to-speech, and optional English voice input. Voice input requires microphone permission and may be processed by the device speech service. Replies are informational, not a diagnosis; urgent symptoms should be taken to a health facility or reported using the emergency call action.
 
+## Newborn image screening
+
+Open **Baby Vision AI** from the mother dashboard menu. The scanner can take a
+photo or select one from the gallery, then uploads it to
+`https://babyhealth-guard-ml.onrender.com/api/v1/analyze`.
+The app requires an internet connection for this feature and displays an error
+if the service is unreachable; it does not substitute a simulated healthy
+result. Treat the model output as experimental information, not a diagnosis or
+replacement for clinical assessment.
+
 ## Run checks
 
 ```sh
