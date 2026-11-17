@@ -19,6 +19,7 @@ import { MaamaCareAssistant } from "@/components/maamacare-assistant";
 import { MotherCareAssignment } from "@/components/mother-care-assignment";
 import { SmsBilling } from "@/components/sms-billing";
 import { UssdRequests } from "@/components/ussd-requests";
+import { BabyVisionScanner } from "@/components/baby-vision-scanner";
 import {
   createMotherAppointment,
   updateMotherAppointmentStatus,
@@ -125,7 +126,7 @@ export default function Home() {
   >({});
   const [search, setSearch] = useState("");
   const [activeView, setActiveView] = useState<
-    "mothers" | "enter-record" | "newborns" | "appointments" | "referrals" | "communications" | "reports" | "staff" | "settings"
+    "mothers" | "enter-record" | "baby-vision" | "newborns" | "appointments" | "referrals" | "communications" | "reports" | "staff" | "settings"
   >("mothers");
   const [appointments, setAppointments] = useState<AppointmentRecord[]>([]);
   const [newborns, setNewborns] = useState<MotherScopedRecord[]>([]);
@@ -445,6 +446,7 @@ export default function Home() {
             ? ([
                 ["mothers", "Mothers"],
                 ["enter-record", "Enter record"],
+                ["baby-vision", "Baby AI Scanner"],
                 ["staff", "Staff management"],
                 ["settings", "Settings"],
                 ["newborns", "Newborn care"],
@@ -456,6 +458,7 @@ export default function Home() {
             : ([
                 ["mothers", "Mothers"],
                 ["enter-record", "Enter record"],
+                ["baby-vision", "Baby AI Scanner"],
                 ["newborns", "Newborn care"],
                 ["appointments", "Appointments"],
                 ["referrals", "Referrals"],
@@ -592,6 +595,46 @@ export default function Home() {
           canManageStaff ? <AdminSettings /> : null
         ) : activeView === "enter-record" ? (
           <EnterRecord mothers={mothers} />
+        ) : activeView === "baby-vision" ? (
+          <BabyVisionScanner
+            currentFacilityName={session.facility}
+            currentStaffName={session.name}
+            mothers={mothers}
+            onEscalateDangerSign={async (motherId, result) => {
+              const token = await session.user.getIdToken();
+              await fetch("/api/mother-records", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  motherId,
+                  activityType: "danger_sign",
+                  dangerSign: `🚨 AI Screening Alert: ${result.condition_name}`,
+                  description: result.clinical_explanation || "Critical neonatal sign requiring immediate triage.",
+                  severity: "emergency",
+                }),
+              });
+            }}
+            onSaveToHealthLog={async (motherId, result) => {
+              const token = await session.user.getIdToken();
+              await fetch("/api/mother-records", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  motherId,
+                  activityType: "danger_sign",
+                  dangerSign: `Baby AI Screening: ${result.condition_name} (${result.severity})`,
+                  description: `${result.clinical_explanation || ""} | Advice: ${result.mother_guidance || ""}`,
+                  severity: result.severity === "EMERGENCY_DANGER" ? "emergency" : "moderate",
+                }),
+              });
+            }}
+          />
         ) : activeView === "appointments" ? (
           <AppointmentManager
             appointments={appointments}

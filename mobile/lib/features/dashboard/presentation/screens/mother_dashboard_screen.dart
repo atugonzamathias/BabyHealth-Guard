@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../data/care_repository.dart';
 import '../../domain/mother_profile.dart';
 import '../../../health_tracking/presentation/screens/my_health_screen.dart';
+import '../../../health_tracking/presentation/screens/baby_vision_scanner_screen.dart';
 import '../../../danger_signs/presentation/screens/danger_signs_screen.dart';
 import '../widgets/maamacare_assistant_sheet.dart';
 
@@ -1643,6 +1644,11 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
 
           const SizedBox(height: 16),
 
+          // AI Baby Skin & Eye Vision Scanner Card
+          _buildBabyVisionCard(),
+
+          const SizedBox(height: 16),
+
           // Next ANC Visit Card
           _buildAncVisitCard(),
 
@@ -1650,6 +1656,105 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
 
           // Danger signs banner & Emergency call
           _buildEmergencyActions(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBabyVisionCard() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0E7490), Color(0xFF155E75)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0E7490).withValues(alpha: 0.25),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.auto_awesome, color: Colors.white, size: 22),
+              ),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'AI Baby Skin & Eye Scanner',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      'Screen for Jaundice, Rashes & Infections',
+                      style: TextStyle(color: Colors.white70, fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Photograph your newborn to check for jaundice, eye discharge, or rashes. Non-baby pictures are automatically filtered out.',
+            style: TextStyle(color: Colors.white, fontSize: 12, height: 1.35),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BabyVisionScannerScreen(
+                      motherUid: widget.profile.uid,
+                      midwifePhone: widget.profile.assignedStaffPhone ??
+                          widget.profile.midwifePhone,
+                      onSaveLog: (title, description) {
+                        widget.careRepository.logDangerSign(
+                          uid: widget.profile.uid,
+                          sign: title,
+                          description: description,
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.photo_camera_rounded, size: 18),
+              label: const Text('Open Baby Vision Scanner'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF0E7490),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                textStyle:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+            ),
+          ),
         ],
       ),
     );
