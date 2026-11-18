@@ -260,14 +260,46 @@ class _BabyVisionScannerScreenState extends State<BabyVisionScannerScreen> {
                     ],
                   ),
                   const SizedBox(height: 10),
+                  if (_analysisError != null) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF1F2),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFFECDD3)),
+                      ),
+                      child: Text(
+                        _analysisError!,
+                        style: const TextStyle(
+                          color: Color(0xFF9F1239),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: _selectedImage == null || _isAnalyzing
                           ? null
                           : _analyzeSelectedImage,
-                      icon: const Icon(Icons.auto_awesome),
-                      label: const Text('Analyze with BabyHealth AI'),
+                      icon: _isAnalyzing
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.auto_awesome),
+                      label: Text(
+                        _isAnalyzing
+                            ? 'Analyzing...'
+                            : 'Analyze with BabyHealth AI',
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0E7490),
                         foregroundColor: Colors.white,
@@ -283,45 +315,6 @@ class _BabyVisionScannerScreenState extends State<BabyVisionScannerScreen> {
             ),
 
             const SizedBox(height: 24),
-
-            if (_analysisError != null)
-              Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF1F2),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFFECDD3)),
-                ),
-                child: Text(
-                  _analysisError!,
-                  style: const TextStyle(
-                    color: Color(0xFF9F1239),
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-
-            // Loader
-            if (_isAnalyzing)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: Column(
-                    children: [
-                      CircularProgressIndicator(color: Color(0xFF0E7490)),
-                      SizedBox(height: 12),
-                      Text(
-                        'Analyzing baby image with VisionNet...',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF0E7490)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
 
             // Result Display
             if (_result != null && !_isAnalyzing) _buildResultCard(),

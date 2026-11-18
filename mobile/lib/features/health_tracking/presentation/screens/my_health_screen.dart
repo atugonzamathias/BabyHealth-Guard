@@ -176,8 +176,8 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minHeight: 130),
-      padding: const EdgeInsets.all(14),
+      constraints: const BoxConstraints(minHeight: 126),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       decoration: _cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,25 +185,43 @@ class _MetricCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 18, color: AppColors.primary),
-              const SizedBox(width: 6),
+              Icon(icon, size: 16, color: AppColors.primary),
+              const SizedBox(width: 4),
               Expanded(
-                  child: Text(label,
-                      style: Theme.of(context).textTheme.bodySmall)),
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
             ],
           ),
           Text(
             value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.stone900,
                 ),
           ),
-          Text(
-            footer,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.primaryDark,
-                ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              footer,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.start,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontSize: 11,
+                    color: AppColors.primaryDark,
+                  ),
+            ),
           ),
         ],
       ),

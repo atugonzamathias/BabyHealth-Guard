@@ -35,8 +35,6 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
 
   int get _kickCount => _vitals.kicks;
   bool get _isIronFolicTaken => _vitals.ironTaken;
-  String get _bpSystolic => _vitals.systolic?.toString() ?? '—';
-  String get _bpDiastolic => _vitals.diastolic?.toString() ?? '—';
   late final DateTime _today = DateTime.now();
   Appointment? get _nextAppointment {
     for (final appointment in _appointments) {
@@ -662,9 +660,7 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
   }
 
   Widget _buildNavigationDrawer() {
-    final drawerWidth = (MediaQuery.sizeOf(context).width * 0.82)
-        .clamp(280.0, 360.0)
-        .toDouble();
+    final drawerWidth = MediaQuery.sizeOf(context).width * 0.45;
     return Drawer(
       width: drawerWidth,
       backgroundColor: const Color(0xFFF6FAFC),
@@ -763,6 +759,15 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
             _buildDrawerItem(2, 'Warning Signs', Icons.warning_amber_rounded),
             _buildDrawerItem(3, 'Visits', Icons.calendar_month_rounded),
             _buildDrawerActionItem(
+              'Health Trackers',
+              Icons.monitor_heart_rounded,
+              subtitle: 'Blood pressure, kicks & iron',
+              onTap: () {
+                Navigator.of(context).pop();
+                setState(() => _currentTab = 1);
+              },
+            ),
+            _buildDrawerActionItem(
               'Baby Vision AI',
               Icons.auto_awesome_rounded,
               subtitle: 'Skin & eye photo screening',
@@ -814,24 +819,26 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
     final iconColor =
         selected ? colorPrimaryContainer : color.withValues(alpha: 0.78);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       child: Material(
         color: tileColor,
         borderRadius: BorderRadius.circular(15),
         child: ListTile(
-          minLeadingWidth: 40,
+          minLeadingWidth: 32,
+          horizontalTitleGap: 8,
+          minVerticalPadding: 4,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
           leading: Container(
-            width: 38,
-            height: 38,
+            width: 32,
+            height: 32,
             decoration: BoxDecoration(
               color: selected
                   ? Colors.white.withValues(alpha: 0.8)
                   : const Color(0xFFEAF2F6),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, size: 20, color: iconColor),
+            child: Icon(icon, size: 17, color: iconColor),
           ),
           title: Text(
             label,
@@ -839,7 +846,7 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: color,
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
             ),
           ),
@@ -870,7 +877,13 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
     return IconButton(
       tooltip: 'Open navigation menu',
       onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-      icon: const Icon(Icons.menu_rounded, color: colorOnSurface),
+      iconSize: 20,
+      constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+      icon: const Icon(
+        Icons.menu_rounded,
+        color: colorOnSurface,
+        size: 20,
+      ),
     );
   }
 
@@ -1766,11 +1779,6 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
 
           const SizedBox(height: 16),
 
-          // 3 Health Metric Cards
-          _buildQuickHealthChecks(),
-
-          const SizedBox(height: 16),
-
           // AI Baby Skin & Eye Vision Scanner Card
           _buildBabyVisionCard(),
 
@@ -2158,262 +2166,6 @@ class _MotherDashboardScreenState extends State<MotherDashboardScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  // 3 Quick Health Checks
-  Widget _buildQuickHealthChecks() {
-    return Row(
-      children: [
-        // Kicks Card (Interactive)
-        Expanded(
-          child: InkWell(
-            onTap: () {
-              _recordKick();
-            },
-            borderRadius: BorderRadius.circular(18),
-            child: Container(
-              height: 136,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.grey.shade100),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 10,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.amber.shade50,
-                    ),
-                    child: Icon(Icons.child_care_rounded,
-                        color: Colors.amber.shade600, size: 18),
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        '$_kickCount kicks',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: colorOnSurface,
-                        ),
-                      ),
-                      const Text(
-                        'Count Today',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10.5,
-                          color: colorOnSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Text(
-                    '+ Log Kick',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F766E),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-
-        const SizedBox(width: 10),
-
-        // Blood Pressure Card
-        Expanded(
-          child: Container(
-            height: 136,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: Colors.grey.shade100),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.02),
-                  blurRadius: 10,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFE6F4F1),
-                  ),
-                  child: const Icon(Icons.favorite_rounded,
-                      color: Color(0xFF0F766E), size: 18),
-                ),
-                Column(
-                  children: [
-                    Text(
-                      '$_bpSystolic / $_bpDiastolic',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: colorOnSurface,
-                      ),
-                    ),
-                    Text(
-                      _vitals.systolic == null
-                          ? 'No reading'
-                          : 'Latest reading',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 10.5,
-                        color: colorOnSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  _vitals.systolic == null ? 'Not recorded' : 'Recorded today',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF10B981),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        const SizedBox(width: 10),
-
-        // Iron & Folic (Interactive Toggle)
-        Expanded(
-          child: InkWell(
-            onTap: () {
-              _toggleIronTaken();
-            },
-            borderRadius: BorderRadius.circular(18),
-            child: Container(
-              height: 136,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.grey.shade100),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 10,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.indigo.shade50,
-                    ),
-                    child: Icon(Icons.medication_rounded,
-                        color: Colors.indigo.shade600, size: 18),
-                  ),
-                  const Column(
-                    children: [
-                      Text(
-                        'Iron & Folic',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.bold,
-                          color: colorOnSurface,
-                        ),
-                      ),
-                      Text(
-                        '1 Pill Daily',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10.5,
-                          color: colorOnSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _isIronFolicTaken
-                            ? Icons.check_circle_rounded
-                            : Icons.schedule_rounded,
-                        size: 13,
-                        color: _isIronFolicTaken
-                            ? const Color(0xFF10B981)
-                            : Colors.amber.shade700,
-                      ),
-                      const SizedBox(width: 3),
-                      Flexible(
-                        child: Text(
-                          _isIronFolicTaken ? 'Taken' : 'Pending',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w600,
-                            color: _isIronFolicTaken
-                                ? const Color(0xFF10B981)
-                                : Colors.amber.shade700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 

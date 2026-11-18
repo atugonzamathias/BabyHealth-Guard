@@ -272,7 +272,7 @@ export function BabyVisionScanner({
               <input
                 type="file"
                 ref={fileInputRef}
-                accept="image/*"
+                accept="image/jpeg,.jpg,.jpeg,image/png,.png,image/webp,.webp,image/heic,.heic,image/heif,.heif,image/avif,.avif,image/gif,.gif,image/bmp,.bmp,image/tiff,.tiff,.tif"
                 capture="environment"
                 onChange={handleFileChange}
                 className="hidden"
@@ -309,7 +309,7 @@ export function BabyVisionScanner({
                       Take Photo or Browse Image
                     </p>
                     <p className="text-xs text-slate-500">
-                      Supports phone camera capture or files (PNG, JPEG, WebP)
+                      Supports phone camera capture and image files (JPEG/JPG, PNG, WebP, HEIC/HEIF, AVIF, GIF, BMP, TIFF)
                     </p>
                   </div>
                 )}

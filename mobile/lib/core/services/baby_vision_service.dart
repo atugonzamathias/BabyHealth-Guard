@@ -80,8 +80,22 @@ class BabyVisionService {
 
     final request = http.MultipartRequest('POST', Uri.parse(endpoint));
     request.fields['modality'] = modality;
+    // JPG and JPEG are the same format. Preserve jpg/jpeg filenames so
+    // multipart upload detection sends image/jpeg rather than application/octet-stream.
+    final originalPath = imageFile.path;
+    final originalName = originalPath.split(RegExp(r'[\\/]')).last;
+    final lowerName = originalName.toLowerCase();
+    final uploadName = lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg')
+        ? originalName
+        : originalName.isEmpty
+            ? 'baby_photo.jpg'
+            : originalName;
     request.files.add(
-      await http.MultipartFile.fromPath('file', imageFile.path),
+      await http.MultipartFile.fromPath(
+        'file',
+        imageFile.path,
+        filename: uploadName,
+      ),
     );
 
     try {

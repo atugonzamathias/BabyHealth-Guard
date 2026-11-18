@@ -3,7 +3,14 @@ import io
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from PIL import Image
+from PIL import Image, ImageOps
+
+try:
+    from pillow_heif import register_heif_opener
+    register_heif_opener()
+except ImportError:
+    # Pillow can still decode the standard formats without the HEIF/HEIC plugin.
+    pass
 
 # Import predictor
 from inference import BabyHealthPredictor
@@ -70,15 +77,27 @@ async def analyze_baby_image(
     if predictor is None:
         predictor = BabyHealthPredictor()
 
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Uploaded file must be a valid image format (JPEG, PNG, WebP).")
-
     try:
         contents = await file.read()
         if len(contents) > 15 * 1024 * 1024:  # 15 MB limit fixed
             raise HTTPException(status_code=400, detail="Image file exceeds the 15 MB size limit.")
 
-        image = Image.open(io.BytesIO(contents)).convert("RGB")
+        # Do not trust UploadFile content_type or the filename extension.
+        # Pillow decodes JPG/JPEG and every supported camera image format by bytes.
+        image = Image.open(io.BytesIO(contents))
+        image_format = (image.format or "").upper()
+        supported_formats = {
+            "JPEG", "PNG", "WEBP", "HEIF", "HEIC",
+            "AVIF", "GIF", "BMP", "TIFF", "MPO",
+        }
+        if image_format not in supported_formats:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unsupported image format: {image_format or 'unknown'}.",
+            )
+        image = ImageOps.exif_transpose(image).convert("RGB")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Could not decode image: {str(e)}")
 
